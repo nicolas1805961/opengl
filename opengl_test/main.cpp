@@ -1,48 +1,257 @@
 #include <iostream>
+#include <memory>
+#include <string>
+#include <fstream>
+#include <sstream>
+#include <tuple>
+#include <cassert>
 #include <GL/glew.h>
 #include <GL/freeglut.h>
+#include "IndexBuffer.h"
+#include "VertexBuffer.h"
+#include "VertexArray.h"
+#include "Shader.h"
+#include "Renderer.h"
+#include "Texture.h"
+#include "Matrix4f.h"
+#include "glm\glm.hpp"
+#include "glm\gtc\matrix_transform.hpp"
+#include "glm\gtx\string_cast.hpp"
+#include "Camera.h"
 
-GLuint vao_id;
-GLint program_id;
+std::unique_ptr<bool[]> keys = std::make_unique<bool[]>(256);
+std::unique_ptr<bool[]> keysSpecial = std::make_unique<bool[]>(256);
+Camera camera(Vector3(0.0f, 0.0f, 3.0f));
+GLfloat deltaTime = 0.0f;
+GLfloat lastFrame = 0.0f;
+bool firstMouse = true;
+GLfloat lastX = 1920.0f / 2.0f;
+GLfloat lastY = 1080.0f / 2.0f;
+
+// Function prototypes
+void KeyPressed(unsigned char key, int xmouse, int ymouse)
+{
+	keys[key] = true;
+}
+
+void KeyUp(unsigned char key, int xmouse, int ymouse)
+{
+	keys[key] = false;
+}
+
+void KeySpecial(int key, int xmouse, int ymouse)
+{
+	keysSpecial[key] = true;
+}
+
+void KeySpecialUp(int key, int xmouse, int ymouse)
+{
+	keysSpecial[key] = false;
+}
+
+void keyOperation(void)
+{
+	if (keys['z'])
+		camera.ProcessKeyboard(Camera_movement::FORWARD, deltaTime);
+	else if (keys['s'])
+		camera.ProcessKeyboard(Camera_movement::BACKWARD, deltaTime);
+	else if (keys['q'])
+		camera.ProcessKeyboard(Camera_movement::LEFT, deltaTime);
+	else if (keys['d'])
+		camera.ProcessKeyboard(Camera_movement::RIGHT, deltaTime);
+	else if (keys[27])
+		exit(0);
+}
+
+void keyOperationSpecial(void)
+{
+	if (keysSpecial[GLUT_KEY_UP])
+		camera.ProcessKeyboard(Camera_movement::FORWARD, deltaTime);
+	else if (keysSpecial[GLUT_KEY_DOWN])
+		camera.ProcessKeyboard(Camera_movement::BACKWARD, deltaTime);
+	else if (keysSpecial[GLUT_KEY_LEFT])
+		camera.ProcessKeyboard(Camera_movement::LEFT, deltaTime);
+	else if (keysSpecial[GLUT_KEY_RIGHT])
+		camera.ProcessKeyboard(Camera_movement::RIGHT, deltaTime);
+}
+
+void look(int x, int y)
+{
+	if (firstMouse)
+	{
+		lastX = x;
+		lastY = y;
+		firstMouse = false;
+	}
+	GLfloat deltaX = lastX - x;
+	GLfloat deltaY = y - lastY;
+	lastX = x;
+	lastY = y;
+	camera.ProcessMouseMovement(deltaX, deltaY);
+}
+
+void mouseWheel(int wheel, int direction, int x, int y)
+{
+	camera.ProcessMouseScroll(direction);
+}
 
 void test_opengl_error() {
-    GLenum err = glGetError();
-    switch (err) {
-    case GL_NO_ERROR: return;
-    case GL_INVALID_ENUM:
-        std::cerr << "GL_INVALID_ENUM\n";
-        break;
-    case GL_INVALID_VALUE:
-        std::cerr << "GL_INVALID_VALUE\n";
-        break;
-    case GL_INVALID_OPERATION:
-        std::cerr << "GL_INVALID_OPERATION\n";
-        break;
-    case GL_INVALID_FRAMEBUFFER_OPERATION:
-        std::cerr << "GL_INVALID_FRAMEBUFFER_OPERATION\n";
-        break;
-    case GL_OUT_OF_MEMORY:
-        std::cerr << "GL_OUT_OF_MEMORY\n";
-        break;
-    case GL_STACK_UNDERFLOW:
-        std::cerr << "GL_STACK_UNDERFLOW\n";
-        break;
-    case GL_STACK_OVERFLOW:
-        std::cerr << "GL_STACK_OVERFLOW\n";
-        break;
-    default:
-        std::cerr << "UNKONWN ERROR\n";
-        break;
-    }
-
+	GLenum err = glGetError();
+	switch (err) {
+	case GL_NO_ERROR: return;
+	case GL_INVALID_ENUM:
+		std::cerr << "GL_INVALID_ENUM\n";
+		break;
+	case GL_INVALID_VALUE:
+		std::cerr << "GL_INVALID_VALUE\n";
+		break;
+	case GL_INVALID_OPERATION:
+		std::cerr << "GL_INVALID_OPERATION\n";
+		break;
+	case GL_INVALID_FRAMEBUFFER_OPERATION:
+		std::cerr << "GL_INVALID_FRAMEBUFFER_OPERATION\n";
+		break;
+	case GL_OUT_OF_MEMORY:
+		std::cerr << "GL_OUT_OF_MEMORY\n";
+		break;
+	case GL_STACK_UNDERFLOW:
+		std::cerr << "GL_STACK_UNDERFLOW\n";
+		break;
+	case GL_STACK_OVERFLOW:
+		std::cerr << "GL_STACK_OVERFLOW\n";
+		break;
+	default:
+		std::cerr << "UNKONWN ERROR\n";
+		break;
+	}
 }
 
 void display() {
-    glUseProgram(program_id);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glBindVertexArray(vao_id);
-    glDrawArrays(GL_TRIANGLES, 0, 3 * 3);
-    glBindVertexArray(0);
+	// Set frame time
+	GLfloat currentFrame = glutGet(GLUT_ELAPSED_TIME);
+	deltaTime = currentFrame - lastFrame;
+	lastFrame = currentFrame;
+	keyOperation();
+	keyOperationSpecial();
+    Renderer renderer;
+    renderer.clear();
+	GLfloat positions[] =
+	{
+		-0.5f, 0.5f, -0.5f, /*0.0f, 1.0f,*/
+		-0.5f, -0.5f, -0.5f, /*0.0f, 0.0f,*/
+		0.5f, -0.5f, -0.5f, /*1.0f, 0.0f,*/
+		0.5f, 0.5f, -0.5f, /*1.0f, 1.0f,*/
+
+		0.5f, 0.5f, -0.5f, /*0.0f, 1.0f,*/
+		0.5f, -0.5f, -0.5f, /*0.0f, 0.0f,*/
+		0.5f, -0.5f, 0.5f, /*1.0f, 0.0f,*/
+		0.5f, 0.5f, 0.5f, /*1.0f, 1.0f,*/
+
+		0.5f, 0.5f, 0.5f, /*0.0f, 1.0f,*/
+		0.5f, -0.5f, 0.5f, /*0.0f, 0.0f,*/
+		-0.5f, -0.5f, 0.5f, /*1.0f, 0.0f,*/
+		-0.5f, 0.5f, 0.5f, /*1.0f, 1.0f,*/
+
+		-0.5f, 0.5f, 0.5f, /*0.0f, 1.0f,*/
+		-0.5f, -0.5f, 0.5f, /*0.0f, 0.0f,*/
+		-0.5f, -0.5f, -0.5f, /*1.0f, 0.0f,*/
+		-0.5f, 0.5f, -0.5f, /*1.0f, 1.0f,*/
+
+		-0.5f, -0.5f, 0.5f, /*0.0f, 1.0f,*/
+		0.5f, -0.5f, 0.5f, /*0.0f, 0.0f,*/
+		0.5f, -0.5f, -0.5f, /*1.0f, 0.0f,*/
+		-0.5f, -0.5f, -0.5f, /*1.0f, 1.0f,*/
+
+		-0.5f, 0.5f, -0.5f, /*0.0f, 1.0f,*/
+		0.5f, 0.5f, -0.5f, /*0.0f, 0.0f,*/
+		0.5f, 0.5f, 0.5f, /*1.0f, 0.0f,*/
+		-0.5f, 0.5f, 0.5f, /*1.0f, 1.0f*/
+
+	};
+	GLuint indices[] =
+	{
+		// front
+		0, 1, 3,
+		3, 1, 2,
+		// right
+		4, 5, 7,
+		7, 5, 6,
+		// back
+		8, 9, 11,
+		11, 9, 10,
+		// left
+		12, 13, 15,
+		15, 13, 14,
+		// bottom
+		16, 17, 19,
+		19, 17, 18,
+		// top
+		20, 21, 23,
+		23, 21, 22
+	};
+	/*Vector3 cubePositions[] =
+	{
+		Vector3(0.0f, 0.0f, 0.0f),
+		Vector3(2.0f, 5.0f, -15.0f),
+		Vector3(-1.5f, -2.2f, -2.5f),
+		Vector3(-3.8f, -2.0f, -12.3f),
+		Vector3(2.4f, -0.4f, -3.5f),
+		Vector3(-1.7f, 3.0f, -7.5f),
+		Vector3(1.3f, -2.0f, -2.5f),
+		Vector3(1.5f, 2.0f, -2.5f),
+		Vector3(1.5f, 0.2f, -1.5f),
+		Vector3(-1.3f, 1.0f, -1.5f)
+	};*/
+    glEnable(GL_DEPTH_TEST);
+    /*glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);*/
+
+
+
+    VertexArray vaBox;
+	VertexBuffer vb(positions, 6 * 6 * 3 * sizeof(float));
+    VertexBufferLayout layout;
+    layout.push<GLfloat>(3);
+    //layout.push<GLfloat>(2);
+    vaBox.addBuffer(vb, layout);
+	IndexBuffer ib(indices, 2 * 3 * 6);
+
+	VertexArray vaLight;
+	vaLight.addBuffer(vb, layout);
+
+	Shader lightingShader("lightingVertex.glsl", "lightingFragment.glsl");
+	Shader lampShader("lampVertex.glsl", "lampFragment.glsl");
+
+
+	Matrix4f model(1.0f);
+	Matrix4f view(1.0f);
+	Matrix4f projection = Matrix4f::gl_perspective(camera.GetZoom(), 1920.0f / 1080.0f, 0.1f, 1000.0f);
+	view = camera.get_view_matrix();
+    //Texture texture("Mauritius_beach.png");
+    //texture.bind();
+    lightingShader.bind();
+    lightingShader.set_uniform_3f("objectColor", 1.0f, 0.5f, 0.31f);
+    lightingShader.set_uniform_3f("lightColor", 1.0f, 0.5f, 1.0f);
+    lightingShader.set_uniform_mat_4f("view", view);
+    lightingShader.set_uniform_mat_4f("projection", projection);
+	lightingShader.set_uniform_mat_4f("model", model);
+	renderer.draw(vaBox, ib, lightingShader);
+	lightingShader.unbind();
+
+	model = Matrix4f::gl_translate(model, Vector3(1.2f, 1.0f, 2.0f));
+	model = Matrix4f::gl_scale(model, Vector3(0.2f));
+	//Texture texture("Mauritius_beach.png");
+	//texture.bind();
+	lampShader.bind();
+	lampShader.set_uniform_mat_4f("view", view);
+	lampShader.set_uniform_mat_4f("projection", projection);
+	lampShader.set_uniform_mat_4f("model", model);
+	renderer.draw(vaLight, ib, lampShader);
+	lampShader.unbind();
+    //shader.set_uniform_1i("u_Texture", 0);
+    //renderer.draw(va, ib, shader);
+
+
     glFinish();
     glutSwapBuffers();
     test_opengl_error();
@@ -51,13 +260,21 @@ void display() {
 void initGlut(int& argc, char* argv[]) {
     //glewExperimental = GL_TRUE;
     glutInit(&argc, argv);
-    glutInitContextVersion(4, 0);
+    glutInitContextVersion(4, 4);
     glutInitContextProfile(GLUT_CORE_PROFILE | GLUT_DEBUG);
     glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
-    glutInitWindowSize(512, 512);
+    glutInitWindowSize(1920, 1080);
     glutInitWindowPosition(100, 100);
     glutCreateWindow("Test");
     glutDisplayFunc(display);
+    glutIdleFunc(display);
+	glutKeyboardFunc(KeyPressed);
+	glutKeyboardUpFunc(KeyUp);
+	glutSpecialFunc(KeySpecial);
+	glutSpecialUpFunc(KeySpecialUp);
+	//glutMotionFunc(look);
+	glutPassiveMotionFunc(look);
+	glutMouseWheelFunc(mouseWheel);
 }
 
 void initGlew() {
@@ -69,80 +286,8 @@ void initGlew() {
 void initGL() {
     glDisable(GL_DEPTH_TEST);
     glDisable(GL_CULL_FACE);
-    glViewport(0, 0, 512, 512);
-    glClearColor(1.0, 0, 0, 1.0);
-    test_opengl_error();
-}
-
-bool initShaders() {
-    GLint compile_status = GL_TRUE;
-    GLint link_result = GL_TRUE;
-    GLint vertex_shader_id = glCreateShader(GL_VERTEX_SHADER);
-    GLint fragment_shader_id = glCreateShader(GL_FRAGMENT_SHADER);
-    program_id = glCreateProgram();
-    if (vertex_shader_id == 0 || fragment_shader_id == 0 || program_id == 0) return false;
-    const char* src_vertex_shader[] = { "#version 400\nlayout(location = 1) in vec3 vPos;\nvoid main() {\ngl_Position = vec4(vPos, 1.0);\n}" };
-    const char* src_fragment_shader[] = { "#version 400\nout vec4 color;\nvoid main() {\ncolor = vec4(1.0,1.0,1.0,1.0);\n}" };
-    glShaderSource(vertex_shader_id, 1, src_vertex_shader, 0);
-    glShaderSource(fragment_shader_id, 1, src_fragment_shader, 0);
-    glCompileShader(vertex_shader_id);
-    glGetShaderiv(vertex_shader_id, GL_COMPILE_STATUS, &compile_status);
-    if (compile_status != GL_TRUE) {
-        GLint log_size;
-        glGetShaderiv(vertex_shader_id, GL_INFO_LOG_LENGTH, &log_size);
-        char* shader_log = (char*)std::malloc(log_size + 1); /* +1 pour le caractere de fin de chaine '\0' */
-        if (shader_log == 0) {
-            return false;
-        }
-        glGetShaderInfoLog(vertex_shader_id, log_size, &log_size, shader_log);
-        std::cerr << shader_log << std::endl;
-        return false;
-    }
-    glCompileShader(fragment_shader_id);
-    glGetShaderiv(fragment_shader_id, GL_COMPILE_STATUS, &compile_status);
-    if (compile_status != GL_TRUE) {
-        GLint log_size;
-        glGetShaderiv(vertex_shader_id, GL_INFO_LOG_LENGTH, &log_size);
-        char* shader_log = (char*)std::malloc(log_size + 1); /* +1 pour le caractere de fin de chaine '\0' */
-        if (shader_log == 0) {
-            return false;
-        }
-        glGetShaderInfoLog(vertex_shader_id, log_size, &log_size, shader_log);
-        std::cerr << shader_log << std::endl;
-        return false;
-    }
-
-    glAttachShader(program_id, vertex_shader_id);
-    glAttachShader(program_id, fragment_shader_id);
-    glLinkProgram(program_id);
-    if (link_result != GL_TRUE) {
-        GLint log_size;
-        glGetProgramiv(program_id, GL_INFO_LOG_LENGTH, &log_size);
-        char* program_log = (char*)std::malloc(log_size + 1); /* +1 pour le caractere de fin de chaine '\0' */
-        if (program_log == 0) {
-            glDeleteProgram(program_id);
-            program_id = 0;
-            return false;
-        }
-        glGetProgramInfoLog(program_id, log_size, &log_size, program_log);
-        std::cerr << program_log << std::endl;
-        glDeleteProgram(program_id);
-        return false;
-    }
-    return true;
-}
-
-void initData() {
-    GLfloat vertex_list[] = { -1, -1, 0.0, 1, -1, 0.0, -1, 1, 0.0 };
-    GLuint vbo_id;
-    glGenVertexArrays(1, &vao_id);
-    glBindVertexArray(vao_id);
-    glGenBuffers(1, &vbo_id);
-    glBindBuffer(GL_ARRAY_BUFFER, vbo_id);
-    glBufferData(GL_ARRAY_BUFFER, 3 * 3 * sizeof(GLfloat), vertex_list, GL_STATIC_DRAW);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
-    glEnableVertexAttribArray(1);
-    glBindVertexArray(0);
+    glViewport(0, 0, 1920, 1080);
+    glClearColor(0.0, 0, 0, 1.0);
     test_opengl_error();
 }
 
@@ -156,12 +301,6 @@ int main(int argc, char* argv[]) {
     std::cerr << "GL init\n";
     initGL();
     std::cerr << "GL init Ok\n";
-    std::cerr << "GL init shaders\n";
-    initShaders();
-    std::cerr << "GL init shaders Ok\n";
-    std::cerr << "GL init data\n";
-    initData();
-    std::cerr << "GL init data Ok\n";
     std::cerr << "Start\n";
     glutMainLoop();
     return 0;
