@@ -27,6 +27,7 @@ GLfloat lastFrame = 0.0f;
 bool firstMouse = true;
 GLfloat lastX = 1920.0f / 2.0f;
 GLfloat lastY = 1080.0f / 2.0f;
+Vector3 lightPosition(1.2f, 1.0f, 2.0f);
 
 // Function prototypes
 void KeyPressed(unsigned char key, int xmouse, int ymouse)
@@ -127,6 +128,8 @@ void test_opengl_error() {
 }
 
 void display() {
+	lightPosition[0] -= 0.001f;
+	lightPosition[2] -= 0.001f;
 	// Set frame time
 	GLfloat currentFrame = glutGet(GLUT_ELAPSED_TIME);
 	deltaTime = currentFrame - lastFrame;
@@ -137,35 +140,41 @@ void display() {
     renderer.clear();
 	GLfloat positions[] =
 	{
-		-0.5f, 0.5f, -0.5f, /*0.0f, 1.0f,*/
-		-0.5f, -0.5f, -0.5f, /*0.0f, 0.0f,*/
-		0.5f, -0.5f, -0.5f, /*1.0f, 0.0f,*/
-		0.5f, 0.5f, -0.5f, /*1.0f, 1.0f,*/
+		//front
+		-0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f,/*0.0f, 1.0f,*/
+		-0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f,/*0.0f, 0.0f,*/
+		0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f,/*1.0f, 0.0f,*/
+		0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f,/*1.0f, 1.0f,*/
 
-		0.5f, 0.5f, -0.5f, /*0.0f, 1.0f,*/
-		0.5f, -0.5f, -0.5f, /*0.0f, 0.0f,*/
-		0.5f, -0.5f, 0.5f, /*1.0f, 0.0f,*/
-		0.5f, 0.5f, 0.5f, /*1.0f, 1.0f,*/
+		//right
+		0.5f, 0.5f, -0.5f, 1.0f, 0.0f, 0.0f,/*0.0f, 1.0f,*/
+		0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f,/*0.0f, 0.0f,*/
+		0.5f, -0.5f, 0.5f, 1.0f, 0.0f, 0.0f,/*1.0f, 0.0f,*/
+		0.5f, 0.5f, 0.5f, 1.0f, 0.0f, 0.0f,/*1.0f, 1.0f,*/
 
-		0.5f, 0.5f, 0.5f, /*0.0f, 1.0f,*/
-		0.5f, -0.5f, 0.5f, /*0.0f, 0.0f,*/
-		-0.5f, -0.5f, 0.5f, /*1.0f, 0.0f,*/
-		-0.5f, 0.5f, 0.5f, /*1.0f, 1.0f,*/
+		//back
+		0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f,/*0.0f, 1.0f,*/
+		0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f,/*0.0f, 0.0f,*/
+		-0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f,/*1.0f, 0.0f,*/
+		-0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f,/*1.0f, 1.0f,*/
 
-		-0.5f, 0.5f, 0.5f, /*0.0f, 1.0f,*/
-		-0.5f, -0.5f, 0.5f, /*0.0f, 0.0f,*/
-		-0.5f, -0.5f, -0.5f, /*1.0f, 0.0f,*/
-		-0.5f, 0.5f, -0.5f, /*1.0f, 1.0f,*/
+		//left
+		-0.5f, 0.5f, 0.5f, -1.0f, 0.0f, 0.0f,/*0.0f, 1.0f,*/
+		-0.5f, -0.5f, 0.5f, -1.0f, 0.0f, 0.0f,/*0.0f, 0.0f,*/
+		-0.5f, -0.5f, -0.5f, -1.0f, 0.0f, 0.0f,/*1.0f, 0.0f,*/
+		-0.5f, 0.5f, -0.5f, -1.0f, 0.0f, 0.0f,/*1.0f, 1.0f,*/
 
-		-0.5f, -0.5f, 0.5f, /*0.0f, 1.0f,*/
-		0.5f, -0.5f, 0.5f, /*0.0f, 0.0f,*/
-		0.5f, -0.5f, -0.5f, /*1.0f, 0.0f,*/
-		-0.5f, -0.5f, -0.5f, /*1.0f, 1.0f,*/
+		//bottom
+		-0.5f, -0.5f, 0.5f, 0.0f, -1.0f, 0.0f,/*0.0f, 1.0f,*/
+		0.5f, -0.5f, 0.5f, 0.0f, -1.0f, 0.0f,/*0.0f, 0.0f,*/
+		0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f,/*1.0f, 0.0f,*/
+		-0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f,/*1.0f, 1.0f,*/
 
-		-0.5f, 0.5f, -0.5f, /*0.0f, 1.0f,*/
-		0.5f, 0.5f, -0.5f, /*0.0f, 0.0f,*/
-		0.5f, 0.5f, 0.5f, /*1.0f, 0.0f,*/
-		-0.5f, 0.5f, 0.5f, /*1.0f, 1.0f*/
+		//top
+		-0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f,/*0.0f, 1.0f,*/
+		0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f,/*0.0f, 0.0f,*/
+		0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f,/*1.0f, 0.0f,*/
+		-0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f/*1.0f, 1.0f*/
 
 	};
 	GLuint indices[] =
@@ -209,15 +218,16 @@ void display() {
 
 
     VertexArray vaBox;
-	VertexBuffer vb(positions, 6 * 6 * 3 * sizeof(float));
-    VertexBufferLayout layout;
-    layout.push<GLfloat>(3);
+	VertexBuffer vb(positions, 6 * 4 * 6 * sizeof(float));
+    VertexBufferLayout layoutBox;
+    layoutBox.push<GLfloat>(3);
+    layoutBox.push<GLfloat>(3);
     //layout.push<GLfloat>(2);
-    vaBox.addBuffer(vb, layout);
+    vaBox.addBuffer(vb, layoutBox);
 	IndexBuffer ib(indices, 2 * 3 * 6);
 
 	VertexArray vaLight;
-	vaLight.addBuffer(vb, layout);
+	vaLight.addBuffer(vb, layoutBox);
 
 	Shader lightingShader("lightingVertex.glsl", "lightingFragment.glsl");
 	Shader lampShader("lampVertex.glsl", "lampFragment.glsl");
@@ -231,15 +241,17 @@ void display() {
     //texture.bind();
     lightingShader.bind();
     lightingShader.set_uniform_3f("objectColor", 1.0f, 0.5f, 0.31f);
-    lightingShader.set_uniform_3f("lightColor", 1.0f, 0.5f, 1.0f);
+    lightingShader.set_uniform_3f("lightColor", 1.0f, 1.0f, 1.0f);
+    lightingShader.set_uniform_3f("lightPos", lightPosition.get_x(), lightPosition.get_y(), lightPosition.get_z());
+    lightingShader.set_uniform_3f("viewPos", camera.GetPosition().get_x(), camera.GetPosition().get_y(), camera.GetPosition().get_z());
     lightingShader.set_uniform_mat_4f("view", view);
     lightingShader.set_uniform_mat_4f("projection", projection);
 	lightingShader.set_uniform_mat_4f("model", model);
 	renderer.draw(vaBox, ib, lightingShader);
 	lightingShader.unbind();
 
-	model = Matrix4f::gl_translate(model, Vector3(1.2f, 1.0f, 2.0f));
-	model = Matrix4f::gl_scale(model, Vector3(0.2f));
+	model = Matrix4f::gl_translate(model, lightPosition);
+	model = Matrix4f::gl_scale(model, Vector3(0.01f));
 	//Texture texture("Mauritius_beach.png");
 	//texture.bind();
 	lampShader.bind();
