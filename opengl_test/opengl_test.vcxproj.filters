@@ -853,10 +853,13 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="rtx.png">
+    <Image Include="Mauritius_beach.png">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="Mauritius_beach.png">
+    <Image Include="container2.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="container2_specular.png">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

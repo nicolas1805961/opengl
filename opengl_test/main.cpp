@@ -141,40 +141,40 @@ void display() {
 	GLfloat positions[] =
 	{
 		//front
-		-0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f,/*0.0f, 1.0f,*/
-		-0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f,/*0.0f, 0.0f,*/
-		0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f,/*1.0f, 0.0f,*/
-		0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f,/*1.0f, 1.0f,*/
+		-0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 0.0f, 1.0f,
+		-0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f,
+		0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f,
+		0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 1.0f, 1.0f,
 
 		//right
-		0.5f, 0.5f, -0.5f, 1.0f, 0.0f, 0.0f,/*0.0f, 1.0f,*/
-		0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f,/*0.0f, 0.0f,*/
-		0.5f, -0.5f, 0.5f, 1.0f, 0.0f, 0.0f,/*1.0f, 0.0f,*/
-		0.5f, 0.5f, 0.5f, 1.0f, 0.0f, 0.0f,/*1.0f, 1.0f,*/
+		0.5f, 0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
+		0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+		0.5f, -0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+		0.5f, 0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f,
 
 		//back
-		0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f,/*0.0f, 1.0f,*/
-		0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f,/*0.0f, 0.0f,*/
-		-0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f,/*1.0f, 0.0f,*/
-		-0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f,/*1.0f, 1.0f,*/
+		0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
+		0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+		-0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f,
+		-0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,
 
 		//left
-		-0.5f, 0.5f, 0.5f, -1.0f, 0.0f, 0.0f,/*0.0f, 1.0f,*/
-		-0.5f, -0.5f, 0.5f, -1.0f, 0.0f, 0.0f,/*0.0f, 0.0f,*/
-		-0.5f, -0.5f, -0.5f, -1.0f, 0.0f, 0.0f,/*1.0f, 0.0f,*/
-		-0.5f, 0.5f, -0.5f, -1.0f, 0.0f, 0.0f,/*1.0f, 1.0f,*/
+		-0.5f, 0.5f, 0.5f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
+		-0.5f, -0.5f, 0.5f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
+		-0.5f, -0.5f, -0.5f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
+		-0.5f, 0.5f, -0.5f, -1.0f, 0.0f, 0.0f, 1.0f, 1.0f,
 
 		//bottom
-		-0.5f, -0.5f, 0.5f, 0.0f, -1.0f, 0.0f,/*0.0f, 1.0f,*/
-		0.5f, -0.5f, 0.5f, 0.0f, -1.0f, 0.0f,/*0.0f, 0.0f,*/
-		0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f,/*1.0f, 0.0f,*/
-		-0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f,/*1.0f, 1.0f,*/
+		-0.5f, -0.5f, 0.5f, 0.0f, -1.0f, 0.0f, 0.0f, 1.0f,
+		0.5f, -0.5f, 0.5f, 0.0f, -1.0f, 0.0f, 0.0f, 0.0f,
+		0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f,
+		-0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f, 1.0f, 1.0f,
 
 		//top
-		-0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f,/*0.0f, 1.0f,*/
-		0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f,/*0.0f, 0.0f,*/
-		0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f,/*1.0f, 0.0f,*/
-		-0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f/*1.0f, 1.0f*/
+		-0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
+		0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f,
+		0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,
+		-0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f
 
 	};
 	GLuint indices[] =
@@ -218,11 +218,11 @@ void display() {
 
 
     VertexArray vaBox;
-	VertexBuffer vb(positions, 6 * 4 * 6 * sizeof(float));
+	VertexBuffer vb(positions, 8 * 4 * 6 * sizeof(float));
     VertexBufferLayout layoutBox;
     layoutBox.push<GLfloat>(3);
     layoutBox.push<GLfloat>(3);
-    //layout.push<GLfloat>(2);
+    layoutBox.push<GLfloat>(2);
     vaBox.addBuffer(vb, layoutBox);
 	IndexBuffer ib(indices, 2 * 3 * 6);
 
@@ -237,18 +237,28 @@ void display() {
 	Matrix4f view(1.0f);
 	Matrix4f projection = Matrix4f::gl_perspective(camera.GetZoom(), 1920.0f / 1080.0f, 0.1f, 1000.0f);
 	view = camera.get_view_matrix();
-    //Texture texture("Mauritius_beach.png");
-    //texture.bind();
+    Texture textureDiffuse("container2.png");
+	Texture textureSpecular("container2_specular.png");
     lightingShader.bind();
-    lightingShader.set_uniform_3f("objectColor", 1.0f, 0.5f, 0.31f);
-    lightingShader.set_uniform_3f("lightColor", 1.0f, 1.0f, 1.0f);
-    lightingShader.set_uniform_3f("lightPos", lightPosition.get_x(), lightPosition.get_y(), lightPosition.get_z());
+    lightingShader.set_uniform_1i("material.diffuse", 0);
+    lightingShader.set_uniform_1i("material.specular", 1);
+    lightingShader.set_uniform_3f("light.ambient", 0.2f, 0.2f, 0.2f);
+    lightingShader.set_uniform_3f("light.diffuse", 0.5f, 0.5f, 0.5f);
+    lightingShader.set_uniform_3f("light.specular", 2.0f, 2.0f, 2.0f);
+    lightingShader.set_uniform_1f("material.shininess", 32.0f);
+    lightingShader.set_uniform_3f("light.position", lightPosition.get_x(), lightPosition.get_y(), lightPosition.get_z());
     lightingShader.set_uniform_3f("viewPos", camera.GetPosition().get_x(), camera.GetPosition().get_y(), camera.GetPosition().get_z());
     lightingShader.set_uniform_mat_4f("view", view);
     lightingShader.set_uniform_mat_4f("projection", projection);
 	lightingShader.set_uniform_mat_4f("model", model);
+
+	textureDiffuse.bind();
+	textureSpecular.bind(1);
+
 	renderer.draw(vaBox, ib, lightingShader);
 	lightingShader.unbind();
+	textureDiffuse.unbind();
+	textureSpecular.unbind();
 
 	model = Matrix4f::gl_translate(model, lightPosition);
 	model = Matrix4f::gl_scale(model, Vector3(0.01f));

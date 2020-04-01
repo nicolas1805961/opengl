@@ -558,8 +558,9 @@
     <ClInclude Include="VertexBufferLayout.h" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="container2.png" />
+    <Image Include="container2_specular.png" />
     <Image Include="Mauritius_beach.png" />
-    <Image Include="rtx.png" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="glm\CMakeLists.txt" />
