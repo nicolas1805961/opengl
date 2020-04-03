@@ -34,6 +34,7 @@ public:
 	void ProcessMouseMovement(GLfloat xOffset, GLfloat yOffset, GLboolean constrainPitch = true);
 	void ProcessMouseScroll(GLfloat yOffset);
 	GLfloat GetZoom();
+	Vector3 getFront();
 	Vector3 GetPosition();
 	GLfloat get_radians(GLfloat x);
 	

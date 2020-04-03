@@ -125,5 +125,5 @@ std::tuple<std::string, std::string> Shader::get_shaders(std::string const& file
 
 Shader::~Shader()
 {
-	glDeleteProgram(m_renderer_id);
+	//glDeleteProgram(m_renderer_id);
 }
