@@ -25,6 +25,7 @@
 #include "Error.h"
 #include "Sphere.h"
 #include "Cube.h"
+#include "Objects.h"
 
 void APIENTRY glDebugCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const GLvoid* userParam)
 {
@@ -85,6 +86,7 @@ void APIENTRY glDebugCallback(GLenum source, GLenum type, GLuint id, GLenum seve
 	printf("glDebugMessage:\n%s \n type = %s source = %s severity = %s\n", message, msgType.c_str(), msgSource.c_str(), msgSeverity.c_str());
 }
 
+Objects objects(10);
 std::unique_ptr<bool[]> keys = std::make_unique<bool[]>(256);
 std::unique_ptr<bool[]> keysSpecial = std::make_unique<bool[]>(256);
 Camera camera(Vector3(0.0f, 0.0f, 3.0f));
@@ -150,6 +152,8 @@ void idle()
 	GLfloat currentFrame = glutGet(GLUT_ELAPSED_TIME);
 	deltaTime = currentFrame - lastFrame;
 	lastFrame = currentFrame;
+	for (auto const& it : objects.getObjects())
+		it.second->setPosition(it.second->getPosition() + Vector3(0.0f, 0.0f, 0.01f));
 	keyOperation();
 	keyOperationSpecial();
 	glutPostRedisplay();
@@ -163,8 +167,8 @@ void look(int x, int y)
 		lastY = y;
 		firstMouse = false;
 	}*/
-	GLfloat deltaX = lastX - x;
-	GLfloat deltaY = y - lastY;
+	GLfloat deltaX = x - lastX;
+	GLfloat deltaY = lastY - y;
 	lastX = x;
 	lastY = y;
 	camera.ProcessMouseMovement(deltaX, deltaY);
@@ -178,8 +182,8 @@ void mouseWheel(int wheel, int direction, int x, int y)
 
 
 void display() {
-	static int x = 0;
-	x++;
+	static unsigned int callNumber = 0;
+	callNumber++;
 	Renderer renderer;
 	renderer.clear();
 	//lightPosition[0] -= 0.001f;
@@ -213,24 +217,6 @@ void display() {
     
     /*glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);*/
-
-    //VertexArray vaBox;
-	//VertexBuffer vb(positions, 8 * 4 * 6 * sizeof(float));
-    //VertexBufferLayout layoutBox(3, 3, 2);
-    /*layoutBox.push<GLfloat>(3);
-    layoutBox.push<GLfloat>(3);
-    layoutBox.push<GLfloat>(2);*/
-    //vaBox.addBuffer(vb, layoutBox);
-	//IndexBuffer ib(indices, 2 * 3 * 6);
-
-	//VertexArray vaLight(vb, layoutBox);
-	//vaLight.addBuffer(vb, layoutBox);
-
-	/*Shader lightingShader("lightingVertex.glsl", "lightingFragment.glsl");
-	Shader lampShader("lampVertex.glsl", "lampFragment.glsl");*/
-
-	/*static Texture textureDiffuse("container2.png");
-	static Texture textureSpecular("container2_specular.png");*/
 	
 	Shader lampShader("lampVertex.glsl", "lampFragment.glsl");
 	Shader lightingShader("colorVertex.glsl", "colorFragment.glsl");
@@ -241,18 +227,15 @@ void display() {
 	//directional light
 	DirectionalLight directionalLight(lightingShader, Vector3(0.05f, 0.05f, 0.05f), Vector3(0.4f, 0.4f, 0.4f), Vector3(0.5f, 0.5f, 0.5f),
 		"dirLight", Vector3(-0.2f, -1.0f, -0.3f));
-	//point light 1
-	PointLight pointLight1(lightingShader, Vector3(0.05f, 0.05f, 0.05f), Vector3(0.8f, 0.8f, 0.8f), Vector3(4.0f, 4.0f, 4.0f), "pointLights[0]",
-		Vector3(pointLightPositions[0].get_x(), pointLightPositions[0].get_y(), pointLightPositions[0].get_z()), 1.0f, 0.09f, 0.032f);
-	//point light 2
-	PointLight pointLight2(lightingShader, Vector3(0.05f, 0.05f, 0.05f), Vector3(0.8f, 0.8f, 0.8f), Vector3(4.0f, 4.0f, 4.0f), "pointLights[1]",
-		Vector3(pointLightPositions[1].get_x(), pointLightPositions[1].get_y(), pointLightPositions[1].get_z()), 1.0f, 0.09f, 0.032f);
-	//point light 3
-	PointLight pointLight3(lightingShader, Vector3(0.05f, 0.05f, 0.05f), Vector3(0.8f, 0.8f, 0.8f), Vector3(4.0f, 4.0f, 4.0f), "pointLights[2]",
-		Vector3(pointLightPositions[2].get_x(), pointLightPositions[2].get_y(), pointLightPositions[2].get_z()), 1.0f, 0.09f, 0.032f);
-	//point light 4
-	PointLight pointLight4(lightingShader, Vector3(0.05f, 0.05f, 0.05f), Vector3(0.8f, 0.8f, 0.8f), Vector3(4.0f, 4.0f, 4.0f), "pointLights[3]",
-		Vector3(pointLightPositions[3].get_x(), pointLightPositions[3].get_y(), pointLightPositions[3].get_z()), 1.0f, 0.09f, 0.032f);
+	//point light
+	PointLight pointLight1(lightingShader, Vector3(0.05f, 0.05f, 0.05f), Vector3(0.8f, 0.8f, 0.8f), Vector3(4.0f, 4.0f, 4.0f),
+		"pointLights[0]", 1.0f, 0.09f, 0.032f, std::make_shared<Sphere>(Vector3(0.7f, 0.2f, 2.0f), 0.05f));
+	PointLight pointLight2(lightingShader, Vector3(0.05f, 0.05f, 0.05f), Vector3(0.8f, 0.8f, 0.8f), Vector3(4.0f, 4.0f, 4.0f),
+		"pointLights[1]", 1.0f, 0.09f, 0.032f, std::make_shared<Sphere>(Vector3(2.3f, -3.3f, -4.0f), 0.05f));
+	PointLight pointLight3(lightingShader, Vector3(0.05f, 0.05f, 0.05f), Vector3(0.8f, 0.8f, 0.8f), Vector3(4.0f, 4.0f, 4.0f),
+		"pointLights[2]", 1.0f, 0.09f, 0.032f, std::make_shared<Sphere>(Vector3(-4.0f, 2.0f, -12.0f), 0.05f));
+	PointLight pointLight4(lightingShader, Vector3(0.05f, 0.05f, 0.05f), Vector3(0.8f, 0.8f, 0.8f), Vector3(4.0f, 4.0f, 4.0f), 
+		"pointLights[3]", 1.0f, 0.09f, 0.032f, std::make_shared<Sphere>(Vector3(0.0f, 0.0f, -3.0f), 0.05f));
 	//spotlight
 	SpotLight spotLight(lightingShader, Vector3(0.0f, 0.0f, 0.0f), Vector3(1.0f, 1.0f, 1.0f), Vector3(1.0f, 1.0f, 1.0f), "spotLight",
 		Vector3(camera.GetPosition().get_x(), camera.GetPosition().get_y(), camera.GetPosition().get_z()),
@@ -266,84 +249,56 @@ void display() {
     lightingShader.set_uniform_mat_4f("view", view);
     lightingShader.set_uniform_mat_4f("projection", projection);
 
-	/*textureDiffuse.bind();
-	textureSpecular.bind(1);*/
-	/*Cube cube1(lightingShader, "material", Vector3(0.0f, 0.0f, 1.0f), Vector3(0.2f, 0.2f, 0.2f), 32.0f, Vector3(0.0f, 0.0f, 0.0f),
-		1.0f, 20.0f, Vector3(1.0f, 0.3f, 0.5f));
-	cube1.draw();
-	Cube cube2(lightingShader, "material", Vector3(0.0f, 1.0f, 0.0f), Vector3(0.2f, 0.2f, 0.2f), 32.0f, Vector3(2.0f, 5.0f, -15.0f),
-		0.5f, 40.0f, Vector3(1.0f, 0.3f, 0.5f));
-	cube2.draw();
-	Cube cube3(lightingShader, "material", Vector3(1.0f, 0.0f, 0.0f), Vector3(0.2f, 0.2f, 0.2f), 32.0f, Vector3(1.5f, 2.0f, -2.5f),
-		0.75f, 60.0f, Vector3(1.0f, 0.3f, 0.5f));
-	cube3.draw();
-	Cube cube4(lightingShader, "material", Vector3(0.3f, 0.2f, 0.75f), Vector3(0.2f, 0.2f, 0.2f), 32.0f, Vector3(-3.8f, -2.0f, -12.3f),
-		1.2f, 80.0f, Vector3(1.0f, 0.3f, 0.5f));
-	cube4.draw();
-	Cube cube5(lightingShader, "material", Vector3(0.4f, 0.75f, 0.85f), Vector3(0.2f, 0.2f, 0.2f), 32.0f, Vector3(2.4f, -0.4f, -3.5f),
-		0.25f, 100.0f, Vector3(1.0f, 0.3f, 0.5f));
-	cube5.draw();*/
-	/*for(unsigned int i = 0; i < 5; i++)
+	if (callNumber <= 1)
 	{
-		model = Matrix4f(1.0f);
-		model = Matrix4f::gl_translate(model, cubePositions[i]);
-		float angle = 20.0f * i;
-		model = Matrix4f::gl_rotate(model, camera.get_radians(angle), Vector3(1.0f, 0.3f, 0.5f));
-		lightingShader.set_uniform_mat_4f("model", model);
-		cube.draw();
-		//renderer.draw(vaBox, ib, lightingShader);
-	}*/
+		Cube cube1(Vector3(0.0f, 0.0f, 1.0f), Vector3(0.2f, 0.2f, 0.2f), 32.0f, Vector3(0.0f, 0.0f, 0.0f), 1.0f, 20.0f,
+			Vector3(1.0f, 0.3f, 0.5f));
+		Cube cube2(Vector3(0.0f, 1.0f, 0.0f), Vector3(0.2f, 0.2f, 0.2f), 32.0f, Vector3(2.0f, 5.0f, -15.0f), 0.5f, 40.0f,
+			Vector3(1.0f, 0.3f, 0.5f));
+		Cube cube3(Vector3(1.0f, 0.0f, 0.0f), Vector3(0.2f, 0.2f, 0.2f), 32.0f, Vector3(-1.5f, -2.2f, -2.5f), 0.75f, 60.0f,
+			Vector3(1.0f, 0.3f, 0.5f));
+		Cube cube4(Vector3(0.3f, 0.2f, 0.75f), Vector3(0.2f, 0.2f, 0.2f), 32.0f, Vector3(-3.8f, -2.0f, -12.3f), 1.2f, 80.0f,
+			Vector3(1.0f, 0.3f, 0.5f));
+		Cube cube5(Vector3(0.4f, 0.75f, 0.85f), Vector3(0.2f, 0.2f, 0.2f), 32.0f, Vector3(2.4f, -0.4f, -3.5f), 0.25f, 100.0f,
+			Vector3(1.0f, 0.3f, 0.5f));
 
-	Sphere sphere1(lightingShader, "material", Vector3(0.0f, 0.0f, 1.0f), Vector3(0.2f, 0.2f, 0.2f), 32.0f, Vector3(-1.7f, 3.0f, -7.5f),
-		0.5f);
-	sphere1.draw();
-	Sphere sphere2(lightingShader, "material", Vector3(0.0f, 1.0f, 0.0f), Vector3(0.2f, 0.2f, 0.2f), 32.0f, Vector3(-1.7f, 4.2f, -7.5f),
-		0.7f);
-	sphere2.draw();
-	/*Sphere sphere3(lightingShader, "material", Vector3(1.0f, 0.0f, 0.0f), Vector3(0.2f, 0.2f, 0.2f), 32.0f, Vector3(1.5f, 2.0f, -2.5f),
-		0.75f);
-	sphere3.draw();
-	Sphere sphere4(lightingShader, "material", Vector3(0.3f, 0.2f, 0.75f), Vector3(0.2f, 0.2f, 0.2f), 32.0f, Vector3(1.5f, 0.2f, -1.5f),
-		1.2f);
-	sphere4.draw();
-	Sphere sphere5(lightingShader, "material", Vector3(0.4f, 0.75f, 0.85f), Vector3(0.2f, 0.2f, 0.2f), 32.0f, Vector3(-1.3f, 1.0f, -1.5f),
-		0.25f);
-	sphere5.draw();*/
-	/*for (unsigned int i = 0; i < 5; i++)
-	{
-		model = Matrix4f(1.0f);
-		model = Matrix4f::gl_translate(model, spherePositions[i]);
-		lightingShader.set_uniform_mat_4f("model", model);
-		sphere.draw();
-		//renderer.draw(vaBox, ib, lightingShader);
-	}*/
+		Sphere sphere1(Vector3(0.0f, 0.0f, 1.0f), Vector3(0.2f, 0.2f, 0.2f), 32.0f, Vector3(-1.7f, 3.0f, -7.5f), 1.0f);
+		Sphere sphere2(Vector3(0.0f, 1.0f, 0.0f), Vector3(0.2f, 0.2f, 0.2f), 32.0f, Vector3(1.3f, -2.0f, -2.5f), 0.7f);
+		Sphere sphere3(Vector3(1.0f, 0.0f, 0.0f), Vector3(0.2f, 0.2f, 0.2f), 32.0f, Vector3(1.5f, 2.0f, -2.5f), 0.5f);
+		Sphere sphere4(Vector3(0.3f, 0.2f, 0.75f), Vector3(0.2f, 0.2f, 0.2f), 32.0f, Vector3(1.5f, 0.2f, -1.5f), 1.2f);
+		Sphere sphere5(Vector3(0.4f, 0.75f, 0.85f), Vector3(0.2f, 0.2f, 0.2f), 32.0f, Vector3(-1.3f, 1.0f, -1.5f), 0.25f);
 
-	/*textureDiffuse.bind();
-	textureSpecular.bind(1);
-
-	renderer.draw(vaBox, ib, lightingShader);*/
+		objects.addObject("cube1", std::make_shared<Cube>(cube1));
+		objects.addObject("cube2", std::make_shared<Cube>(cube2));
+		objects.addObject("cube3", std::make_shared<Cube>(cube3));
+		objects.addObject("cube4", std::make_shared<Cube>(cube4));
+		objects.addObject("cube5", std::make_shared<Cube>(cube5));
+		objects.addObject("sphere1", std::make_shared<Sphere>(sphere1));
+		objects.addObject("sphere2", std::make_shared<Sphere>(sphere2));
+		objects.addObject("sphere3", std::make_shared<Sphere>(sphere3));
+		objects.addObject("sphere4", std::make_shared<Sphere>(sphere4));
+		objects.addObject("sphere5", std::make_shared<Sphere>(sphere5));
+	}
+	
+	objects.getObjects()["cube1"]->draw(lightingShader, Object::ShaderType::LIGHTING);
+	objects.getObjects()["cube2"]->draw(lightingShader, Object::ShaderType::LIGHTING);
+	objects.getObjects()["cube3"]->draw(lightingShader, Object::ShaderType::LIGHTING);
+	objects.getObjects()["cube4"]->draw(lightingShader, Object::ShaderType::LIGHTING);
+	objects.getObjects()["cube5"]->draw(lightingShader, Object::ShaderType::LIGHTING);
+	objects.getObjects()["sphere1"]->draw(lightingShader, Object::ShaderType::LIGHTING);
+	objects.getObjects()["sphere2"]->draw(lightingShader, Object::ShaderType::LIGHTING);
+	objects.getObjects()["sphere3"]->draw(lightingShader, Object::ShaderType::LIGHTING);
+	objects.getObjects()["sphere4"]->draw(lightingShader, Object::ShaderType::LIGHTING);
+	objects.getObjects()["sphere5"]->draw(lightingShader, Object::ShaderType::LIGHTING);
 	lightingShader.unbind();
-	/*textureDiffuse.unbind();
-	textureSpecular.unbind();*/
 
-	/*model = Matrix4f::gl_translate(model, lightPosition);
-	model = Matrix4f::gl_scale(model, Vector3(0.01f));*/
 	lampShader.bind();
 	lampShader.set_uniform_mat_4f("view", view);
 	lampShader.set_uniform_mat_4f("projection", projection);
-	//lampShader.set_uniform_mat_4f("model", model);
-	Matrix4f model(1.0f);
-	for (GLuint i = 0; i < 4; i++)
-	{
-		model = Matrix4f(1.0f);
-		model = Matrix4f::gl_translate(model, pointLightPositions[i]);
-		model = Matrix4f::gl_scale(model, Vector3(0.05f)); // Make it a smaller cube
-		lampShader.set_uniform_mat_4f("model", model);
-		sphere1.draw(lampShader);
-		//renderer.draw(vaLight, ib, lampShader);
-	}
-
-	//renderer.draw(vaLight, ib, lampShader);
+	pointLight1.getShape()->draw(lampShader, Object::ShaderType::LAMP);
+	pointLight2.getShape()->draw(lampShader, Object::ShaderType::LAMP);
+	pointLight3.getShape()->draw(lampShader, Object::ShaderType::LAMP);
+	pointLight4.getShape()->draw(lampShader, Object::ShaderType::LAMP);
 	lampShader.unbind();
 
 	glEnable(GL_DEBUG_OUTPUT);
@@ -384,7 +339,7 @@ void initGL() {
     glDisable(GL_DEPTH_TEST);
     glDisable(GL_CULL_FACE);
     glViewport(0, 0, 1920, 1080);
-    glClearColor(0.0, 0, 0, 1.0);
+    glClearColor(0.0, 0, 0.0, 1.0);
     //test_opengl_error();
 }
 

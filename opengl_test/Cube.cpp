@@ -1,23 +1,21 @@
 #include "Cube.h"
 
-Cube::Cube(Shader const& shader, std::string const& name, Vector3 const& diffuse, Vector3 const& specular, float shininess,
-	Vector3 const& center, float size, float degreeAngle, Vector3 const& axis): m_shader(shader), m_model(1.0f)
-{
-	m_model = Matrix4f::gl_translate(m_model, center);
-	m_model = Matrix4f::gl_scale(m_model, Vector3(size));
-	m_model = Matrix4f::gl_rotate(m_model, getRadians(degreeAngle), axis);
-	m_shader.set_uniform_mat_4f("model", m_model);
-	m_material = Material(m_shader, shininess, name, diffuse, specular);
-}
+Cube::Cube(Vector3 const& diffuse, Vector3 const& specular, float shininess,
+	Vector3 const& center, float size, float degreeAngle, Vector3 const& axis)
+	: Object(center, size, diffuse, specular, shininess), m_degreeAngle(degreeAngle), m_axis(axis)
+{}
 
-Cube::Cube(Shader const& shader, std::string const& name, float shininess, Vector3 const& center, float size, float degreeAngle,
-	Vector3 const& axis): m_shader(shader), m_model(1.0f)
+Cube::Cube(float shininess, Vector3 const& center, float size, float degreeAngle,
+	Vector3 const& axis): Object(center, size, shininess), m_degreeAngle(degreeAngle), m_axis(axis)
+{}
+
+Cube::Cube(Vector3 const& center, float size, float degreeAngle, Vector3 const& axis)
+	: Object(center, size), m_degreeAngle(degreeAngle), m_axis(axis)
+{}
+
+Cube::Cube() : m_degreeAngle(1.0f), m_axis(1.0f)
 {
-	m_model = Matrix4f::gl_translate(m_model, center);
-	m_model = Matrix4f::gl_scale(m_model, Vector3(size));
-	m_model = Matrix4f::gl_rotate(m_model, getRadians(degreeAngle), axis);
-	m_shader.set_uniform_mat_4f("model", m_model);
-	m_material = Material(m_shader, shininess, name);
+
 }
 
 void Cube::initializeLayout()
@@ -91,25 +89,23 @@ void Cube::initializeLayout()
 	m_vertexArray = VertexArray(m_vertexBuffer, m_vertexBufferLayout);
 }
 
-float Cube::getRadians(float degreeAngle)
+void Cube::draw(Shader const& shader, Object::ShaderType shaderType)
 {
-	float y = M_PI / 180;
-	return degreeAngle * y;
-}
-
-void Cube::draw(Shader const& shader) const
-{
+	Matrix4f model(1.0f);
 	shader.bind();
 	m_vertexArray.bind();
 	m_indexBuffer.bind();
-	glDrawElements(GL_TRIANGLES, m_indexBuffer.getCount(), GL_UNSIGNED_INT, nullptr);
-}
-
-void Cube::draw() const
-{
-	m_shader.bind();
-	m_vertexArray.bind();
-	m_indexBuffer.bind();
+	model = Matrix4f::gl_translate(model, m_position);
+	model = Matrix4f::gl_scale(model, Vector3(m_size));
+	model = Matrix4f::gl_rotate(model, getRadians(m_degreeAngle), m_axis);
+	shader.set_uniform_mat_4f("model", model);
+	if (shaderType == Object::ShaderType::LIGHTING)
+	{
+		if (m_isTexture)
+			m_material = Material(shader, m_shininess, "material");
+		else
+			m_material = Material(shader, m_shininess, "material", m_diffuse, m_specular);
+	}
 	glDrawElements(GL_TRIANGLES, m_indexBuffer.getCount(), GL_UNSIGNED_INT, nullptr);
 }
 

@@ -23,6 +23,15 @@ int Shader::get_uniform_location(const std::string& name)
 	return location;
 }
 
+
+int Shader::get_uniform_location(const std::string& name) const
+{
+	int location = glGetUniformLocation(m_renderer_id, name.c_str());
+	if (location == -1)
+		std::cerr << "Warning: uniform " << name << " does not exist !" << "\n";
+	return location;
+}
+
 void Shader::set_uniform_4f(const std::string& name, float v0, float v1, float v2, float v3)
 {
 	glUniform4f(get_uniform_location(name), v0, v1, v2, v3);
@@ -44,6 +53,11 @@ void Shader::set_uniform_mat_4f(const std::string& name, Matrix4f& matrix)
 	glUniformMatrix4fv(get_uniform_location(name), 1, GL_FALSE, matrix.as_array().get());
 }
 
+
+void Shader::set_uniform_mat_4f(const std::string& name, Matrix4f& matrix) const
+{
+	glUniformMatrix4fv(get_uniform_location(name), 1, GL_FALSE, matrix.as_array().get());
+}
 
 void Shader::set_uniform_mat_4f_glm(const std::string& name, const glm::mat4& matrix)
 {

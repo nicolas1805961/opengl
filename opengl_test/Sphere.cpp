@@ -7,23 +7,16 @@ VertexBuffer Sphere::m_vertexBuffer = VertexBuffer();
 VertexBufferLayout Sphere::m_vertexBufferLayout = VertexBufferLayout();
 VertexArray Sphere::m_vertexArray = VertexArray();
 
-Sphere::Sphere(Shader const& shader, std::string const& name, Vector3 const& diffuse, Vector3 const& specular, float shininess,
-	Vector3 const& center, float radius): m_shader(shader), m_model(1.0f)
-{
-	m_model = Matrix4f::gl_translate(m_model, center);
-	m_model = Matrix4f::gl_scale(m_model, Vector3(radius));
-	m_shader.set_uniform_mat_4f("model", m_model);
-	m_material = Material(m_shader, shininess, name, diffuse, specular);
-}
+Sphere::Sphere(Vector3 const& diffuse, Vector3 const& specular, float shininess,
+	Vector3 const& center, float radius): Object(center, radius, diffuse, specular, shininess)
+{}
 
-Sphere::Sphere(Shader const& shader, std::string const& name, float shininess, Vector3 const& center, float radius)
-	: m_shader(shader), m_model(1.0f)
-{
-	m_model = Matrix4f::gl_translate(m_model, center);
-	m_model = Matrix4f::gl_scale(m_model, Vector3(radius));
-	m_shader.set_uniform_mat_4f("model", m_model);
-	m_material = Material(m_shader, shininess, name);
-}
+Sphere::Sphere(float shininess, Vector3 const& center, float radius)
+	: Object(center, radius, shininess)
+{}
+
+Sphere::Sphere(Vector3 const& center, float radius): Object(center, radius)
+{}
 
 void Sphere::initializeLayout()
 {
@@ -84,18 +77,31 @@ void Sphere::initializeLayout()
 	m_vertexArray = VertexArray(m_vertexBuffer, m_vertexBufferLayout);
 }
 
-void Sphere::draw() const
+Intersect Sphere::intersectBoundingSphere(Sphere const& other)
 {
-	m_shader.bind();
-	m_vertexArray.bind();
-	m_indexBuffer.bind();
-	glDrawElements(GL_TRIANGLES, m_indexBuffer.getCount(), GL_UNSIGNED_INT, nullptr);
+	float radiusDistance = m_size + other.m_size;
+	float centerDistance = (other.m_position - m_position).norm();
+	if (centerDistance < radiusDistance)
+		return Intersect(true, centerDistance - radiusDistance);
+	else
+		return Intersect(false, centerDistance - radiusDistance);
 }
 
-void Sphere::draw(Shader const& shader) const
+void Sphere::draw(Shader const& shader, Object::ShaderType shaderType)
 {
+	Matrix4f model(1.0f);
 	shader.bind();
 	m_vertexArray.bind();
 	m_indexBuffer.bind();
+	model = Matrix4f::gl_translate(model, m_position);
+	model = Matrix4f::gl_scale(model, Vector3(m_size));
+	shader.set_uniform_mat_4f("model", model);
+	if (shaderType == Object::ShaderType::LIGHTING)
+	{
+		if (m_isTexture)
+			m_material = Material(shader, m_shininess, "material");
+		else
+			m_material = Material(shader, m_shininess, "material", m_diffuse, m_specular);
+	}
 	glDrawElements(GL_TRIANGLES, m_indexBuffer.getCount(), GL_UNSIGNED_INT, nullptr);
 }

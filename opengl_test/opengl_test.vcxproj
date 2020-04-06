@@ -148,7 +148,10 @@
     <ClCompile Include="DirectionalLight.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Error.cpp" />
+    <ClCompile Include="Intersect.cpp" />
     <ClCompile Include="Material.cpp" />
+    <ClCompile Include="Object.cpp" />
+    <ClCompile Include="Objects.cpp" />
     <ClCompile Include="PointLight.cpp" />
     <ClCompile Include="IndexBuffer.cpp" />
     <ClCompile Include="Light.cpp" />
@@ -313,7 +316,10 @@
     <ClInclude Include="DirectionalLight.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Error.h" />
+    <ClInclude Include="Intersect.h" />
     <ClInclude Include="Material.h" />
+    <ClInclude Include="Object.h" />
+    <ClInclude Include="Objects.h" />
     <ClInclude Include="PointLight.h" />
     <ClInclude Include="glm\common.hpp" />
     <ClInclude Include="glm\detail\compute_common.hpp" />
