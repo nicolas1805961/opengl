@@ -1,12 +1,8 @@
 #include "VertexArray.h"
 
-VertexArray::VertexArray()
+VertexArray::VertexArray(const VertexBuffer& vb, const VertexBufferLayout& layout)
 {
 	glGenVertexArrays(1, &m_renderer_id);
-}
-
-void VertexArray::addBuffer(const VertexBuffer& vb, const VertexBufferLayout& layout)
-{
 	bind();
 	vb.bind();
 	unsigned int offset = 0;
@@ -32,5 +28,5 @@ void VertexArray::unbind() const
 
 VertexArray::~VertexArray()
 {
-	glDeleteVertexArrays(1, &m_renderer_id);
+	//glDeleteVertexArrays(1, &m_renderer_id);
 }

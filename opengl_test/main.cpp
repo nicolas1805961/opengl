@@ -23,6 +23,8 @@
 #include "SpotLight.h"
 #include "Material.h"
 #include "Error.h"
+#include "Sphere.h"
+#include "Cube.h"
 
 void APIENTRY glDebugCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const GLvoid* userParam)
 {
@@ -155,12 +157,12 @@ void idle()
 
 void look(int x, int y)
 {
-	if (firstMouse)
+	/*if (firstMouse)
 	{
 		lastX = x;
 		lastY = y;
 		firstMouse = false;
-	}
+	}*/
 	GLfloat deltaX = lastX - x;
 	GLfloat deltaY = y - lastY;
 	lastX = x;
@@ -176,86 +178,30 @@ void mouseWheel(int wheel, int direction, int x, int y)
 
 
 void display() {
-	//keyOperation();
-	//keyOperationSpecial();
+	static int x = 0;
+	x++;
 	Renderer renderer;
 	renderer.clear();
 	//lightPosition[0] -= 0.001f;
 	//lightPosition[2] -= 0.001f;
 	glEnable(GL_DEPTH_TEST);
-	GLfloat positions[] =
-	{
-		//front
-		-0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 0.0f, 1.0f,
-		-0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 0.0f, 0.0f,
-		0.5f, -0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 1.0f, 0.0f,
-		0.5f, 0.5f, -0.5f, 0.0f, 0.0f, -1.0f, 1.0f, 1.0f,
-
-		//right
-		0.5f, 0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
-		0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-		0.5f, -0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
-		0.5f, 0.5f, 0.5f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f,
-
-		//back
-		0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
-		0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
-		-0.5f, -0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f,
-		-0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,
-
-		//left
-		-0.5f, 0.5f, 0.5f, -1.0f, 0.0f, 0.0f, 0.0f, 1.0f,
-		-0.5f, -0.5f, 0.5f, -1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
-		-0.5f, -0.5f, -0.5f, -1.0f, 0.0f, 0.0f, 1.0f, 0.0f,
-		-0.5f, 0.5f, -0.5f, -1.0f, 0.0f, 0.0f, 1.0f, 1.0f,
-
-		//bottom
-		-0.5f, -0.5f, 0.5f, 0.0f, -1.0f, 0.0f, 0.0f, 1.0f,
-		0.5f, -0.5f, 0.5f, 0.0f, -1.0f, 0.0f, 0.0f, 0.0f,
-		0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f,
-		-0.5f, -0.5f, -0.5f, 0.0f, -1.0f, 0.0f, 1.0f, 1.0f,
-
-		//top
-		-0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
-		0.5f, 0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f,
-		0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,
-		-0.5f, 0.5f, 0.5f, 0.0f, 1.0f, 0.0f, 1.0f, 1.0f
-
-	};
-	GLuint indices[] =
-	{
-		// front
-		0, 1, 3,
-		3, 1, 2,
-		// right
-		4, 5, 7,
-		7, 5, 6,
-		// back
-		8, 9, 11,
-		11, 9, 10,
-		// left
-		12, 13, 15,
-		15, 13, 14,
-		// bottom
-		16, 17, 19,
-		19, 17, 18,
-		// top
-		20, 21, 23,
-		23, 21, 22
-	};
-	Vector3 cubePositions[] =
+	/*Vector3 cubePositions[] =
 	{
 		Vector3(0.0f, 0.0f, 0.0f),
 		Vector3(2.0f, 5.0f, -15.0f),
 		Vector3(-1.5f, -2.2f, -2.5f),
 		Vector3(-3.8f, -2.0f, -12.3f),
-		Vector3(2.4f, -0.4f, -3.5f),
+		Vector3(2.4f, -0.4f, -3.5f)
+	};*/
+
+	/*Vector3 spherePositions[] =
+	{
 		Vector3(-1.7f, 3.0f, -7.5f),
 		Vector3(1.3f, -2.0f, -2.5f),
 		Vector3(1.5f, 2.0f, -2.5f),
 		Vector3(1.5f, 0.2f, -1.5f),
 		Vector3(-1.3f, 1.0f, -1.5f)
-	};
+	};*/
 
 	// Positions of the point lights
 	Vector3 pointLightPositions[] = {
@@ -268,26 +214,30 @@ void display() {
     /*glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);*/
 
-    VertexArray vaBox;
-	VertexBuffer vb(positions, 8 * 4 * 6 * sizeof(float));
-    VertexBufferLayout layoutBox;
+    //VertexArray vaBox;
+	//VertexBuffer vb(positions, 8 * 4 * 6 * sizeof(float));
+    //VertexBufferLayout layoutBox(3, 3, 2);
+    /*layoutBox.push<GLfloat>(3);
     layoutBox.push<GLfloat>(3);
-    layoutBox.push<GLfloat>(3);
-    layoutBox.push<GLfloat>(2);
-    vaBox.addBuffer(vb, layoutBox);
-	IndexBuffer ib(indices, 2 * 3 * 6);
+    layoutBox.push<GLfloat>(2);*/
+    //vaBox.addBuffer(vb, layoutBox);
+	//IndexBuffer ib(indices, 2 * 3 * 6);
 
-	VertexArray vaLight;
-	vaLight.addBuffer(vb, layoutBox);
+	//VertexArray vaLight(vb, layoutBox);
+	//vaLight.addBuffer(vb, layoutBox);
 
-	Shader lightingShader("lightingVertex.glsl", "lightingFragment.glsl");
-	Shader lampShader("lampVertex.glsl", "lampFragment.glsl");
+	/*Shader lightingShader("lightingVertex.glsl", "lightingFragment.glsl");
+	Shader lampShader("lampVertex.glsl", "lampFragment.glsl");*/
 
-	static Texture textureDiffuse("container2.png");
-	static Texture textureSpecular("container2_specular.png");
+	/*static Texture textureDiffuse("container2.png");
+	static Texture textureSpecular("container2_specular.png");*/
 	
+	Shader lampShader("lampVertex.glsl", "lampFragment.glsl");
+	Shader lightingShader("colorVertex.glsl", "colorFragment.glsl");
     
     lightingShader.bind();
+	Sphere::initializeLayout();
+	Cube::initializeLayout();
 	//directional light
 	DirectionalLight directionalLight(lightingShader, Vector3(0.05f, 0.05f, 0.05f), Vector3(0.4f, 0.4f, 0.4f), Vector3(0.5f, 0.5f, 0.5f),
 		"dirLight", Vector3(-0.2f, -1.0f, -0.3f));
@@ -308,8 +258,6 @@ void display() {
 		Vector3(camera.GetPosition().get_x(), camera.GetPosition().get_y(), camera.GetPosition().get_z()),
 		Vector3(camera.getFront().get_x(), camera.getFront().get_y(), camera.getFront().get_z()), cosf(camera.get_radians(12.5f)),
 		cosf(camera.get_radians(15.0f)), 1.0f, 0.09f, 0.032f);
-	//material
-	Material material(lightingShader, 32.0f, "material");
 
     lightingShader.set_uniform_3f("viewPos", camera.GetPosition().get_x(), camera.GetPosition().get_y(), camera.GetPosition().get_z());
 
@@ -317,29 +265,66 @@ void display() {
 	Matrix4f view = camera.get_view_matrix();
     lightingShader.set_uniform_mat_4f("view", view);
     lightingShader.set_uniform_mat_4f("projection", projection);
-	//lightingShader.set_uniform_mat_4f("model", model);
 
-	textureDiffuse.bind();
-	textureSpecular.bind(1);
-
-	Matrix4f model(1.0f);
-	for(unsigned int i = 0; i < 10; i++)
+	/*textureDiffuse.bind();
+	textureSpecular.bind(1);*/
+	/*Cube cube1(lightingShader, "material", Vector3(0.0f, 0.0f, 1.0f), Vector3(0.2f, 0.2f, 0.2f), 32.0f, Vector3(0.0f, 0.0f, 0.0f),
+		1.0f, 20.0f, Vector3(1.0f, 0.3f, 0.5f));
+	cube1.draw();
+	Cube cube2(lightingShader, "material", Vector3(0.0f, 1.0f, 0.0f), Vector3(0.2f, 0.2f, 0.2f), 32.0f, Vector3(2.0f, 5.0f, -15.0f),
+		0.5f, 40.0f, Vector3(1.0f, 0.3f, 0.5f));
+	cube2.draw();
+	Cube cube3(lightingShader, "material", Vector3(1.0f, 0.0f, 0.0f), Vector3(0.2f, 0.2f, 0.2f), 32.0f, Vector3(1.5f, 2.0f, -2.5f),
+		0.75f, 60.0f, Vector3(1.0f, 0.3f, 0.5f));
+	cube3.draw();
+	Cube cube4(lightingShader, "material", Vector3(0.3f, 0.2f, 0.75f), Vector3(0.2f, 0.2f, 0.2f), 32.0f, Vector3(-3.8f, -2.0f, -12.3f),
+		1.2f, 80.0f, Vector3(1.0f, 0.3f, 0.5f));
+	cube4.draw();
+	Cube cube5(lightingShader, "material", Vector3(0.4f, 0.75f, 0.85f), Vector3(0.2f, 0.2f, 0.2f), 32.0f, Vector3(2.4f, -0.4f, -3.5f),
+		0.25f, 100.0f, Vector3(1.0f, 0.3f, 0.5f));
+	cube5.draw();*/
+	/*for(unsigned int i = 0; i < 5; i++)
 	{
 		model = Matrix4f(1.0f);
 		model = Matrix4f::gl_translate(model, cubePositions[i]);
 		float angle = 20.0f * i;
 		model = Matrix4f::gl_rotate(model, camera.get_radians(angle), Vector3(1.0f, 0.3f, 0.5f));
 		lightingShader.set_uniform_mat_4f("model", model);
-		renderer.draw(vaBox, ib, lightingShader);
-	}
+		cube.draw();
+		//renderer.draw(vaBox, ib, lightingShader);
+	}*/
+
+	Sphere sphere1(lightingShader, "material", Vector3(0.0f, 0.0f, 1.0f), Vector3(0.2f, 0.2f, 0.2f), 32.0f, Vector3(-1.7f, 3.0f, -7.5f),
+		0.5f);
+	sphere1.draw();
+	Sphere sphere2(lightingShader, "material", Vector3(0.0f, 1.0f, 0.0f), Vector3(0.2f, 0.2f, 0.2f), 32.0f, Vector3(-1.7f, 4.2f, -7.5f),
+		0.7f);
+	sphere2.draw();
+	/*Sphere sphere3(lightingShader, "material", Vector3(1.0f, 0.0f, 0.0f), Vector3(0.2f, 0.2f, 0.2f), 32.0f, Vector3(1.5f, 2.0f, -2.5f),
+		0.75f);
+	sphere3.draw();
+	Sphere sphere4(lightingShader, "material", Vector3(0.3f, 0.2f, 0.75f), Vector3(0.2f, 0.2f, 0.2f), 32.0f, Vector3(1.5f, 0.2f, -1.5f),
+		1.2f);
+	sphere4.draw();
+	Sphere sphere5(lightingShader, "material", Vector3(0.4f, 0.75f, 0.85f), Vector3(0.2f, 0.2f, 0.2f), 32.0f, Vector3(-1.3f, 1.0f, -1.5f),
+		0.25f);
+	sphere5.draw();*/
+	/*for (unsigned int i = 0; i < 5; i++)
+	{
+		model = Matrix4f(1.0f);
+		model = Matrix4f::gl_translate(model, spherePositions[i]);
+		lightingShader.set_uniform_mat_4f("model", model);
+		sphere.draw();
+		//renderer.draw(vaBox, ib, lightingShader);
+	}*/
 
 	/*textureDiffuse.bind();
 	textureSpecular.bind(1);
 
 	renderer.draw(vaBox, ib, lightingShader);*/
 	lightingShader.unbind();
-	textureDiffuse.unbind();
-	textureSpecular.unbind();
+	/*textureDiffuse.unbind();
+	textureSpecular.unbind();*/
 
 	/*model = Matrix4f::gl_translate(model, lightPosition);
 	model = Matrix4f::gl_scale(model, Vector3(0.01f));*/
@@ -347,14 +332,15 @@ void display() {
 	lampShader.set_uniform_mat_4f("view", view);
 	lampShader.set_uniform_mat_4f("projection", projection);
 	//lampShader.set_uniform_mat_4f("model", model);
-
+	Matrix4f model(1.0f);
 	for (GLuint i = 0; i < 4; i++)
 	{
 		model = Matrix4f(1.0f);
 		model = Matrix4f::gl_translate(model, pointLightPositions[i]);
 		model = Matrix4f::gl_scale(model, Vector3(0.05f)); // Make it a smaller cube
 		lampShader.set_uniform_mat_4f("model", model);
-		renderer.draw(vaLight, ib, lampShader);
+		sphere1.draw(lampShader);
+		//renderer.draw(vaLight, ib, lampShader);
 	}
 
 	//renderer.draw(vaLight, ib, lampShader);

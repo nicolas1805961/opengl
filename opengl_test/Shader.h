@@ -12,6 +12,7 @@
 class Shader
 {
 public:
+	Shader() = default;
 	Shader(const std::string& vertex_shader, const std::string& fragment_shader);
 	void bind() const;
 	void unbind() const;

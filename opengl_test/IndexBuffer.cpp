@@ -25,5 +25,5 @@ GLuint IndexBuffer::getCount() const
 
 IndexBuffer::~IndexBuffer()
 {
-	glDeleteBuffers(1, &m_renderer_id);
+	//glDeleteBuffers(1, &m_renderer_id);
 }

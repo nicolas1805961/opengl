@@ -96,6 +96,12 @@
     <ClCompile Include="Error.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Sphere.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Cube.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stb_image.h">
@@ -887,6 +893,12 @@
     <ClInclude Include="Error.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Sphere.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Cube.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="Mauritius_beach.png">
@@ -1302,16 +1314,22 @@
     <None Include="glm\gtx\wrap.inl">
       <Filter>Source Files\vendor\glm\gtx</Filter>
     </None>
-    <None Include="lightingFragment.glsl">
-      <Filter>Resource Files</Filter>
-    </None>
     <None Include="lampFragment.glsl">
       <Filter>Resource Files</Filter>
     </None>
     <None Include="lampVertex.glsl">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="lightingVertex.glsl">
+    <None Include="colorFragment.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="colorVertex.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="textureFragment.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="textureVertex.glsl">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>

@@ -7,8 +7,8 @@
 class VertexArray
 {
 public:
-	VertexArray();
-	void addBuffer(const VertexBuffer& vb, const VertexBufferLayout& layout);
+	VertexArray() = default;
+	VertexArray(const VertexBuffer& vb, const VertexBufferLayout& layout);
 	void bind() const;
 	void unbind() const;
 	~VertexArray();

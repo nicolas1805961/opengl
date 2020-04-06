@@ -7,7 +7,20 @@
 class VertexBufferLayout
 {
 public:
-	VertexBufferLayout(): m_stride(0){}
+	VertexBufferLayout() = default;
+
+	VertexBufferLayout(unsigned int x, unsigned int y, unsigned int z): m_stride(0)
+	{
+		push<float>(x);
+		push<float>(y);
+		push<float>(z);
+	}
+
+	VertexBufferLayout(unsigned int x, unsigned int y): m_stride(0)
+	{
+		push<float>(x);
+		push<float>(y);
+	}
 
 	template <typename T>
 	void push(unsigned int count)
