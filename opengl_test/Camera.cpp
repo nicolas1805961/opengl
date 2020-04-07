@@ -104,6 +104,11 @@ Vector3 Camera::GetPosition()
 	return this->position;
 }
 
+Vector3 Camera::GetPosition() const
+{
+	return this->position;
+}
+
 GLfloat Camera::get_radians(GLfloat x)
 {
 	float y = M_PI / 180;

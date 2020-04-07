@@ -26,6 +26,7 @@ public:
 	static Matrix4f gl_scale(Matrix4f& m, Vector3 const& v);
 	static Matrix4f gl_rotate(Matrix4f& m, float angle, Vector3 const& axis);
 	static Matrix4f gl_perspective(float fovy, float aspect, float near, float far);
+	//static Matrix4f gl_inverse(Matrix4f const& m);
 	std::unique_ptr<float[]> as_array();
 	Vector3& operator*(Vector3& v);
 	Matrix4f operator*(Matrix4f& m);

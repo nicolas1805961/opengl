@@ -36,6 +36,7 @@ public:
 	GLfloat GetZoom();
 	Vector3 getFront();
 	Vector3 GetPosition();
+	Vector3 GetPosition() const;
 	GLfloat get_radians(GLfloat x);
 	
 private:

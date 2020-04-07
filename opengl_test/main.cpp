@@ -26,6 +26,7 @@
 #include "Sphere.h"
 #include "Cube.h"
 #include "Objects.h"
+#include "Plane.h"
 
 void APIENTRY glDebugCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const GLvoid* userParam)
 {
@@ -90,11 +91,13 @@ Objects objects(10);
 std::unique_ptr<bool[]> keys = std::make_unique<bool[]>(256);
 std::unique_ptr<bool[]> keysSpecial = std::make_unique<bool[]>(256);
 Camera camera(Vector3(0.0f, 0.0f, 3.0f));
-GLfloat deltaTime = 0.0f;
-GLfloat lastFrame = 0.0f;
+GLfloat dt = 0.0f;
+GLfloat lastTime = 0.0f;
 bool firstMouse = true;
 GLfloat lastX = 1920.0f / 2.0f;
 GLfloat lastY = 1080.0f / 2.0f;
+bool isLeftButtonDown = false;
+int mouseX = 0, mouseY = 0;
 
 //Vector3 lightPosition(1.2f, 1.0f, 2.0f);
 
@@ -122,13 +125,13 @@ void KeySpecialUp(int key, int xmouse, int ymouse)
 void keyOperation(void)
 {
 	if (keys['z'])
-		camera.ProcessKeyboard(Camera_movement::FORWARD, deltaTime);
+		camera.ProcessKeyboard(Camera_movement::FORWARD, dt);
 	else if (keys['s'])
-		camera.ProcessKeyboard(Camera_movement::BACKWARD, deltaTime);
+		camera.ProcessKeyboard(Camera_movement::BACKWARD, dt);
 	else if (keys['q'])
-		camera.ProcessKeyboard(Camera_movement::LEFT, deltaTime);
+		camera.ProcessKeyboard(Camera_movement::LEFT, dt);
 	else if (keys['d'])
-		camera.ProcessKeyboard(Camera_movement::RIGHT, deltaTime);
+		camera.ProcessKeyboard(Camera_movement::RIGHT, dt);
 	else if (keys[27])
 		exit(0);
 }
@@ -136,24 +139,24 @@ void keyOperation(void)
 void keyOperationSpecial(void)
 {
 	if (keysSpecial[GLUT_KEY_UP])
-		camera.ProcessKeyboard(Camera_movement::FORWARD, deltaTime);
+		camera.ProcessKeyboard(Camera_movement::FORWARD, dt);
 	else if (keysSpecial[GLUT_KEY_DOWN])
-		camera.ProcessKeyboard(Camera_movement::BACKWARD, deltaTime);
+		camera.ProcessKeyboard(Camera_movement::BACKWARD, dt);
 	else if (keysSpecial[GLUT_KEY_LEFT])
-		camera.ProcessKeyboard(Camera_movement::LEFT, deltaTime);
+		camera.ProcessKeyboard(Camera_movement::LEFT, dt);
 	else if (keysSpecial[GLUT_KEY_RIGHT])
-		camera.ProcessKeyboard(Camera_movement::RIGHT, deltaTime);
+		camera.ProcessKeyboard(Camera_movement::RIGHT, dt);
 	
 }
 
 void idle()
 {
 	// Set frame time
-	GLfloat currentFrame = glutGet(GLUT_ELAPSED_TIME);
-	deltaTime = currentFrame - lastFrame;
-	lastFrame = currentFrame;
-	for (auto const& it : objects.getObjects())
-		it.second->setPosition(it.second->getPosition() + Vector3(0.0f, 0.0f, 0.01f));
+	GLfloat currentTime = glutGet(GLUT_ELAPSED_TIME);
+	dt = currentTime - lastTime;
+	lastTime = currentTime;
+	/*for (auto const& it : objects.getObjects())
+		it.second->updateVelocityAndPosition(dt / 10000.0f);*/
 	keyOperation();
 	keyOperationSpecial();
 	glutPostRedisplay();
@@ -173,6 +176,36 @@ void look(int x, int y)
 	lastY = y;
 	camera.ProcessMouseMovement(deltaX, deltaY);
 }
+
+/*void click(int button, int state, int x, int y)
+{
+	if (state == GLUT_DOWN && button == GLUT_LEFT_BUTTON)
+		isLeftButtonDown = true;
+	if (state == GLUT_UP && button == GLUT_LEFT_BUTTON)
+		isLeftButtonDown = false;
+	mouseX = x;
+	mouseY = y;
+}
+
+void processClick()
+{
+	static unsigned int x = 0;
+	if (isLeftButtonDown)
+	{
+		x++;
+		if (x < 2)
+		{
+			for (auto const& it: objects.getObjects())
+			{
+				if (it.second->intersectRay(mouseX, mouseY, camera))
+				{
+
+				}
+			}
+		}
+	}
+	x = 0;
+}*/
 
 void mouseWheel(int wheel, int direction, int x, int y)
 {
@@ -224,6 +257,7 @@ void display() {
     lightingShader.bind();
 	Sphere::initializeLayout();
 	Cube::initializeLayout();
+	Plane::initializeLayout();
 	//directional light
 	DirectionalLight directionalLight(lightingShader, Vector3(0.05f, 0.05f, 0.05f), Vector3(0.4f, 0.4f, 0.4f), Vector3(0.5f, 0.5f, 0.5f),
 		"dirLight", Vector3(-0.2f, -1.0f, -0.3f));
@@ -249,6 +283,8 @@ void display() {
     lightingShader.set_uniform_mat_4f("view", view);
     lightingShader.set_uniform_mat_4f("projection", projection);
 
+	Plane plane1(Vector3(0.0f, 0.0f, 1.0f), Vector3(0.2f, 0.2f, 0.2f), 32.0f, Vector3(0.0f, -10.0f, 0.0f), 20.0f, 0.0f,
+		Vector3(1.0f, 0.3f, 0.5f));
 	if (callNumber <= 1)
 	{
 		Cube cube1(Vector3(0.0f, 0.0f, 1.0f), Vector3(0.2f, 0.2f, 0.2f), 32.0f, Vector3(0.0f, 0.0f, 0.0f), 1.0f, 20.0f,
@@ -263,7 +299,7 @@ void display() {
 			Vector3(1.0f, 0.3f, 0.5f));
 
 		Sphere sphere1(Vector3(0.0f, 0.0f, 1.0f), Vector3(0.2f, 0.2f, 0.2f), 32.0f, Vector3(-1.7f, 3.0f, -7.5f), 1.0f);
-		Sphere sphere2(Vector3(0.0f, 1.0f, 0.0f), Vector3(0.2f, 0.2f, 0.2f), 32.0f, Vector3(1.3f, -2.0f, -2.5f), 0.7f);
+		Sphere sphere2(Vector3(0.0f, 1.0f, 0.0f), Vector3(0.2f, 0.2f, 0.2f), 32.0f, Vector3(1.3f, -2.0f, -2.5f), 1.0f);
 		Sphere sphere3(Vector3(1.0f, 0.0f, 0.0f), Vector3(0.2f, 0.2f, 0.2f), 32.0f, Vector3(1.5f, 2.0f, -2.5f), 0.5f);
 		Sphere sphere4(Vector3(0.3f, 0.2f, 0.75f), Vector3(0.2f, 0.2f, 0.2f), 32.0f, Vector3(1.5f, 0.2f, -1.5f), 1.2f);
 		Sphere sphere5(Vector3(0.4f, 0.75f, 0.85f), Vector3(0.2f, 0.2f, 0.2f), 32.0f, Vector3(-1.3f, 1.0f, -1.5f), 0.25f);
@@ -279,7 +315,7 @@ void display() {
 		objects.addObject("sphere4", std::make_shared<Sphere>(sphere4));
 		objects.addObject("sphere5", std::make_shared<Sphere>(sphere5));
 	}
-	
+	plane1.draw(lightingShader, Object::ShaderType::LIGHTING);
 	objects.getObjects()["cube1"]->draw(lightingShader, Object::ShaderType::LIGHTING);
 	objects.getObjects()["cube2"]->draw(lightingShader, Object::ShaderType::LIGHTING);
 	objects.getObjects()["cube3"]->draw(lightingShader, Object::ShaderType::LIGHTING);
@@ -324,7 +360,7 @@ void initGlut(int& argc, char* argv[]) {
 	glutKeyboardUpFunc(KeyUp);
 	glutSpecialFunc(KeySpecial);
 	glutSpecialUpFunc(KeySpecialUp);
-	//glutMotionFunc(look);
+	//glutMouseFunc(click);
 	glutPassiveMotionFunc(look);
 	glutMouseWheelFunc(mouseWheel);
 }
