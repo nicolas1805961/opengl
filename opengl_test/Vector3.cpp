@@ -65,6 +65,11 @@ Vector3& Vector3::operator+=(Vector3 const& rhs)
 	return *this;
 }
 
+Vector3 Vector3::operator+(Vector3 const& rhs) const
+{
+	return Vector3(this->x + rhs.x, this->y + rhs.y, this->z + rhs.z);
+}
+
 float& Vector3::operator[](int index)
 {
 	switch (index)
@@ -98,6 +103,13 @@ bool Vector3::operator==(const Vector3& rhs)
 	return false;
 }
 
+void Vector3::perspectiveDivision()
+{
+	x /= z;
+	y /= z;
+	z /= z;
+}
+
 float Vector3::dot_product(Vector3 const& rhs) const
 {
 	return x * rhs.x + y * rhs.y + z * rhs.z;
@@ -115,6 +127,8 @@ float Vector3::norm() const
 
 Vector3 Vector3::normalize() const
 {
+	if (x == 0 && y == 0 && z == 0)
+		return *this;
 	Vector3 normalized_vector = (*this) * (1 / norm());
 	if (normalized_vector.x < 0.0000001 && normalized_vector.x > -0.0000001)
 		normalized_vector.x = 0;

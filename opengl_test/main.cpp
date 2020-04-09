@@ -14,9 +14,6 @@
 #include "Renderer.h"
 #include "Texture.h"
 #include "Matrix4f.h"
-#include "glm\glm.hpp"
-#include "glm\gtc\matrix_transform.hpp"
-#include "glm\gtx\string_cast.hpp"
 #include "Camera.h"
 #include "DirectionalLight.h"
 #include "PointLight.h"
@@ -27,6 +24,8 @@
 #include "Cube.h"
 #include "Objects.h"
 #include "Plane.h"
+#include "Vector4.h"
+#include "Ray.h"
 
 void APIENTRY glDebugCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const GLvoid* userParam)
 {
@@ -96,8 +95,8 @@ GLfloat lastTime = 0.0f;
 bool firstMouse = true;
 GLfloat lastX = 1920.0f / 2.0f;
 GLfloat lastY = 1080.0f / 2.0f;
-bool isLeftButtonDown = false;
-int mouseX = 0, mouseY = 0;
+bool doesIntersect = false;
+bool isFirstHit = false;
 
 //Vector3 lightPosition(1.2f, 1.0f, 2.0f);
 
@@ -149,19 +148,6 @@ void keyOperationSpecial(void)
 	
 }
 
-void idle()
-{
-	// Set frame time
-	GLfloat currentTime = glutGet(GLUT_ELAPSED_TIME);
-	dt = currentTime - lastTime;
-	lastTime = currentTime;
-	/*for (auto const& it : objects.getObjects())
-		it.second->updateVelocityAndPosition(dt / 10000.0f);*/
-	keyOperation();
-	keyOperationSpecial();
-	glutPostRedisplay();
-}
-
 void look(int x, int y)
 {
 	/*if (firstMouse)
@@ -177,35 +163,87 @@ void look(int x, int y)
 	camera.ProcessMouseMovement(deltaX, deltaY);
 }
 
-/*void click(int button, int state, int x, int y)
+bool trace(Ray& ray)
 {
-	if (state == GLUT_DOWN && button == GLUT_LEFT_BUTTON)
-		isLeftButtonDown = true;
-	if (state == GLUT_UP && button == GLUT_LEFT_BUTTON)
-		isLeftButtonDown = false;
-	mouseX = x;
-	mouseY = y;
-}
-
-void processClick()
-{
-	static unsigned int x = 0;
-	if (isLeftButtonDown)
+	for (auto const& it : objects.getObjects())
 	{
-		x++;
-		if (x < 2)
+		if (it.second->intersectRay(ray))
 		{
-			for (auto const& it: objects.getObjects())
+			if (ray.get_t_distance() < ray.get_nearest())
 			{
-				if (it.second->intersectRay(mouseX, mouseY, camera))
-				{
-
-				}
+				ray.set_nearest(ray.get_t_distance());
+				ray.set_hit(it.second);
 			}
 		}
 	}
-	x = 0;
-}*/
+	ray.set_t_distance(ray.get_nearest());
+	return (ray.get_hit() != nullptr);
+}
+
+void processIntersection(Vector3 const& currentMousePosition, Vector3 const& lastMousePosition, Ray& ray)
+{
+	doesIntersect = true;
+	Vector3 distanceMousePositions = (currentMousePosition - lastMousePosition).normalize();
+	if (isnan(distanceMousePositions.get_x()))
+	{
+		std::cout << "ok\n";
+	}
+	ray.get_hit()->setTranslation(ray.get_hit()->getTranslation() + distanceMousePositions);
+	glutPostRedisplay();
+}
+
+void motionFunction(int x, int y)
+{
+	static Ray lastRay;
+	Vector3 mousePosition = camera.get3dMousePosition(x, y);
+	static Vector3 lastMousePosition = mousePosition;
+	Ray ray(camera.GetPosition(), (mousePosition - camera.GetPosition()).normalize());
+	if (trace(ray) && isFirstHit)
+	{
+		if (doesIntersect && lastRay.get_hit() != ray.get_hit())
+		{
+			look(x, y);
+			lastMousePosition = mousePosition;
+			return;
+		}
+		processIntersection(mousePosition, lastMousePosition, ray);
+		lastRay = ray;
+	}
+	else if (doesIntersect && isFirstHit)
+		processIntersection(mousePosition, lastMousePosition, lastRay);
+	else
+		doesIntersect = false;
+	look(x, y);
+	lastMousePosition = mousePosition;
+}
+
+void idle()
+{
+	// Set frame time
+	GLfloat currentTime = glutGet(GLUT_ELAPSED_TIME);
+	dt = currentTime - lastTime;
+	lastTime = currentTime;
+	/*for (auto const& it : objects.getObjects())
+		it.second->updateVelocityAndPosition(dt / 10000.0f);*/
+	keyOperation();
+	keyOperationSpecial();
+	glutPostRedisplay();
+}
+
+void click(int button, int state, int x, int y)
+{
+	if (state == GLUT_UP && button == GLUT_LEFT_BUTTON)
+		doesIntersect = false;
+	else if (state == GLUT_DOWN)
+	{
+		Vector3 mousePosition = camera.get3dMousePosition(x, y);
+		Ray ray(camera.GetPosition(), (mousePosition - camera.GetPosition()).normalize());
+		if (trace(ray))
+			isFirstHit = true;
+		else
+			isFirstHit = false;
+	}
+}
 
 void mouseWheel(int wheel, int direction, int x, int y)
 {
@@ -263,13 +301,13 @@ void display() {
 		"dirLight", Vector3(-0.2f, -1.0f, -0.3f));
 	//point light
 	PointLight pointLight1(lightingShader, Vector3(0.05f, 0.05f, 0.05f), Vector3(0.8f, 0.8f, 0.8f), Vector3(4.0f, 4.0f, 4.0f),
-		"pointLights[0]", 1.0f, 0.09f, 0.032f, std::make_shared<Sphere>(Vector3(0.7f, 0.2f, 2.0f), 0.05f));
+		"pointLights[0]", 1.0f, 0.09f, 0.032f, std::make_shared<Sphere>());
 	PointLight pointLight2(lightingShader, Vector3(0.05f, 0.05f, 0.05f), Vector3(0.8f, 0.8f, 0.8f), Vector3(4.0f, 4.0f, 4.0f),
-		"pointLights[1]", 1.0f, 0.09f, 0.032f, std::make_shared<Sphere>(Vector3(2.3f, -3.3f, -4.0f), 0.05f));
+		"pointLights[1]", 1.0f, 0.09f, 0.032f, std::make_shared<Sphere>());
 	PointLight pointLight3(lightingShader, Vector3(0.05f, 0.05f, 0.05f), Vector3(0.8f, 0.8f, 0.8f), Vector3(4.0f, 4.0f, 4.0f),
-		"pointLights[2]", 1.0f, 0.09f, 0.032f, std::make_shared<Sphere>(Vector3(-4.0f, 2.0f, -12.0f), 0.05f));
+		"pointLights[2]", 1.0f, 0.09f, 0.032f, std::make_shared<Sphere>());
 	PointLight pointLight4(lightingShader, Vector3(0.05f, 0.05f, 0.05f), Vector3(0.8f, 0.8f, 0.8f), Vector3(4.0f, 4.0f, 4.0f), 
-		"pointLights[3]", 1.0f, 0.09f, 0.032f, std::make_shared<Sphere>(Vector3(0.0f, 0.0f, -3.0f), 0.05f));
+		"pointLights[3]", 1.0f, 0.09f, 0.032f, std::make_shared<Sphere>());
 	//spotlight
 	SpotLight spotLight(lightingShader, Vector3(0.0f, 0.0f, 0.0f), Vector3(1.0f, 1.0f, 1.0f), Vector3(1.0f, 1.0f, 1.0f), "spotLight",
 		Vector3(camera.GetPosition().get_x(), camera.GetPosition().get_y(), camera.GetPosition().get_z()),
@@ -278,16 +316,17 @@ void display() {
 
     lightingShader.set_uniform_3f("viewPos", camera.GetPosition().get_x(), camera.GetPosition().get_y(), camera.GetPosition().get_z());
 
-	Matrix4f projection = Matrix4f::gl_perspective(camera.GetZoom(), 1920.0f / 1080.0f, 0.1f, 1000.0f);
+	Matrix4f projection = camera.getProjectionMatrix();
 	Matrix4f view = camera.get_view_matrix();
     lightingShader.set_uniform_mat_4f("view", view);
     lightingShader.set_uniform_mat_4f("projection", projection);
 
-	Plane plane1(Vector3(0.0f, 0.0f, 1.0f), Vector3(0.2f, 0.2f, 0.2f), 32.0f, Vector3(0.0f, -10.0f, 0.0f), 20.0f, 0.0f,
-		Vector3(1.0f, 0.3f, 0.5f));
+	Plane plane1(Vector3(1.0f, 0.0f, 0.0f), Vector3(0.2f, 0.2f, 0.2f), 32.0f, 20.0f, Vector3(1.0f, 0.3f, 0.5f));
+	plane1.setScale(20.0f);
+	plane1.setTranslation(Vector3(0.0f, -10.0f, 0.0f));
 	if (callNumber <= 1)
 	{
-		Cube cube1(Vector3(0.0f, 0.0f, 1.0f), Vector3(0.2f, 0.2f, 0.2f), 32.0f, Vector3(0.0f, 0.0f, 0.0f), 1.0f, 20.0f,
+		/*Cube cube1(Vector3(0.0f, 0.0f, 1.0f), Vector3(0.2f, 0.2f, 0.2f), 32.0f, Vector3(0.0f, 0.0f, 0.0f), 1.0f, 20.0f,
 			Vector3(1.0f, 0.3f, 0.5f));
 		Cube cube2(Vector3(0.0f, 1.0f, 0.0f), Vector3(0.2f, 0.2f, 0.2f), 32.0f, Vector3(2.0f, 5.0f, -15.0f), 0.5f, 40.0f,
 			Vector3(1.0f, 0.3f, 0.5f));
@@ -296,45 +335,59 @@ void display() {
 		Cube cube4(Vector3(0.3f, 0.2f, 0.75f), Vector3(0.2f, 0.2f, 0.2f), 32.0f, Vector3(-3.8f, -2.0f, -12.3f), 1.2f, 80.0f,
 			Vector3(1.0f, 0.3f, 0.5f));
 		Cube cube5(Vector3(0.4f, 0.75f, 0.85f), Vector3(0.2f, 0.2f, 0.2f), 32.0f, Vector3(2.4f, -0.4f, -3.5f), 0.25f, 100.0f,
-			Vector3(1.0f, 0.3f, 0.5f));
+			Vector3(1.0f, 0.3f, 0.5f));*/
 
-		Sphere sphere1(Vector3(0.0f, 0.0f, 1.0f), Vector3(0.2f, 0.2f, 0.2f), 32.0f, Vector3(-1.7f, 3.0f, -7.5f), 1.0f);
-		Sphere sphere2(Vector3(0.0f, 1.0f, 0.0f), Vector3(0.2f, 0.2f, 0.2f), 32.0f, Vector3(1.3f, -2.0f, -2.5f), 1.0f);
-		Sphere sphere3(Vector3(1.0f, 0.0f, 0.0f), Vector3(0.2f, 0.2f, 0.2f), 32.0f, Vector3(1.5f, 2.0f, -2.5f), 0.5f);
+		//Vector3(-1.7f, 3.0f, -7.5f)
+		Sphere sphere1(Vector3(0.0f, 0.0f, 1.0f), Vector3(0.2f, 0.2f, 0.2f), 32.0f);
+		sphere1.setTranslation(Vector3(-1.7f, 3.0f, -7.5f));
+		Sphere sphere2(Vector3(0.0f, 1.0f, 0.0f), Vector3(0.2f, 0.2f, 0.2f), 32.0f);
+		sphere2.setTranslation(Vector3(1.3f, -2.0f, -2.5f));
+		/*Sphere sphere3(Vector3(1.0f, 0.0f, 0.0f), Vector3(0.2f, 0.2f, 0.2f), 32.0f, Vector3(1.5f, 2.0f, -2.5f), 0.5f);
 		Sphere sphere4(Vector3(0.3f, 0.2f, 0.75f), Vector3(0.2f, 0.2f, 0.2f), 32.0f, Vector3(1.5f, 0.2f, -1.5f), 1.2f);
-		Sphere sphere5(Vector3(0.4f, 0.75f, 0.85f), Vector3(0.2f, 0.2f, 0.2f), 32.0f, Vector3(-1.3f, 1.0f, -1.5f), 0.25f);
+		Sphere sphere5(Vector3(0.4f, 0.75f, 0.85f), Vector3(0.2f, 0.2f, 0.2f), 32.0f, Vector3(-1.3f, 1.0f, -1.5f), 0.25f);*/
 
-		objects.addObject("cube1", std::make_shared<Cube>(cube1));
+		/*objects.addObject("cube1", std::make_shared<Cube>(cube1));
 		objects.addObject("cube2", std::make_shared<Cube>(cube2));
 		objects.addObject("cube3", std::make_shared<Cube>(cube3));
 		objects.addObject("cube4", std::make_shared<Cube>(cube4));
-		objects.addObject("cube5", std::make_shared<Cube>(cube5));
+		objects.addObject("cube5", std::make_shared<Cube>(cube5));*/
 		objects.addObject("sphere1", std::make_shared<Sphere>(sphere1));
 		objects.addObject("sphere2", std::make_shared<Sphere>(sphere2));
-		objects.addObject("sphere3", std::make_shared<Sphere>(sphere3));
+		/*objects.addObject("sphere3", std::make_shared<Sphere>(sphere3));
 		objects.addObject("sphere4", std::make_shared<Sphere>(sphere4));
-		objects.addObject("sphere5", std::make_shared<Sphere>(sphere5));
+		objects.addObject("sphere5", std::make_shared<Sphere>(sphere5));*/
 	}
-	plane1.draw(lightingShader, Object::ShaderType::LIGHTING);
-	objects.getObjects()["cube1"]->draw(lightingShader, Object::ShaderType::LIGHTING);
+
+	pointLight1.getShape()->setScale(0.05f);
+	pointLight2.getShape()->setScale(0.05f);
+	pointLight3.getShape()->setScale(0.05f);
+	pointLight4.getShape()->setScale(0.05f);
+
+	pointLight1.getShape()->setTranslation(Vector3(0.7f, 0.2f, 2.0f));
+	pointLight2.getShape()->setTranslation(Vector3(2.3f, -3.3f, -4.0f));
+	pointLight3.getShape()->setTranslation(Vector3(-4.0f, 2.0f, -12.0f));
+	pointLight4.getShape()->setTranslation(Vector3(0.0f, 0.0f, -3.0f));
+
+	plane1.draw(lightingShader, Object::ShaderType::LIGHTING, view, projection);
+	/*objects.getObjects()["cube1"]->draw(lightingShader, Object::ShaderType::LIGHTING);
 	objects.getObjects()["cube2"]->draw(lightingShader, Object::ShaderType::LIGHTING);
 	objects.getObjects()["cube3"]->draw(lightingShader, Object::ShaderType::LIGHTING);
 	objects.getObjects()["cube4"]->draw(lightingShader, Object::ShaderType::LIGHTING);
-	objects.getObjects()["cube5"]->draw(lightingShader, Object::ShaderType::LIGHTING);
-	objects.getObjects()["sphere1"]->draw(lightingShader, Object::ShaderType::LIGHTING);
-	objects.getObjects()["sphere2"]->draw(lightingShader, Object::ShaderType::LIGHTING);
-	objects.getObjects()["sphere3"]->draw(lightingShader, Object::ShaderType::LIGHTING);
+	objects.getObjects()["cube5"]->draw(lightingShader, Object::ShaderType::LIGHTING);*/
+	objects.getObjects()["sphere1"]->draw(lightingShader, Object::ShaderType::LIGHTING, view, projection);
+	objects.getObjects()["sphere2"]->draw(lightingShader, Object::ShaderType::LIGHTING, view, projection);
+	/*objects.getObjects()["sphere3"]->draw(lightingShader, Object::ShaderType::LIGHTING);
 	objects.getObjects()["sphere4"]->draw(lightingShader, Object::ShaderType::LIGHTING);
-	objects.getObjects()["sphere5"]->draw(lightingShader, Object::ShaderType::LIGHTING);
+	objects.getObjects()["sphere5"]->draw(lightingShader, Object::ShaderType::LIGHTING);*/
 	lightingShader.unbind();
 
 	lampShader.bind();
 	lampShader.set_uniform_mat_4f("view", view);
 	lampShader.set_uniform_mat_4f("projection", projection);
-	pointLight1.getShape()->draw(lampShader, Object::ShaderType::LAMP);
-	pointLight2.getShape()->draw(lampShader, Object::ShaderType::LAMP);
-	pointLight3.getShape()->draw(lampShader, Object::ShaderType::LAMP);
-	pointLight4.getShape()->draw(lampShader, Object::ShaderType::LAMP);
+	/*pointLight1.getShape()->draw(lampShader, Object::ShaderType::LAMP, view, projection);
+	pointLight2.getShape()->draw(lampShader, Object::ShaderType::LAMP, view, projection);
+	pointLight3.getShape()->draw(lampShader, Object::ShaderType::LAMP, view, projection);
+	pointLight4.getShape()->draw(lampShader, Object::ShaderType::LAMP, view, projection);*/
 	lampShader.unbind();
 
 	glEnable(GL_DEBUG_OUTPUT);
@@ -360,8 +413,9 @@ void initGlut(int& argc, char* argv[]) {
 	glutKeyboardUpFunc(KeyUp);
 	glutSpecialFunc(KeySpecial);
 	glutSpecialUpFunc(KeySpecialUp);
-	//glutMouseFunc(click);
+	glutMouseFunc(click);
 	glutPassiveMotionFunc(look);
+	glutMotionFunc(motionFunction);
 	glutMouseWheelFunc(mouseWheel);
 }
 

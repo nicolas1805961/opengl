@@ -11,7 +11,7 @@ public:
 		const Vector3& position, const Vector3& direction, float cutOff, float outerCutOff, float constant, float linear, float quadratic);
 	
 private:
-	Vector3 m_position;
+	Vector3 m_translation;
 	Vector3 m_direction;
 	float m_cutOff;
 	float m_outerCuttOff;

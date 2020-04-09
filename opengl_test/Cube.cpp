@@ -1,19 +1,27 @@
 #include "Cube.h"
 
-Cube::Cube(Vector3 const& diffuse, Vector3 const& specular, float shininess,
-	Vector3 const& center, float size, float degreeAngle, Vector3 const& axis, float mass, Vector3 const& velocity)
-	: Object(center, size, diffuse, specular, shininess, mass, velocity), m_degreeAngle(degreeAngle), m_axis(axis)
-{}
-
-Cube::Cube(float shininess, Vector3 const& center, float size, float degreeAngle, Vector3 const& axis, float mass, Vector3 const& velocity)
-	: Object(center, size, shininess, mass, velocity), m_degreeAngle(degreeAngle), m_axis(axis)
-{}
-
-Cube::Cube(Vector3 const& center, float size, float degreeAngle, Vector3 const& axis, float mass, Vector3 const& velocity)
-	: Object(center, size, mass, velocity), m_degreeAngle(degreeAngle), m_axis(axis)
-{}
-
 Cube::Cube() : m_degreeAngle(1.0f), m_axis(1.0f)
+{
+
+}
+
+Cube::Cube(Vector3 const& diffuse, Vector3 const& specular, float shininess, float degreeAngle, Vector3 const& axis, float mass /*= 1.0f*/,
+	Vector3 const& velocity /*= 0.0f*/, Vector3 const& translation /*= Vector3(0.0f)*/, float scale /*= 1.0f*/)
+	: Object(translation, scale, diffuse, specular, shininess, mass, velocity), m_degreeAngle(degreeAngle), m_axis(axis)
+{
+
+}
+
+Cube::Cube(float shininess, float degreeAngle, Vector3 const& axis, float mass /*= 1.0f*/, Vector3 const& velocity /*= Vector3(0.0f)*/,
+	Vector3 const& translation /*= Vector3(0.0f)*/, float scale /*= 1.0f*/)
+	: Object(translation, scale, shininess, mass, velocity), m_degreeAngle(degreeAngle), m_axis(axis)
+{
+
+}
+
+Cube::Cube(float degreeAngle, Vector3 const& axis, float mass /*= 1.0f*/, Vector3 const& velocity /*= Vector3(0.0f)*/,
+	Vector3 const& translation /*= Vector3(0.0f)*/, float scale /*= 1.0f*/)
+	: Object(translation, scale, mass, velocity), m_degreeAngle(degreeAngle), m_axis(axis)
 {
 
 }
@@ -94,20 +102,26 @@ void Cube::initializeLayout()
 	m_vertexArray = VertexArray(m_vertexBuffer, m_vertexBufferLayout);
 }
 
+bool Cube::intersectRay(Ray& ray)
+{
+	return true;
+}
+
 /*bool Cube::intersectRay(int x, int y, Camera const& camera)
 {
 
 }*/
 
-void Cube::draw(Shader const& shader, Object::ShaderType shaderType)
+void Cube::draw(Shader const& shader, Object::ShaderType shaderType, Matrix4f const& view, Matrix4f const& projection)
 {
 	Matrix4f model(1.0f);
 	shader.bind();
 	m_vertexArray.bind();
 	m_indexBuffer.bind();
-	model = Matrix4f::gl_translate(model, m_position);
-	model = Matrix4f::gl_scale(model, Vector3(m_size));
+	model = Matrix4f::gl_translate(model, m_translation);
+	model = Matrix4f::gl_scale(model, Vector3(m_scale));
 	model = Matrix4f::gl_rotate(model, getRadians(m_degreeAngle), m_axis);
+	keepTrack(model, view, projection);
 	shader.set_uniform_mat_4f("model", model);
 	if (shaderType == Object::ShaderType::LIGHTING)
 	{
@@ -117,6 +131,7 @@ void Cube::draw(Shader const& shader, Object::ShaderType shaderType)
 			m_material = Material(shader, m_shininess, "material", m_diffuse, m_specular);
 	}
 	glDrawElements(GL_TRIANGLES, m_indexBuffer.getCount(), GL_UNSIGNED_INT, nullptr);
+	m_doesModify = false;
 }
 
 VertexBuffer Cube::m_vertexBuffer = VertexBuffer();

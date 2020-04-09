@@ -7,23 +7,24 @@
 #include "VertexArray.h"
 #include "Object.h"
 #include <algorithm>
+#include "Ray.h"
 
 class Cube: public Object
 {
 public:
 	Cube();
 	Cube(Vector3 const& diffuse, Vector3 const& specular, float shininess,
-		Vector3 const& center, float size, float degreeAngle, Vector3 const& axis, float mass = 1.0f,
-		Vector3 const& velocity = Vector3(0.0f, 0.0f, 0.0f));
-	Cube(float shininess, Vector3 const& center, float size, float degreeAngle, Vector3 const& axis, float mass = 1.0f,
-		Vector3 const& velocity = Vector3(0.0f, 0.0f, 0.0f));
-	Cube(Vector3 const& center, float size, float degreeAngle, Vector3 const& axis, float mass = 1.0f,
-		Vector3 const& velocity = Vector3(0.0f, 0.0f, 0.0f));
+		  float degreeAngle, Vector3 const& axis, float mass = 1.0f,
+		Vector3 const& velocity = 0.0f, Vector3 const& translation = Vector3(0.0f), float scale = 1.0f);
+	Cube(float shininess,  float degreeAngle, Vector3 const& axis, float mass = 1.0f,
+		Vector3 const& velocity = Vector3(0.0f), Vector3 const& translation = Vector3(0.0f), float scale = 1.0f);
+	Cube(  float degreeAngle, Vector3 const& axis, float mass = 1.0f,
+		Vector3 const& velocity = Vector3(0.0f), Vector3 const& translation = Vector3(0.0f), float scale = 1.0f);
 	static void initializeLayout();
 	bool intersect(Objects const& objects);
-	//bool intersectRay(int x, int y, Camera const& camera);
+	bool intersectRay(Ray& ray);
 
-	void draw(Shader const& shader, Object::ShaderType shaderType);
+	void draw(Shader const& shader, Object::ShaderType shaderType, Matrix4f const& view, Matrix4f const& projection);
 	
 private:
 	float m_degreeAngle;

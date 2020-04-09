@@ -7,8 +7,11 @@
 #include "Shader.h"
 #include "Material.h"
 #include <cmath>
+#include "Camera.h"
 
 class Objects;
+
+class Ray;
 
 class Object
 {
@@ -16,23 +19,32 @@ public:
 
 	enum class ShaderType {LAMP, LIGHTING};
 
+	enum class Force {GRAVITY, FRICTION};
+
 	Object() = default;
-	Object(Vector3 const& position, float size, Vector3 const& diffuse, Vector3 const& specular, float shininess, float mass,
+	Object(Vector3 const& translation, float scale, Vector3 const& diffuse, Vector3 const& specular, float shininess, float mass,
 		Vector3 const& velocity);
-	Object(Vector3 const& position, float size, float shininess, float mass, Vector3 const& velocity);
-	Object(Vector3 const& position, float size, float mass, Vector3 const& velocity);
+	Object(Vector3 const& translation, float scale, float shininess, float mass, Vector3 const& velocity);
+	Object(Vector3 const& translation, float scale, float mass, Vector3 const& velocity);
 	float getRadians(float degreeAngle);
-	Vector3 getPosition();
-	//virtual bool intersect(Objects const& objects) = 0;
+	Vector3 getTranslation();
+	Vector3 getTranslation() const;
+	void keepTrack(Matrix4f const& model, Matrix4f const& view, Matrix4f const& projection);
+	virtual bool intersectRay(Ray &ray) = 0;
 	//virtual bool intersectRay(int x, int y, Camera const& camera) = 0;
-	float getSize();
-	void setSize(float size);
+	float getScale();
+	void addForce(Force force);
+	void setColor(Vector3 const& color);
+	void setScale(float scale);
 	void updateVelocityAndPosition(float dt);
-	void setPosition(Vector3 const& position);
-	virtual void draw(Shader const& shader, Object::ShaderType shaderType) = 0;
+	void setTranslation(Vector3 const& translation);
+	virtual void draw(Shader const& shader, Object::ShaderType shaderType, Matrix4f const& view, Matrix4f const& projection) = 0;
 
 protected:
-	Vector3 m_force;
+	bool m_doesModify;
+	Vector4 m_position;
+	Vector3 m_sumForces;
+	Vector3 m_acceleration;
 	Vector3 m_velocity;
 	float m_mass;
 	Material m_material;
@@ -40,6 +52,6 @@ protected:
 	Vector3 m_diffuse;
 	Vector3 m_specular;
 	float m_shininess;
-	Vector3 m_position;
-	float m_size;
+	Vector3 m_translation;
+	float m_scale;
 };

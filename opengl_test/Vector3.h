@@ -17,6 +17,7 @@ public:
 	Vector3(float x, float y, float z);
 	Vector3(float f);
 	Vector3 operator+(Vector3 const& rhs);
+	Vector3 operator+(Vector3 const& rhs) const;
 	Vector3 operator*(std::vector<Vector3> const& rhs);
 	float operator*(Vector3& rhs);
 	Vector3& operator+=(Vector3 const& rhs);
@@ -25,6 +26,7 @@ public:
 	float& operator[](int index);
 	float operator[](int index) const;
 	bool operator==(const Vector3& rhs);
+	void perspectiveDivision();
 	float dot_product(Vector3 const& rhs) const;
 	float max_component();
 	Vector3 cross_product(Vector3 const& rhs);
@@ -32,10 +34,10 @@ public:
 	Vector3 normalize() const;
 	float get_x();
 	float get_y();
+	float get_z();
 	void set_x(float x);
 	void set_y(float y);
 	void set_z(float z);
-	float get_z();
 	~Vector3();
 	friend Vector3 operator-(Vector3 const& lhs, Vector3 const& rhs);
 	friend Vector3 operator*(std::vector<Vector3> const& lhs, const Vector3& rhs);

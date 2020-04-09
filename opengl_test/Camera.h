@@ -5,6 +5,7 @@
 #include <vector>
 #include <cmath>
 #include <GL/glew.h>
+#include <GL/freeglut.h>
 #include "Vector3.h"
 #include "Matrix4f.h"
 
@@ -16,12 +17,6 @@ enum class Camera_movement
 	RIGHT
 };
 
-/*const GLfloat YAW = -90.0f;
-const GLfloat PITCH = 0.0f;
-const GLfloat SPEED = 6.0f;
-const GLfloat SENSITIVTY = 0.25f;
-const GLfloat ZOOM = 45.0f;*/
-
 class Camera
 {
 public:
@@ -30,10 +25,15 @@ public:
 	Camera(GLfloat posX = 0.0f, GLfloat posY = 0.0f, GLfloat posZ = 0.0f, GLfloat upX = 0.0f, GLfloat upY = 1.0f,
 		GLfloat upZ = 0.0f, GLfloat yaw = -90.0f, GLfloat pitch = 0.0f);
 	Matrix4f get_view_matrix();
+	Matrix4f get_view_matrix() const;
+	Matrix4f getProjectionMatrix();
+	Matrix4f getProjectionMatrix() const;
 	void ProcessKeyboard(Camera_movement direction, GLfloat deltaTime);
 	void ProcessMouseMovement(GLfloat xOffset, GLfloat yOffset, GLboolean constrainPitch = true);
 	void ProcessMouseScroll(GLfloat yOffset);
 	GLfloat GetZoom();
+	GLfloat GetZoom() const;
+	Vector3 get3dMousePosition(int xMouse, int yMouse);
 	Vector3 getFront();
 	Vector3 GetPosition();
 	Vector3 GetPosition() const;

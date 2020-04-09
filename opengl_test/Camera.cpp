@@ -1,7 +1,4 @@
 #include "Camera.h"
-#include "glm\glm.hpp"
-#include "glm\gtc\matrix_transform.hpp"
-#include "glm\gtx\string_cast.hpp"
 
 Camera::Camera(Vector3 position /*= Vector3(0.0f, 0.0f, 0.0f)*/, Vector3 up /*= Vector3(0.0f, 0.1f, 0.0f)*/,
 	GLfloat yaw /*= -90.0f*/, GLfloat pitch /*= 0.0f*/)
@@ -26,12 +23,22 @@ Camera::Camera(GLfloat posX, GLfloat posY, GLfloat posZ, GLfloat upX, GLfloat up
 
 Matrix4f Camera::get_view_matrix()
 {
-	/*glm::mat4 view_glm = glm::lookAt(glm::vec3(this->position.get_x(), this->position.get_y(), this->position.get_z()),
-		glm::vec3(this->position.get_x(), this->position.get_y(), this->position.get_z())
-		+ glm::vec3(this->front.get_x(), this->front.get_y(), this->front.get_z()),
-		glm::vec3(this->up.get_x(), this->up.get_y(), this->up.get_z()));
-	std::cout << glm::to_string(view_glm) << "\n";*/
 	return Matrix4f::gl_look_at(this->position, this->position + this->front, this->up);
+}
+
+Matrix4f Camera::get_view_matrix() const
+{
+	return Matrix4f::gl_look_at(this->position, this->position + this->front, this->up);
+}
+
+Matrix4f Camera::getProjectionMatrix()
+{
+	return Matrix4f::gl_perspective(GetZoom(), 1920.0f / 1080.0f, 0.1f, 1000.0f);
+}
+
+Matrix4f Camera::getProjectionMatrix() const
+{
+	return Matrix4f::gl_perspective(GetZoom(), 1920.0f / 1080.0f, 0.1f, 1000.0f);
 }
 
 void Camera::ProcessKeyboard(Camera_movement direction, GLfloat deltaTime)
@@ -92,6 +99,23 @@ void Camera::ProcessMouseScroll(GLfloat yOffset)
 GLfloat Camera::GetZoom()
 {
 	return this->zoom;
+}
+
+GLfloat Camera::GetZoom() const
+{
+	return this->zoom;
+}
+
+Vector3 Camera::get3dMousePosition(int xMouse, int yMouse)
+{
+	float x = (2.0f * xMouse) / glutGet(GLUT_WINDOW_WIDTH) - 1.0f;
+	float y = 1.0f - (2.0f * yMouse) / glutGet(GLUT_WINDOW_HEIGHT);
+	Vector4 to = Vector4(x, y, 1.0, 1.0);
+	to = Matrix4f::inverse(getProjectionMatrix()) * to;
+	to = Matrix4f::inverse(get_view_matrix()) * to;
+	to.perspectiveDivision();
+	Vector3 to3f = Vector3(to.get_x(), to.get_y(), to.get_z());
+	return to3f;
 }
 
 Vector3 Camera::getFront()

@@ -12,18 +12,21 @@
 #include "VertexArray.h"
 #include "Material.h"
 #include "Object.h"
+#include "Plane.h"
+#include "Ray.h"
 
 class Sphere: public Object
 {
 public:
-	Sphere(Vector3 const& diffuse, Vector3 const& specular, float shininess, Vector3 const& center, float radius, float mass = 1.0f,
-		Vector3 const& velocity = Vector3(0.0f, 0.0f, 0.0f));
-	Sphere(float shininess, Vector3 const& center, float radius, float mass = 1.0f, Vector3 const& velocity = Vector3(0.0f, 0.0f, 0.0f));
-	Sphere(Vector3 const& center, float radius, float mass = 1.0f, Vector3 const& velocity = Vector3(0.0f ,0.0f, 0.0f));
+	Sphere(Vector3 const& diffuse, Vector3 const& specular, float shininess, float mass = 1.0f,
+		Vector3 const& velocity = Vector3(0.0f), Vector3 const& translation = Vector3(0.0f), float scale = 1.0f);
+	Sphere(float shininess, float mass = 1.0f, Vector3 const& velocity = Vector3(0.0f), Vector3 const& translation = Vector3(0.0f), float scale = 1.0f);
+	Sphere(float mass = 1.0f, Vector3 const& velocity = Vector3(0.0f), Vector3 const& translation = Vector3(0.0f), float scale = 1.0f);
 	static void initializeLayout();
+	bool intersectPlane(Plane const& plane);
 	//bool intersect(Objects const& objects);
-	//bool intersectRay(int x, int y, Camera const& camera);
-	void draw(Shader const& shader, Object::ShaderType shaderType);
+	bool intersectRay(Ray& ray);
+	void draw(Shader const& shader, Object::ShaderType shaderType, Matrix4f const& view, Matrix4f const& projection);
 
 private:
 	static unsigned int m_height;

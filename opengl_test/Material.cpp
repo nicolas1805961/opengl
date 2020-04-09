@@ -16,3 +16,8 @@ Material::Material(const Shader& shader, float shininess, std::string const& nam
 	m_shader.set_uniform_3f(name + ".specular", m_specular.get_x(), m_specular.get_y(), m_specular.get_z());
 	m_shader.set_uniform_1f(name + ".shininess", m_shininess);
 }
+
+void Material::setColor(Vector3 const& color)
+{
+	m_diffuse = color;
+}

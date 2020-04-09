@@ -5,25 +5,31 @@ Plane::Plane()
 
 }
 
-Plane::Plane(Vector3 const& diffuse, Vector3 const& specular, float shininess, Vector3 const& center, float size, float degreeAngle,
-    Vector3 const& axis, float mass /*= 1.0f*/, Vector3 const& velocity /*= Vector3(0.0f, 0.0f, 0.0f)*/)
-    : Object(center, size, diffuse, specular, shininess, mass, velocity), m_degreeAngle(degreeAngle), m_axis(axis)
+Plane::Plane(Vector3 const& diffuse, Vector3 const& specular, float shininess, float degreeAngle, Vector3 const& axis,
+	float mass /*= 1.0f*/, Vector3 const& velocity /*= Vector3(0.0f)*/, Vector3 const& translation /*= Vector3(0.0f)*/, float scale /*= 1.0f*/,
+	Vector3 const& normal /*= Vector3(0.0f, 1.0f, 0.0f)*/)
+	: Object(translation, scale, diffuse, specular, shininess, mass, velocity), m_degreeAngle(degreeAngle), m_axis(axis)
 {
-	m_normal = Vector3(0.0f, 1.0f, 0.0f);
+
 }
 
-Plane::Plane(float shininess, Vector3 const& center, float size, float degreeAngle, Vector3 const& axis, float mass /*= 1.0f*/,
-    Vector3 const& velocity /*= Vector3(0.0f, 0.0f, 0.0f)*/) 
-    : Object(center, size, shininess, mass, velocity), m_degreeAngle(degreeAngle), m_axis(axis)
+Plane::Plane(float shininess, float degreeAngle, Vector3 const& axis, float mass /*= 1.0f*/, Vector3 const& velocity /*= Vector3(0.0f)*/,
+	Vector3 const& translation /*= Vector3(0.0f)*/, float scale /*= 1.0f*/, Vector3 const& normal /*= Vector3(0.0f, 1.0f, 0.0f)*/)
+	: Object(translation, scale, shininess, mass, velocity), m_degreeAngle(degreeAngle), m_axis(axis)
 {
-	m_normal = Vector3(0.0f, 1.0f, 0.0f);
+
 }
 
-Plane::Plane(Vector3 const& center, float size, float degreeAngle, Vector3 const& axis, float mass /*= 1.0f*/,
-    Vector3 const& velocity /*= Vector3(0.0f, 0.0f, 0.0f)*/)
-    : Object(center, size, mass, velocity), m_degreeAngle(degreeAngle), m_axis(axis)
+Plane::Plane(float degreeAngle, Vector3 const& axis, float mass /*= 1.0f*/, Vector3 const& velocity /*= Vector3(0.0f)*/,
+	Vector3 const& translation /*= Vector3(0.0f)*/, float scale /*= 1.0f*/, Vector3 const& normal /*= Vector3(0.0f, 1.0f, 0.0f)*/)
+	: Object(translation, scale, mass, velocity), m_degreeAngle(degreeAngle), m_axis(axis)
 {
-	m_normal = Vector3(0.0f, 1.0f, 0.0f);
+
+}
+
+bool Plane::intersectRay(Ray& ray)
+{
+	return false;
 }
 
 void Plane::initializeLayout()
@@ -70,16 +76,27 @@ void Plane::initializeLayout()
 	m_vertexArray = VertexArray(m_vertexBuffer, m_vertexBufferLayout);
 }
 
-void Plane::draw(Shader const& shader, Object::ShaderType shaderType)
+Vector3 Plane::getNormal()
+{
+	return m_normal;
+}
+
+Vector3 Plane::getNormal() const
+{
+	return m_normal;
+}
+
+void Plane::draw(Shader const& shader, Object::ShaderType shaderType, Matrix4f const& view, Matrix4f const& projection)
 {
 	Matrix4f model(1.0f);
 	shader.bind();
 	m_vertexArray.bind();
 	m_indexBuffer.bind();
-	model = Matrix4f::gl_translate(model, m_position);
-	model = Matrix4f::gl_scale(model, Vector3(m_size));
+	model = Matrix4f::gl_translate(model, m_translation);
+	model = Matrix4f::gl_scale(model, Vector3(m_scale));
 	model = Matrix4f::gl_rotate(model, getRadians(m_degreeAngle), m_axis);
 	shader.set_uniform_mat_4f("model", model);
+	keepTrack(model, view, projection);
 	if (shaderType == Object::ShaderType::LIGHTING)
 	{
 		if (m_isTexture)
@@ -88,6 +105,7 @@ void Plane::draw(Shader const& shader, Object::ShaderType shaderType)
 			m_material = Material(shader, m_shininess, "material", m_diffuse, m_specular);
 	}
 	glDrawElements(GL_TRIANGLES, m_indexBuffer.getCount(), GL_UNSIGNED_INT, nullptr);
+	m_doesModify = false;
 }
 
 unsigned int Plane::m_height = 100.0f;

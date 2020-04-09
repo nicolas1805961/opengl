@@ -7,17 +7,25 @@ VertexBuffer Sphere::m_vertexBuffer = VertexBuffer();
 VertexBufferLayout Sphere::m_vertexBufferLayout = VertexBufferLayout();
 VertexArray Sphere::m_vertexArray = VertexArray();
 
-Sphere::Sphere(Vector3 const& diffuse, Vector3 const& specular, float shininess,
-	Vector3 const& center, float radius, float mass, Vector3 const& velocity)
-	: Object(center, radius, diffuse, specular, shininess, mass, velocity)
-{}
+Sphere::Sphere(Vector3 const& diffuse, Vector3 const& specular, float shininess, float mass /*= 1.0f*/,
+	Vector3 const& velocity /*= Vector3(0.0f)*/, Vector3 const& translation /*= Vector3(0.0f)*/, float scale /*= 1.0f*/)
+	: Object(translation, scale, diffuse, specular, shininess, mass, velocity)
+{
 
-Sphere::Sphere(float shininess, Vector3 const& center, float radius, float mass, Vector3 const& velocity)
-	: Object(center, radius, shininess, mass, velocity)
-{}
+}
 
-Sphere::Sphere(Vector3 const& center, float radius, float mass, Vector3 const& velocity): Object(center, radius, mass, velocity)
-{}
+Sphere::Sphere(float shininess, float mass /*= 1.0f*/, Vector3 const& velocity /*= Vector3(0.0f)*/,
+	Vector3 const& translation /*= Vector3(0.0f)*/, float scale /*= 1.0f*/)
+	: Object(translation, scale, shininess, mass, velocity)
+{
+
+}
+
+Sphere::Sphere(float mass /*= 1.0f*/, Vector3 const& velocity /*= Vector3(0.0f)*/, Vector3 const& translation /*= Vector3(0.0f)*/,
+	float scale /*= 1.0f*/) : Object(translation, scale, mass, velocity)
+{
+
+}
 
 void Sphere::initializeLayout()
 {
@@ -78,18 +86,21 @@ void Sphere::initializeLayout()
 	m_vertexArray = VertexArray(m_vertexBuffer, m_vertexBufferLayout);
 }
 
-/*bool Sphere::intersect(Objects const& objects)
+bool Sphere::intersectPlane(Plane const& plane)
 {
+	Vector3 distanceSphereCenterToPlanePoint = (m_translation - plane.getTranslation()).normalize();
+	float minimalDistanceSphereToPlane = distanceSphereCenterToPlanePoint.dot_product(plane.getNormal()) / plane.getNormal().norm();
+	if (minimalDistanceSphereToPlane < m_scale)
+		return true;
+	return false;
+}
 
-}*/
-
-/*bool Sphere::intersectRay(int x, int y, Camera const& camera)
+bool Sphere::intersectRay(Ray& ray)
 {
-	Ray ray(camera.GetPosition(), )
-	auto k = ray.get_origin() - center;
+	auto k = ray.get_origin() - Vector3(m_translation.get_x(), m_translation.get_y(), m_translation.get_z());
 	float a = ray.get_direction().dot_product(ray.get_direction());
 	float b = 2 * ray.get_direction().dot_product(k);
-	float c = k.dot_product(k) - pow(radius, 2);
+	float c = k.dot_product(k) - pow(m_scale, 2);
 	auto discriminant = pow(b, 2) - 4 * a * c;
 	if (discriminant < 0)
 		return false;
@@ -109,26 +120,27 @@ void Sphere::initializeLayout()
 			ray.set_t_distance(x1);
 	}
 	return true;
-}*/
+}
 
 /*Intersect Sphere::intersectBoundingSphere(Sphere const& other)
 {
-	float radiusDistance = m_size + other.m_size;
-	float centerDistance = (other.m_position - m_position).norm();
+	float radiusDistance = m_scale + other.m_scale;
+	float centerDistance = (other.m_translation - m_translation).norm();
 	if (centerDistance < radiusDistance)
 		return Intersect(true, centerDistance - radiusDistance);
 	else
 		return Intersect(false, centerDistance - radiusDistance);
 }*/
 
-void Sphere::draw(Shader const& shader, Object::ShaderType shaderType)
+void Sphere::draw(Shader const& shader, Object::ShaderType shaderType, Matrix4f const& view, Matrix4f const& projection)
 {
 	Matrix4f model(1.0f);
 	shader.bind();
 	m_vertexArray.bind();
 	m_indexBuffer.bind();
-	model = Matrix4f::gl_translate(model, m_position);
-	model = Matrix4f::gl_scale(model, Vector3(m_size));
+	model = Matrix4f::gl_translate(model, m_translation);
+	model = Matrix4f::gl_scale(model, Vector3(m_scale));
+	keepTrack(model, view, projection);
 	shader.set_uniform_mat_4f("model", model);
 	if (shaderType == Object::ShaderType::LIGHTING)
 	{
@@ -138,4 +150,5 @@ void Sphere::draw(Shader const& shader, Object::ShaderType shaderType)
 			m_material = Material(shader, m_shininess, "material", m_diffuse, m_specular);
 	}
 	glDrawElements(GL_TRIANGLES, m_indexBuffer.getCount(), GL_UNSIGNED_INT, nullptr);
+	m_doesModify = false;
 }

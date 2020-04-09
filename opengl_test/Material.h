@@ -11,7 +11,7 @@ public:
 	Material() = default;
 	Material(const Shader& shader, float shininess, std::string const& name);
 	Material(const Shader& shader, float shininess, std::string const& name, Vector3 const& diffuse, Vector3 const& specular);
-
+	void setColor(Vector3 const& color);
 private:
 	float m_shininess;
 	Shader m_shader;

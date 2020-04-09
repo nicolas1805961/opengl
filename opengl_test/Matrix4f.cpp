@@ -19,7 +19,7 @@ Matrix4f::Matrix4f(float f)
         m_matrix = std::vector<Vector4>(4, Vector4(f));
 }
 
-Matrix4f::Matrix4f(Vector4& v1, Vector4& v2, Vector4& v3, Vector4& v4)
+Matrix4f::Matrix4f(Vector4 const& v1, Vector4 const& v2, Vector4 const& v3, Vector4 const& v4)
 {
     m_matrix = std::vector<Vector4>(4, Vector4(0));
     m_matrix[0] = v1;
@@ -55,9 +55,9 @@ Matrix4f Matrix4f::gl_ortho(const float& left, const float& right,
     return ortho;
 }
 
-Matrix4f Matrix4f::gl_look_at(Vector3 const& eye, Vector3 const& center, Vector3 const& up)
+Matrix4f Matrix4f::gl_look_at(Vector3 const& eye, Vector3 const& translation, Vector3 const& up)
 {
-	Vector3 f((center - eye).normalize());
+	Vector3 f((translation - eye).normalize());
 	Vector3 s(f.cross_product(up).normalize());
 	Vector3 u(s.cross_product(f).normalize());
 	Matrix4f Result(1.0f);
@@ -164,6 +164,111 @@ Matrix4f Matrix4f::gl_perspective(float fovy, float aspect, float near, float fa
     return Result;
 }
 
+Matrix4f Matrix4f::getComatrix()
+{
+    Matrix4f result;
+    for (size_t i = 0; i < 4; i++)
+    {
+        for (size_t j = 0; j < 4; j++)
+        {
+            result[i][j] = pow(-1, i + j) * gl_getCofactorMatrix(i, j).determinant();
+        }
+    }
+    return result;
+}
+
+Matrix4f Matrix4f::getComatrix() const
+{
+	Matrix4f result;
+	for (size_t i = 0; i < 4; i++)
+	{
+		for (size_t j = 0; j < 4; j++)
+		{
+			result[i][j] = pow(-1, i + j) * gl_getCofactorMatrix(i, j).determinant();
+		}
+	}
+	return result;
+}
+
+Matrix3f Matrix4f::gl_getCofactorMatrix(unsigned int column, unsigned int row)
+{
+    Matrix3f result;
+    unsigned int a = 0, b = 0;
+    for (size_t i = 0; i < 4; i++)
+    {
+        if (i == column)
+            continue;
+        for (size_t j = 0; j < 4; j++)
+        {
+            if (j == row)
+                continue;
+            result[a][b] = m_matrix[i][j];
+            b++;
+        }
+        a++;
+        b = 0;
+    }
+    return result;
+}
+
+Matrix3f Matrix4f::gl_getCofactorMatrix(unsigned int column, unsigned int row) const
+{
+	Matrix3f result;
+	unsigned int a = 0, b = 0;
+	for (size_t i = 0; i < 4; i++)
+	{
+		if (i == column)
+			continue;
+		for (size_t j = 0; j < 4; j++)
+		{
+			if (j == row)
+				continue;
+			result[a][b] = m_matrix[i][j];
+			b++;
+		}
+		a++;
+		b = 0;
+	}
+	return result;
+}
+
+float Matrix4f::determinant()
+{
+	float a = m_matrix[0][0] * gl_getCofactorMatrix(0, 0).determinant();
+	float b = m_matrix[1][0] * -1 * gl_getCofactorMatrix(1, 0).determinant();
+	float c = m_matrix[2][0] * gl_getCofactorMatrix(2, 0).determinant();
+	float d = m_matrix[3][0] * -1 * gl_getCofactorMatrix(3, 0).determinant();
+	return a + b + c + d;
+}
+
+float Matrix4f::determinant() const
+{
+	float a = m_matrix[0][0] * gl_getCofactorMatrix(0, 0).determinant();
+	float b = m_matrix[1][0] * -1 * gl_getCofactorMatrix(1, 0).determinant();
+	float c = m_matrix[2][0] * gl_getCofactorMatrix(2, 0).determinant();
+	float d = m_matrix[3][0] * -1 * gl_getCofactorMatrix(3, 0).determinant();
+	return a + b + c + d;
+}
+
+Matrix4f Matrix4f::gl_transpose()
+{
+    Matrix4f result;
+    result.m_matrix = m_matrix;
+    result[0][1] = m_matrix[1][0];
+    result[0][2] = m_matrix[2][0];
+    result[0][3] = m_matrix[3][0];
+    result[1][0] = m_matrix[0][1];
+    result[1][2] = m_matrix[2][1];
+    result[1][3] = m_matrix[3][1];
+    result[2][0] = m_matrix[0][2];
+    result[2][1] = m_matrix[1][2];
+    result[2][3] = m_matrix[3][2];
+    result[3][0] = m_matrix[0][3];
+    result[3][1] = m_matrix[1][3];
+    result[3][2] = m_matrix[2][3];
+    return result;
+}
+
 std::unique_ptr<float[]> Matrix4f::as_array()
 {
     auto ptr = std::make_unique<float[]>(16);
@@ -186,6 +291,34 @@ std::unique_ptr<float[]> Matrix4f::as_array()
     return ptr;
 }
 
+Matrix4f Matrix4f::inverse(Matrix4f const& m)
+{
+	float x = 1 / m.determinant();
+	return x * m.getComatrix().gl_transpose();
+}
+
+Matrix4f operator*(float x, Matrix4f const& m)
+{
+    Matrix4f result;
+	result[0][0] = m[0][0] * x;
+	result[0][1] = m[0][1] * x;
+	result[0][2] = m[0][2] * x;
+	result[0][3] = m[0][3] * x;
+	result[1][0] = m[1][0] * x;
+	result[1][1] = m[1][1] * x;
+	result[1][2] = m[1][2] * x;
+	result[1][3] = m[1][3] * x;
+	result[2][0] = m[2][0] * x;
+	result[2][1] = m[2][1] * x;
+	result[2][2] = m[2][2] * x;
+	result[2][3] = m[2][3] * x;
+	result[3][0] = m[3][0] * x;
+	result[3][1] = m[3][1] * x;
+	result[3][2] = m[3][2] * x;
+	result[3][3] = m[3][3] * x;
+	return result;
+}
+
 Vector3& Matrix4f::operator*(Vector3& v)
 {
     Vector3 res;
@@ -195,7 +328,7 @@ Vector3& Matrix4f::operator*(Vector3& v)
     return res;
 }
 
-Matrix4f Matrix4f::operator*(Matrix4f& m)
+Matrix4f Matrix4f::operator*(Matrix4f const& m)
 {
     Matrix4f res;
     Vector4 l1(this->m_matrix[0][0], this->m_matrix[1][0], this->m_matrix[2][0], this->m_matrix[3][0]);
@@ -209,12 +342,59 @@ Matrix4f Matrix4f::operator*(Matrix4f& m)
     return res;
 }
 
+Vector4 Matrix4f::operator*(Vector4 const& v)
+{
+	Vector4 res;
+	Vector4 l1(this->m_matrix[0][0], this->m_matrix[1][0], this->m_matrix[2][0], this->m_matrix[3][0]);
+	Vector4 l2(this->m_matrix[0][1], this->m_matrix[1][1], this->m_matrix[2][1], this->m_matrix[3][1]);
+	Vector4 l3(this->m_matrix[0][2], this->m_matrix[1][2], this->m_matrix[2][2], this->m_matrix[3][2]);
+	Vector4 l4(this->m_matrix[0][3], this->m_matrix[1][3], this->m_matrix[2][3], this->m_matrix[3][3]);
+    res[0] = l1 * v;
+    res[1] = l2 * v;
+    res[2] = l3 * v;
+    res[3] = l4 * v;
+	return res;
+}
+
+Vector4 Matrix4f::operator*(Vector4 const& v) const
+{
+	Vector4 res;
+	Vector4 l1(this->m_matrix[0][0], this->m_matrix[1][0], this->m_matrix[2][0], this->m_matrix[3][0]);
+	Vector4 l2(this->m_matrix[0][1], this->m_matrix[1][1], this->m_matrix[2][1], this->m_matrix[3][1]);
+	Vector4 l3(this->m_matrix[0][2], this->m_matrix[1][2], this->m_matrix[2][2], this->m_matrix[3][2]);
+	Vector4 l4(this->m_matrix[0][3], this->m_matrix[1][3], this->m_matrix[2][3], this->m_matrix[3][3]);
+	res[0] = l1 * v;
+	res[1] = l2 * v;
+	res[2] = l3 * v;
+	res[3] = l4 * v;
+	return res;
+}
+
+Matrix4f Matrix4f::operator*(Matrix4f const& m) const
+{
+	Matrix4f res;
+	Vector4 l1(this->m_matrix[0][0], this->m_matrix[1][0], this->m_matrix[2][0], this->m_matrix[3][0]);
+	Vector4 l2(this->m_matrix[0][1], this->m_matrix[1][1], this->m_matrix[2][1], this->m_matrix[3][1]);
+	Vector4 l3(this->m_matrix[0][2], this->m_matrix[1][2], this->m_matrix[2][2], this->m_matrix[3][2]);
+	Vector4 l4(this->m_matrix[0][3], this->m_matrix[1][3], this->m_matrix[2][3], this->m_matrix[3][3]);
+	res[0] = Vector4(l1 * m[0], l2 * m[0], l3 * m[0], l4 * m[0]);
+	res[1] = Vector4(l1 * m[1], l2 * m[1], l3 * m[1], l4 * m[1]);
+	res[2] = Vector4(l1 * m[2], l2 * m[2], l3 * m[2], l4 * m[2]);
+	res[3] = Vector4(l1 * m[3], l2 * m[3], l3 * m[3], l4 * m[3]);
+	return res;
+}
+
 Vector4& Matrix4f::operator[](int i)
 {
     return m_matrix[i];
 }
 
-std::ostream& operator<<(std::ostream& out, Matrix4f& m)
+Vector4 Matrix4f::operator[](int i) const
+{
+    return m_matrix[i];
+}
+
+std::ostream& operator<<(std::ostream& out, Matrix4f const& m)
 {
     return out << m[0][0] << " " << m[1][0] << " " << m[2][0] << " " << m[3][0] << "\n"
         << m[0][1] << " " << m[1][1] << " " << m[2][1] << " " << m[3][1] << "\n"

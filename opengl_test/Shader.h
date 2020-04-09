@@ -7,7 +7,6 @@
 #include <GL/glew.h>
 #include <memory>
 #include "Matrix4f.h"
-#include "glm\glm.hpp"
 
 class Shader
 {
@@ -21,7 +20,6 @@ public:
 	void set_uniform_3f(const std::string& name, float v0, float v1, float v2);
 	void set_uniform_mat_4f(const std::string& name, Matrix4f& matrix);
 	void set_uniform_mat_4f(const std::string& name, Matrix4f& matrix) const;
-	void set_uniform_mat_4f_glm(const std::string& name, const glm::mat4& matrix);
 	void set_uniform_1i(const std::string& name, int value);
 	~Shader();
 	
