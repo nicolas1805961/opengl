@@ -5,33 +5,23 @@ Cube::Cube() : m_degreeAngle(1.0f), m_axis(1.0f)
 
 }
 
-Cube::Cube(Vector3 const& diffuse, Vector3 const& specular, float shininess, float degreeAngle, Vector3 const& axis, float mass /*= 1.0f*/,
-	Vector3 const& velocity /*= 0.0f*/, Vector3 const& translation /*= Vector3(0.0f)*/, float scale /*= 1.0f*/)
-	: Object(translation, scale, diffuse, specular, shininess, mass, velocity), m_degreeAngle(degreeAngle), m_axis(axis)
-{
+Cube::Cube(Shader const& shader, Vector3 const& diffuse, Vector3 const& specular, float degreeAngle, Vector3 const& axis,
+	Vector3 const& translation, float scale /*= 1.0f*/, float shininess /*= 32.0f*/, float mass /*= 1.0f*/,
+	Vector3 const& velocity /*= 0.0f*/)
+	: Object(shader, translation, scale, diffuse, specular, shininess, mass, velocity), m_degreeAngle(degreeAngle), m_axis(axis)
+{}
 
-}
+Cube::Cube(Shader const& shader, float degreeAngle, Vector3 const& axis, Vector3 const& translation, float scale /*= 1.0f*/,
+	float shininess /*= 32.0f*/, float mass /*= 1.0f*/, Vector3 const& velocity /*= 0.0f*/)
+	: Object(shader, translation, scale, shininess, mass, velocity), m_degreeAngle(degreeAngle), m_axis(axis)
+{}
 
-Cube::Cube(float shininess, float degreeAngle, Vector3 const& axis, float mass /*= 1.0f*/, Vector3 const& velocity /*= Vector3(0.0f)*/,
-	Vector3 const& translation /*= Vector3(0.0f)*/, float scale /*= 1.0f*/)
-	: Object(translation, scale, shininess, mass, velocity), m_degreeAngle(degreeAngle), m_axis(axis)
-{
-
-}
-
-Cube::Cube(float degreeAngle, Vector3 const& axis, float mass /*= 1.0f*/, Vector3 const& velocity /*= Vector3(0.0f)*/,
-	Vector3 const& translation /*= Vector3(0.0f)*/, float scale /*= 1.0f*/)
-	: Object(translation, scale, mass, velocity), m_degreeAngle(degreeAngle), m_axis(axis)
-{
-
-}
-
-void Cube::initializeLayout()
+std::pair<IndexBuffer, VertexArray> Cube::initializeLayout()
 {
 	static int callNumber = 0;
 	callNumber++;
 	if (callNumber > 1)
-		return;
+		return std::make_pair(IndexBuffer(), VertexArray());
 	std::vector<float> positions =
 	{
 		//front
@@ -91,15 +81,11 @@ void Cube::initializeLayout()
 		20, 21, 23,
 		23, 21, 22
 	};
-	float minX, minY, minZ, maxX, maxY, maxZ;
-	for (size_t i = 0; i < positions.size(); i+= 8)
-	{
-
-	}
-	m_vertexBuffer = VertexBuffer(&positions[0], positions.size() * sizeof(float));
-	m_indexBuffer = IndexBuffer(indices, 2 * 3 * 6);
-	m_vertexBufferLayout = VertexBufferLayout(3, 3, 2);
-	m_vertexArray = VertexArray(m_vertexBuffer, m_vertexBufferLayout);
+	VertexBuffer vb(&positions[0], positions.size() * sizeof(float));
+	IndexBuffer ib(indices, 2 * 3 * 6);
+	VertexBufferLayout vbl(3, 3, 2);
+	VertexArray va(vb, vbl);
+	return std::make_pair(ib, va);
 }
 
 bool Cube::intersectRay(Ray& ray)
@@ -112,32 +98,23 @@ bool Cube::intersectRay(Ray& ray)
 
 }*/
 
-void Cube::draw(Shader const& shader, Object::ShaderType shaderType, Matrix4f const& view, Matrix4f const& projection)
+void Cube::draw(Matrix4f const& view, Matrix4f const& projection, unsigned int indexCount)
 {
 	Matrix4f model(1.0f);
-	shader.bind();
-	m_vertexArray.bind();
-	m_indexBuffer.bind();
 	model = Matrix4f::gl_translate(model, m_translation);
 	model = Matrix4f::gl_scale(model, Vector3(m_scale));
 	model = Matrix4f::gl_rotate(model, getRadians(m_degreeAngle), m_axis);
 	keepTrack(model, view, projection);
-	shader.set_uniform_mat_4f("model", model);
-	if (shaderType == Object::ShaderType::LIGHTING)
+	m_shader.set_uniform_mat_4f("view", view);
+	m_shader.set_uniform_mat_4f("projection", projection);
+	m_shader.set_uniform_mat_4f("model", model);
+	if (m_shader.getShaderType() == Shader::ShaderType::LIGHTING)
 	{
 		if (m_isTexture)
-			m_material = Material(shader, m_shininess, "material");
+			m_material = Material(m_shader, m_shininess, "material");
 		else
-			m_material = Material(shader, m_shininess, "material", m_diffuse, m_specular);
+			m_material = Material(m_shader, m_shininess, "material", m_diffuse, m_specular);
 	}
-	glDrawElements(GL_TRIANGLES, m_indexBuffer.getCount(), GL_UNSIGNED_INT, nullptr);
+	glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, nullptr);
 	m_doesModify = false;
 }
-
-VertexBuffer Cube::m_vertexBuffer = VertexBuffer();
-
-VertexBufferLayout Cube::m_vertexBufferLayout = VertexBufferLayout();
-
-VertexArray Cube::m_vertexArray = VertexArray();
-
-IndexBuffer Cube::m_indexBuffer = IndexBuffer();

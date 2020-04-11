@@ -33,8 +33,11 @@ public:
 	float norm() const;
 	Vector3 normalize() const;
 	float get_x();
+	float get_x() const;
 	float get_y();
+	float get_y() const;
 	float get_z();
+	float get_z() const;
 	void set_x(float x);
 	void set_y(float y);
 	void set_z(float z);

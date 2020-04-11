@@ -17,16 +17,17 @@ class Object
 {
 public:
 
-	enum class ShaderType {LAMP, LIGHTING};
+	enum class objectType {PLANE, SPHERE, CUBE};
 
 	enum class Force {GRAVITY, FRICTION};
 
 	Object() = default;
-	Object(Vector3 const& translation, float scale, Vector3 const& diffuse, Vector3 const& specular, float shininess, float mass,
-		Vector3 const& velocity);
-	Object(Vector3 const& translation, float scale, float shininess, float mass, Vector3 const& velocity);
-	Object(Vector3 const& translation, float scale, float mass, Vector3 const& velocity);
+	Object(Shader const& shader, Vector3 const& translation, float scale, Vector3 const& diffuse, Vector3 const& specular, float shininess,
+		float mass, Vector3 const& velocity);
+	Object(Shader const& shader, Vector3 const& translation, float scale, float shininess, float mass, Vector3 const& velocity);
 	float getRadians(float degreeAngle);
+	Shader getShader() const;
+	Shader getShader();
 	Vector3 getTranslation();
 	Vector3 getTranslation() const;
 	void keepTrack(Matrix4f const& model, Matrix4f const& view, Matrix4f const& projection);
@@ -38,9 +39,10 @@ public:
 	void setScale(float scale);
 	void updateVelocityAndPosition(float dt);
 	void setTranslation(Vector3 const& translation);
-	virtual void draw(Shader const& shader, Object::ShaderType shaderType, Matrix4f const& view, Matrix4f const& projection) = 0;
+	virtual void draw(Matrix4f const& view, Matrix4f const& projection, unsigned int indexCount) = 0;
 
 protected:
+	Shader m_shader;
 	bool m_doesModify;
 	Vector4 m_position;
 	Vector3 m_sumForces;

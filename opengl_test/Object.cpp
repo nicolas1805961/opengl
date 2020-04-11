@@ -1,22 +1,16 @@
 #include "Object.h"
 
-Object::Object(Vector3 const& translation, float scale, Vector3 const& diffuse, Vector3 const& specular, float shininess, float mass,
-	Vector3 const& velocity): m_translation(translation), m_scale(scale), m_diffuse(diffuse), m_specular(specular), m_shininess(shininess),
-	m_isTexture(false), m_mass(mass), m_velocity(velocity), m_acceleration(0.0f), m_sumForces(0.0f), m_doesModify(false)
+Object::Object(Shader const& shader, Vector3 const& translation, float scale, Vector3 const& diffuse, Vector3 const& specular, float shininess, float mass,
+	Vector3 const& velocity): m_shader(shader), m_translation(translation), m_scale(scale), m_diffuse(diffuse), m_specular(specular),
+	m_shininess(shininess), m_isTexture(false), m_mass(mass), m_velocity(velocity), m_acceleration(0.0f), m_sumForces(0.0f),
+	m_doesModify(false)
 {
 	m_position = Vector4(0.0f, 0.0f, 0.0f, 1.0f);
 }
 
-Object::Object(Vector3 const& translation, float scale, float shininess, float mass, Vector3 const& velocity)
-	: m_translation(translation), m_scale(scale), m_shininess(shininess), m_isTexture(true), m_mass(mass), m_velocity(velocity), m_acceleration(0.0f),
-	m_sumForces(0.0f), m_doesModify(false)
-{
-	m_position = Vector4(0.0f, 0.0f, 0.0f, 1.0f);
-}
-
-Object::Object(Vector3 const& translation, float scale, float mass, Vector3 const& velocity)
-	: m_translation(translation), m_scale(scale), m_isTexture(true), m_mass(mass), m_velocity(velocity), m_acceleration(0.0f),
-	m_sumForces(0.0f), m_doesModify(false)
+Object::Object(Shader const& shader, Vector3 const& translation, float scale, float shininess, float mass, Vector3 const& velocity)
+	: m_shader(shader), m_translation(translation), m_scale(scale), m_shininess(shininess), m_isTexture(true), m_mass(mass),
+	m_velocity(velocity), m_acceleration(0.0f), m_sumForces(0.0f), m_doesModify(false)
 {
 	m_position = Vector4(0.0f, 0.0f, 0.0f, 1.0f);
 }
@@ -25,6 +19,16 @@ float Object::getRadians(float degreeAngle)
 {
 	float y = M_PI / 180;
 	return degreeAngle * y;
+}
+
+Shader Object::getShader() const
+{
+	return m_shader;
+}
+
+Shader Object::getShader()
+{
+	return m_shader;
 }
 
 Vector3 Object::getTranslation()

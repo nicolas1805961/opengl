@@ -4,6 +4,7 @@ PointLight::PointLight(Shader const& shader, const Vector3& ambient, const Vecto
 	float linear, float quadratic, std::shared_ptr<Object> const& shape) :
 	Light(shader, ambient, diffuse, specular, name), m_shape(shape), m_constant(constant), m_linear(linear), m_quadratic(quadratic)
 {
+	m_shader.bind();
 	m_shader.set_uniform_3f(name + ".ambient", m_ambient[0], m_ambient[1], m_ambient[2]);
 	m_shader.set_uniform_3f(name + ".diffuse", m_diffuse[0], m_diffuse[1], m_diffuse[2]);
 	m_shader.set_uniform_3f(name + ".specular", m_specular[0], m_specular[1], m_specular[2]);

@@ -23,6 +23,22 @@ GLuint IndexBuffer::getCount() const
 	return m_count;
 }
 
+bool operator==(IndexBuffer const& left, IndexBuffer const& right)
+{
+	return left.m_renderer_id == right.m_renderer_id;
+}
+
+
+bool IndexBuffer::operator<(IndexBuffer const& right)
+{
+	return m_renderer_id < right.m_renderer_id;
+}
+
+bool IndexBuffer::operator<(IndexBuffer const& right) const
+{
+	return m_renderer_id < right.m_renderer_id;
+}
+
 IndexBuffer::~IndexBuffer()
 {
 	//glDeleteBuffers(1, &m_renderer_id);

@@ -291,6 +291,28 @@ std::unique_ptr<float[]> Matrix4f::as_array()
     return ptr;
 }
 
+std::unique_ptr<float[]> Matrix4f::as_array() const
+{
+	auto ptr = std::make_unique<float[]>(16);
+	ptr[0] = this->m_matrix[0][0];
+	ptr[1] = this->m_matrix[0][1];
+	ptr[2] = this->m_matrix[0][2];
+	ptr[3] = this->m_matrix[0][3];
+	ptr[4] = this->m_matrix[1][0];
+	ptr[5] = this->m_matrix[1][1];
+	ptr[6] = this->m_matrix[1][2];
+	ptr[7] = this->m_matrix[1][3];
+	ptr[8] = this->m_matrix[2][0];
+	ptr[9] = this->m_matrix[2][1];
+	ptr[10] = this->m_matrix[2][2];
+	ptr[11] = this->m_matrix[2][3];
+	ptr[12] = this->m_matrix[3][0];
+	ptr[13] = this->m_matrix[3][1];
+	ptr[14] = this->m_matrix[3][2];
+	ptr[15] = this->m_matrix[3][3];
+	return ptr;
+}
+
 Matrix4f Matrix4f::inverse(Matrix4f const& m)
 {
 	float x = 1 / m.determinant();

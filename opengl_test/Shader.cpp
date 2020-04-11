@@ -1,6 +1,7 @@
 #include "Shader.h"
 
-Shader::Shader(const std::string& vertex_shader, const std::string& fragment_shader): m_renderer_id(0)
+Shader::Shader(const std::string& vertex_shader, const std::string& fragment_shader, ShaderType const& shaderType)
+	: m_renderer_id(0), m_shaderType(shaderType)
 {
 	m_renderer_id = create_shader(get_shader(vertex_shader), get_shader(fragment_shader));
 }
@@ -10,10 +11,10 @@ void Shader::bind() const
 	glUseProgram(m_renderer_id);
 }
 
-void Shader::unbind() const
+/*void Shader::unbind() const
 {
 	glUseProgram(0);
-}
+}*/
 
 int Shader::get_uniform_location(const std::string& name)
 {
@@ -38,7 +39,18 @@ void Shader::set_uniform_4f(const std::string& name, float v0, float v1, float v
 }
 
 
+void Shader::set_uniform_4f(const std::string& name, float v0, float v1, float v2, float v3) const
+{
+	glUniform4f(get_uniform_location(name), v0, v1, v2, v3);
+}
+
 void Shader::set_uniform_1f(const std::string& name, float v0)
+{
+	glUniform1f(get_uniform_location(name), v0);
+}
+
+
+void Shader::set_uniform_1f(const std::string& name, float v0) const
 {
 	glUniform1f(get_uniform_location(name), v0);
 }
@@ -48,13 +60,19 @@ void Shader::set_uniform_3f(const std::string& name, float v0, float v1, float v
 	glUniform3f(get_uniform_location(name), v0, v1, v2);
 }
 
-void Shader::set_uniform_mat_4f(const std::string& name, Matrix4f& matrix)
+
+void Shader::set_uniform_3f(const std::string& name, float v0, float v1, float v2) const
+{
+	glUniform3f(get_uniform_location(name), v0, v1, v2);
+}
+
+void Shader::set_uniform_mat_4f(const std::string& name, Matrix4f const& matrix)
 {
 	glUniformMatrix4fv(get_uniform_location(name), 1, GL_FALSE, matrix.as_array().get());
 }
 
 
-void Shader::set_uniform_mat_4f(const std::string& name, Matrix4f& matrix) const
+void Shader::set_uniform_mat_4f(const std::string& name, Matrix4f const& matrix) const
 {
 	glUniformMatrix4fv(get_uniform_location(name), 1, GL_FALSE, matrix.as_array().get());
 }
@@ -62,6 +80,38 @@ void Shader::set_uniform_mat_4f(const std::string& name, Matrix4f& matrix) const
 void Shader::set_uniform_1i(const std::string& name, int value)
 {
 	glUniform1i(get_uniform_location(name), value);
+}
+
+
+void Shader::set_uniform_1i(const std::string& name, int value) const
+{
+	glUniform1i(get_uniform_location(name), value);
+}
+
+
+Shader::ShaderType Shader::getShaderType()
+{
+	return m_shaderType;
+}
+
+Shader::ShaderType Shader::getShaderType() const
+{
+	return m_shaderType;
+}
+
+bool Shader::operator<(Shader const& right)
+{
+	return getShaderType() < right.getShaderType();
+}
+
+bool Shader::operator<(Shader const& right) const
+{
+	return getShaderType() < right.getShaderType();
+}
+
+bool operator==(Shader const& left, Shader const& right)
+{
+	return left.m_renderer_id == right.m_renderer_id;
 }
 
 unsigned int Shader::compile_shader(unsigned int type, const std::string& source)

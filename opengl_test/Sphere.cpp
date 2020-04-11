@@ -2,37 +2,23 @@
 
 unsigned int Sphere::m_height = 100;
 unsigned int Sphere::m_width = 100;
-IndexBuffer Sphere::m_indexBuffer = IndexBuffer();
-VertexBuffer Sphere::m_vertexBuffer = VertexBuffer();
-VertexBufferLayout Sphere::m_vertexBufferLayout = VertexBufferLayout();
-VertexArray Sphere::m_vertexArray = VertexArray();
 
-Sphere::Sphere(Vector3 const& diffuse, Vector3 const& specular, float shininess, float mass /*= 1.0f*/,
-	Vector3 const& velocity /*= Vector3(0.0f)*/, Vector3 const& translation /*= Vector3(0.0f)*/, float scale /*= 1.0f*/)
-	: Object(translation, scale, diffuse, specular, shininess, mass, velocity)
+Sphere::Sphere(Shader const& shader, Vector3 const& diffuse, Vector3 const& specular, Vector3 const& translation, float scale /*= 1.0f*/,
+	 float shininess /*= 32.0f*/, float mass /*= 1.0f*/, Vector3 const& velocity /*= Vector3(0.0f)*/)
+	: Object(shader, translation, scale, diffuse, specular, shininess, mass, velocity)
+{}
+
+Sphere::Sphere(Shader const& shader, Vector3 const& translation, float scale /*= 1.0f*/,  float shininess /*= 32.0f*/,
+	float mass /*= 1.0f*/, Vector3 const& velocity /*= Vector3(0.0f)*/)
+	: Object(shader, translation, scale, shininess, mass, velocity)
+{}
+
+std::pair<IndexBuffer, VertexArray> Sphere::initializeLayout()
 {
-
-}
-
-Sphere::Sphere(float shininess, float mass /*= 1.0f*/, Vector3 const& velocity /*= Vector3(0.0f)*/,
-	Vector3 const& translation /*= Vector3(0.0f)*/, float scale /*= 1.0f*/)
-	: Object(translation, scale, shininess, mass, velocity)
-{
-
-}
-
-Sphere::Sphere(float mass /*= 1.0f*/, Vector3 const& velocity /*= Vector3(0.0f)*/, Vector3 const& translation /*= Vector3(0.0f)*/,
-	float scale /*= 1.0f*/) : Object(translation, scale, mass, velocity)
-{
-
-}
-
-void Sphere::initializeLayout()
-{
-	static int callNumber = 0;
+	/*static int callNumber = 0;
 	callNumber++;
 	if (callNumber > 1)
-		return;
+		return std::make_pair(IndexBuffer(), VertexArray());*/
 	std::vector<unsigned int> m_indices;
 	std::vector<float> m_vertices;
 	unsigned int k1;
@@ -64,7 +50,7 @@ void Sphere::initializeLayout()
 		k2 = k1 + m_width + 1;
 		for (size_t j = 0; j < m_width; j++)
 		{
-			if (i != 0)
+			/*if (i != 0)
 			{
 				m_indices.push_back(k1);
 				m_indices.push_back(k2);
@@ -75,15 +61,22 @@ void Sphere::initializeLayout()
 				m_indices.push_back(k1 + 1);
 				m_indices.push_back(k2);
 				m_indices.push_back(k2 + 1);
-			}
+			}*/
+			m_indices.push_back(k1);
+			m_indices.push_back(k2);
+			m_indices.push_back(k1 + 1);
+			m_indices.push_back(k1 + 1);
+			m_indices.push_back(k2);
+			m_indices.push_back(k2 + 1);
 			k1++;
 			k2++;
 		}
 	}
-	m_vertexBuffer = VertexBuffer(&m_vertices[0], sizeof(float) * m_vertices.size());
-	m_vertexBufferLayout = VertexBufferLayout(3, 3);
-	m_indexBuffer = IndexBuffer(&m_indices[0], m_indices.size());
-	m_vertexArray = VertexArray(m_vertexBuffer, m_vertexBufferLayout);
+	VertexBuffer vb(&m_vertices[0], sizeof(float) * m_vertices.size());
+	VertexBufferLayout vbl(3, 3);
+	IndexBuffer ib(&m_indices[0], m_indices.size());
+	VertexArray va(vb, vbl);
+	return std::make_pair(ib, va);
 }
 
 bool Sphere::intersectPlane(Plane const& plane)
@@ -132,23 +125,22 @@ bool Sphere::intersectRay(Ray& ray)
 		return Intersect(false, centerDistance - radiusDistance);
 }*/
 
-void Sphere::draw(Shader const& shader, Object::ShaderType shaderType, Matrix4f const& view, Matrix4f const& projection)
+void Sphere::draw(Matrix4f const& view, Matrix4f const& projection, unsigned int indexCount)
 {
 	Matrix4f model(1.0f);
-	shader.bind();
-	m_vertexArray.bind();
-	m_indexBuffer.bind();
 	model = Matrix4f::gl_translate(model, m_translation);
 	model = Matrix4f::gl_scale(model, Vector3(m_scale));
 	keepTrack(model, view, projection);
-	shader.set_uniform_mat_4f("model", model);
-	if (shaderType == Object::ShaderType::LIGHTING)
+	m_shader.set_uniform_mat_4f("view", view);
+	m_shader.set_uniform_mat_4f("projection", projection);
+	m_shader.set_uniform_mat_4f("model", model);
+	if (m_shader.getShaderType() == Shader::ShaderType::LIGHTING)
 	{
 		if (m_isTexture)
-			m_material = Material(shader, m_shininess, "material");
+			m_material = Material(m_shader, m_shininess, "material");
 		else
-			m_material = Material(shader, m_shininess, "material", m_diffuse, m_specular);
+			m_material = Material(m_shader, m_shininess, "material", m_diffuse, m_specular);
 	}
-	glDrawElements(GL_TRIANGLES, m_indexBuffer.getCount(), GL_UNSIGNED_INT, nullptr);
+	glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, nullptr);
 	m_doesModify = false;
 }

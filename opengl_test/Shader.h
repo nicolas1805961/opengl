@@ -11,19 +11,32 @@
 class Shader
 {
 public:
+
+	enum class ShaderType { LAMP = 1, LIGHTING = 0 };
+
 	Shader() = default;
-	Shader(const std::string& vertex_shader, const std::string& fragment_shader);
+	Shader(const std::string& vertex_shader, const std::string& fragment_shader, ShaderType const& shaderType);
 	void bind() const;
-	void unbind() const;
+	//void unbind() const;
 	void set_uniform_4f(const std::string& name, float v0, float v1, float v2, float v3);
+	void set_uniform_4f(const std::string& name, float v0, float v1, float v2, float v3) const;
 	void set_uniform_1f(const std::string& name, float v0);
+	void set_uniform_1f(const std::string& name, float v0) const;
 	void set_uniform_3f(const std::string& name, float v0, float v1, float v2);
-	void set_uniform_mat_4f(const std::string& name, Matrix4f& matrix);
-	void set_uniform_mat_4f(const std::string& name, Matrix4f& matrix) const;
+	void set_uniform_3f(const std::string& name, float v0, float v1, float v2) const;
+	void set_uniform_mat_4f(const std::string& name, Matrix4f const& matrix);
+	void set_uniform_mat_4f(const std::string& name, Matrix4f const& matrix) const;
 	void set_uniform_1i(const std::string& name, int value);
+	void set_uniform_1i(const std::string& name, int value) const;
+	ShaderType getShaderType();
+	ShaderType getShaderType() const;
+	bool operator<(Shader const& right);
+	bool operator<(Shader const& right) const;
+	friend bool operator==(Shader const& left, Shader const& right);
 	~Shader();
 	
 private:
+	ShaderType m_shaderType;
 	unsigned int create_shader(const std::string& vertex_shader, const std::string& fragment_shader);
 	std::tuple<std::string, std::string> get_shaders(std::string const& filename);
 	std::string get_shader(std::string const& filename);

@@ -144,7 +144,17 @@ float Vector3::get_x()
 	return x;
 }
 
+float Vector3::get_x() const
+{
+	return x;
+}
+
 float Vector3::get_y()
+{
+	return y;
+}
+
+float Vector3::get_y() const
 {
 	return y;
 }
@@ -174,6 +184,11 @@ Vector3 operator-(Vector3 const& lhs, Vector3 const& rhs)
 }
 
 float Vector3::get_z()
+{
+	return z;
+}
+
+float Vector3::get_z() const
 {
 	return z;
 }

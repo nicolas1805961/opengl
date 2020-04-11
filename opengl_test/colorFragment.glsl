@@ -154,7 +154,6 @@ void main()
     {
         result += CalcPointLight( pointLights[i], norm, FragPos, viewDir);
     }
-    
     // Spot light
     result += CalcSpotLight( spotLight, norm, FragPos, viewDir);
     

@@ -29,6 +29,7 @@ public:
 	static Matrix4f gl_perspective(float fovy, float aspect, float near, float far);
 	//static Matrix4f gl_inverse(Matrix4f const& m);
 	std::unique_ptr<float[]> as_array();
+	std::unique_ptr<float[]> as_array() const;
 	static Matrix4f inverse(Matrix4f const& m);
 	Vector3& operator*(Vector3& v);
 	Vector4 operator*(Vector4 const& v);

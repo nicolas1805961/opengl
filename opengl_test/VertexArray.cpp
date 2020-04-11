@@ -21,9 +21,25 @@ void VertexArray::bind() const
 	glBindVertexArray(m_renderer_id);
 }
 
+bool operator==(VertexArray const& left, VertexArray const& right)
+{
+	return left.m_renderer_id == right.m_renderer_id;
+}
+
 void VertexArray::unbind() const
 {
 	glBindVertexArray(0);
+}
+
+
+bool VertexArray::operator<(VertexArray const& rhs)
+{
+	return m_renderer_id < rhs.m_renderer_id;
+}
+
+bool VertexArray::operator<(VertexArray const& rhs) const
+{
+	return m_renderer_id < rhs.m_renderer_id;
 }
 
 VertexArray::~VertexArray()

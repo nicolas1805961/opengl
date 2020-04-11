@@ -5,39 +5,29 @@ Plane::Plane()
 
 }
 
-Plane::Plane(Vector3 const& diffuse, Vector3 const& specular, float shininess, float degreeAngle, Vector3 const& axis,
-	float mass /*= 1.0f*/, Vector3 const& velocity /*= Vector3(0.0f)*/, Vector3 const& translation /*= Vector3(0.0f)*/, float scale /*= 1.0f*/,
+Plane::Plane(Shader const& shader, Vector3 const& diffuse, Vector3 const& specular, float degreeAngle, Vector3 const& axis,
+	Vector3 const& translation, float scale /*= 1.0f*/, float shininess /*= 32.0f*/, float mass /*= 1.0f*/,
+	Vector3 const& velocity /*= Vector3(0.0f)*/, Vector3 const& normal /*= Vector3(0.0f, 1.0f, 0.0f)*/)
+	: Object(shader, translation, scale, diffuse, specular, shininess, mass, velocity), m_degreeAngle(degreeAngle), m_axis(axis)
+{}
+
+Plane::Plane(Shader const& shader, float degreeAngle, Vector3 const& axis, Vector3 const& translation, float scale /*= 1.0f*/,
+	 float shininess /*= 32.0f*/, float mass /*= 1.0f*/, Vector3 const& velocity /*= Vector3(0.0f)*/,
 	Vector3 const& normal /*= Vector3(0.0f, 1.0f, 0.0f)*/)
-	: Object(translation, scale, diffuse, specular, shininess, mass, velocity), m_degreeAngle(degreeAngle), m_axis(axis)
-{
-
-}
-
-Plane::Plane(float shininess, float degreeAngle, Vector3 const& axis, float mass /*= 1.0f*/, Vector3 const& velocity /*= Vector3(0.0f)*/,
-	Vector3 const& translation /*= Vector3(0.0f)*/, float scale /*= 1.0f*/, Vector3 const& normal /*= Vector3(0.0f, 1.0f, 0.0f)*/)
-	: Object(translation, scale, shininess, mass, velocity), m_degreeAngle(degreeAngle), m_axis(axis)
-{
-
-}
-
-Plane::Plane(float degreeAngle, Vector3 const& axis, float mass /*= 1.0f*/, Vector3 const& velocity /*= Vector3(0.0f)*/,
-	Vector3 const& translation /*= Vector3(0.0f)*/, float scale /*= 1.0f*/, Vector3 const& normal /*= Vector3(0.0f, 1.0f, 0.0f)*/)
-	: Object(translation, scale, mass, velocity), m_degreeAngle(degreeAngle), m_axis(axis)
-{
-
-}
+	: Object(shader, translation, scale, shininess, mass, velocity), m_degreeAngle(degreeAngle), m_axis(axis)
+{}
 
 bool Plane::intersectRay(Ray& ray)
 {
 	return false;
 }
 
-void Plane::initializeLayout()
+std::pair<IndexBuffer, VertexArray> Plane::initializeLayout()
 {
-	static int callNumber = 0;
+	/*static int callNumber = 0;
 	callNumber++;
 	if (callNumber > 1)
-		return;
+		return std::make_pair(IndexBuffer(), VertexArray());*/
 	std::vector<float> vertices;
 	std::vector<unsigned int> indices;
 	float halfHeight = m_height / 2;
@@ -70,10 +60,11 @@ void Plane::initializeLayout()
 			indices.push_back(j + i * m_width + m_width + 1);
 		}
 	}
-	m_vertexBuffer = VertexBuffer(&vertices[0], sizeof(float) * vertices.size());
-	m_vertexBufferLayout = VertexBufferLayout(3, 3);
-	m_indexBuffer = IndexBuffer(&indices[0], indices.size());
-	m_vertexArray = VertexArray(m_vertexBuffer, m_vertexBufferLayout);
+	VertexBuffer vb(&vertices[0], sizeof(float) * vertices.size());
+	VertexBufferLayout vbl(3, 3);
+	IndexBuffer ib(&indices[0], indices.size());
+	VertexArray va(vb, vbl);
+	return std::make_pair(ib, va);
 }
 
 Vector3 Plane::getNormal()
@@ -86,36 +77,27 @@ Vector3 Plane::getNormal() const
 	return m_normal;
 }
 
-void Plane::draw(Shader const& shader, Object::ShaderType shaderType, Matrix4f const& view, Matrix4f const& projection)
+void Plane::draw(Matrix4f const& view, Matrix4f const& projection, unsigned int indexCount)
 {
 	Matrix4f model(1.0f);
-	shader.bind();
-	m_vertexArray.bind();
-	m_indexBuffer.bind();
 	model = Matrix4f::gl_translate(model, m_translation);
 	model = Matrix4f::gl_scale(model, Vector3(m_scale));
 	model = Matrix4f::gl_rotate(model, getRadians(m_degreeAngle), m_axis);
-	shader.set_uniform_mat_4f("model", model);
+	m_shader.set_uniform_mat_4f("view", view);
+	m_shader.set_uniform_mat_4f("projection", projection);
+	m_shader.set_uniform_mat_4f("model", model);
 	keepTrack(model, view, projection);
-	if (shaderType == Object::ShaderType::LIGHTING)
+	if (m_shader.getShaderType() == Shader::ShaderType::LIGHTING)
 	{
 		if (m_isTexture)
-			m_material = Material(shader, m_shininess, "material");
+			m_material = Material(m_shader, m_shininess, "material");
 		else
-			m_material = Material(shader, m_shininess, "material", m_diffuse, m_specular);
+			m_material = Material(m_shader, m_shininess, "material", m_diffuse, m_specular);
 	}
-	glDrawElements(GL_TRIANGLES, m_indexBuffer.getCount(), GL_UNSIGNED_INT, nullptr);
+	glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, nullptr);
 	m_doesModify = false;
 }
 
 unsigned int Plane::m_height = 100.0f;
 
 unsigned int Plane::m_width = 100.0f;
-
-VertexBuffer Plane::m_vertexBuffer = VertexBuffer();
-
-VertexBufferLayout Plane::m_vertexBufferLayout = VertexBufferLayout();
-
-VertexArray Plane::m_vertexArray = VertexArray();
-
-IndexBuffer Plane::m_indexBuffer = IndexBuffer();

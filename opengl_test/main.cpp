@@ -11,7 +11,6 @@
 #include "VertexBuffer.h"
 #include "VertexArray.h"
 #include "Shader.h"
-#include "Renderer.h"
 #include "Texture.h"
 #include "Matrix4f.h"
 #include "Camera.h"
@@ -86,7 +85,7 @@ void APIENTRY glDebugCallback(GLenum source, GLenum type, GLuint id, GLenum seve
 	printf("glDebugMessage:\n%s \n type = %s source = %s severity = %s\n", message, msgType.c_str(), msgSource.c_str(), msgSeverity.c_str());
 }
 
-Objects objects(10);
+Objects objects(7);
 std::unique_ptr<bool[]> keys = std::make_unique<bool[]>(256);
 std::unique_ptr<bool[]> keysSpecial = std::make_unique<bool[]>(256);
 Camera camera(Vector3(0.0f, 0.0f, 3.0f));
@@ -150,34 +149,17 @@ void keyOperationSpecial(void)
 
 void look(int x, int y)
 {
-	/*if (firstMouse)
+	if (firstMouse)
 	{
 		lastX = x;
 		lastY = y;
 		firstMouse = false;
-	}*/
+	}
 	GLfloat deltaX = x - lastX;
 	GLfloat deltaY = lastY - y;
 	lastX = x;
 	lastY = y;
 	camera.ProcessMouseMovement(deltaX, deltaY);
-}
-
-bool trace(Ray& ray)
-{
-	for (auto const& it : objects.getObjects())
-	{
-		if (it.second->intersectRay(ray))
-		{
-			if (ray.get_t_distance() < ray.get_nearest())
-			{
-				ray.set_nearest(ray.get_t_distance());
-				ray.set_hit(it.second);
-			}
-		}
-	}
-	ray.set_t_distance(ray.get_nearest());
-	return (ray.get_hit() != nullptr);
 }
 
 void processIntersection(Vector3 const& currentMousePosition, Vector3 const& lastMousePosition, Ray& ray)
@@ -198,7 +180,7 @@ void motionFunction(int x, int y)
 	Vector3 mousePosition = camera.get3dMousePosition(x, y);
 	static Vector3 lastMousePosition = mousePosition;
 	Ray ray(camera.GetPosition(), (mousePosition - camera.GetPosition()).normalize());
-	if (trace(ray) && isFirstHit)
+	if (objects.trace(ray) && isFirstHit)
 	{
 		if (doesIntersect && lastRay.get_hit() != ray.get_hit())
 		{
@@ -238,7 +220,7 @@ void click(int button, int state, int x, int y)
 	{
 		Vector3 mousePosition = camera.get3dMousePosition(x, y);
 		Ray ray(camera.GetPosition(), (mousePosition - camera.GetPosition()).normalize());
-		if (trace(ray))
+		if (objects.trace(ray))
 			isFirstHit = true;
 		else
 			isFirstHit = false;
@@ -255,8 +237,10 @@ void mouseWheel(int wheel, int direction, int x, int y)
 void display() {
 	static unsigned int callNumber = 0;
 	callNumber++;
-	Renderer renderer;
-	renderer.clear();
+	static auto sphereData = Sphere::initializeLayout();
+	static auto cubeData = Cube::initializeLayout();
+	static auto planeData = Plane::initializeLayout();
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	//lightPosition[0] -= 0.001f;
 	//lightPosition[2] -= 0.001f;
 	glEnable(GL_DEPTH_TEST);
@@ -289,106 +273,93 @@ void display() {
     /*glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);*/
 	
-	Shader lampShader("lampVertex.glsl", "lampFragment.glsl");
-	Shader lightingShader("colorVertex.glsl", "colorFragment.glsl");
+	static Shader lampShader("lampVertex.glsl", "lampFragment.glsl", Shader::ShaderType::LAMP);
+	static Shader lightingShader("colorVertex.glsl", "colorFragment.glsl", Shader::ShaderType::LIGHTING);
     
-    lightingShader.bind();
-	Sphere::initializeLayout();
-	Cube::initializeLayout();
-	Plane::initializeLayout();
 	//directional light
-	DirectionalLight directionalLight(lightingShader, Vector3(0.05f, 0.05f, 0.05f), Vector3(0.4f, 0.4f, 0.4f), Vector3(0.5f, 0.5f, 0.5f),
-		"dirLight", Vector3(-0.2f, -1.0f, -0.3f));
+    lightingShader.bind();
+	DirectionalLight directionalLight(lightingShader, Vector3(0.05f, 0.05f, 0.05f), Vector3(0.8f, 0.8f, 0.8f), Vector3(0.5f, 0.5f, 0.5f),
+		"dirLight", Vector3(0.0f, -10.0f, 0.0f));
 	//point light
-	PointLight pointLight1(lightingShader, Vector3(0.05f, 0.05f, 0.05f), Vector3(0.8f, 0.8f, 0.8f), Vector3(4.0f, 4.0f, 4.0f),
-		"pointLights[0]", 1.0f, 0.09f, 0.032f, std::make_shared<Sphere>());
-	PointLight pointLight2(lightingShader, Vector3(0.05f, 0.05f, 0.05f), Vector3(0.8f, 0.8f, 0.8f), Vector3(4.0f, 4.0f, 4.0f),
-		"pointLights[1]", 1.0f, 0.09f, 0.032f, std::make_shared<Sphere>());
-	PointLight pointLight3(lightingShader, Vector3(0.05f, 0.05f, 0.05f), Vector3(0.8f, 0.8f, 0.8f), Vector3(4.0f, 4.0f, 4.0f),
-		"pointLights[2]", 1.0f, 0.09f, 0.032f, std::make_shared<Sphere>());
-	PointLight pointLight4(lightingShader, Vector3(0.05f, 0.05f, 0.05f), Vector3(0.8f, 0.8f, 0.8f), Vector3(4.0f, 4.0f, 4.0f), 
-		"pointLights[3]", 1.0f, 0.09f, 0.032f, std::make_shared<Sphere>());
+	PointLight pointLight1(lightingShader, Vector3(0.05f, 0.05f, 0.05f), Vector3(0.8f, 0.8f, 0.8f), Vector3(1.0f, 1.0f, 1.0f),
+		"pointLights[0]", 1.0f, 0.09f, 0.032f, std::make_shared<Sphere>(lampShader, Vector3(0.7f, 0.2f, 2.0f), 0.05f));
+	PointLight pointLight2(lightingShader, Vector3(0.05f, 0.05f, 0.05f), Vector3(0.8f, 0.8f, 0.8f), Vector3(1.0f, 1.0f, 1.0f),
+		"pointLights[1]", 1.0f, 0.09f, 0.032f, std::make_shared<Sphere>(lampShader, Vector3(2.3f, -3.3f, -4.0f), 0.05f));
+	PointLight pointLight3(lightingShader, Vector3(0.05f, 0.05f, 0.05f), Vector3(0.8f, 0.8f, 0.8f), Vector3(1.0f, 1.0f, 1.0f),
+		"pointLights[2]", 1.0f, 0.09f, 0.032f, std::make_shared<Sphere>(lampShader, Vector3(-4.0f, 2.0f, -12.0f), 0.05f));
+	PointLight pointLight4(lightingShader, Vector3(0.05f, 0.05f, 0.05f), Vector3(0.8f, 0.8f, 0.8f), Vector3(1.0f, 1.0f, 1.0f),
+		"pointLights[3]", 1.0f, 0.09f, 0.032f, std::make_shared<Sphere>(lampShader, Vector3(0.0f, 0.0f, -3.0f), 0.05f));
 	//spotlight
 	SpotLight spotLight(lightingShader, Vector3(0.0f, 0.0f, 0.0f), Vector3(1.0f, 1.0f, 1.0f), Vector3(1.0f, 1.0f, 1.0f), "spotLight",
 		Vector3(camera.GetPosition().get_x(), camera.GetPosition().get_y(), camera.GetPosition().get_z()),
 		Vector3(camera.getFront().get_x(), camera.getFront().get_y(), camera.getFront().get_z()), cosf(camera.get_radians(12.5f)),
 		cosf(camera.get_radians(15.0f)), 1.0f, 0.09f, 0.032f);
 
+	Plane plane1(lightingShader, Vector3(1.0f, 0.0f, 0.0f), Vector3(0.1f, 0.1f, 0.1f), 0.0f, Vector3(1.0f, 0.3f, 0.5f),
+		Vector3(0.0f, -10.0f, 0.0f), 20.0f);
+	Sphere sphere1(lightingShader, Vector3(0.0f, 0.0f, 1.0f), Vector3(0.1f, 0.1f, 0.1f), Vector3(-1.7f, 3.0f, -7.5f));
+	Sphere sphere2(lightingShader, Vector3(0.0f, 1.0f, 0.0f), Vector3(0.1f, 0.1f, 0.1f), Vector3(1.3f, -2.0f, -2.5f));
+
     lightingShader.set_uniform_3f("viewPos", camera.GetPosition().get_x(), camera.GetPosition().get_y(), camera.GetPosition().get_z());
 
-	Matrix4f projection = camera.getProjectionMatrix();
+	objects.addObject(sphereData, std::make_shared<Sphere>(sphere1));
+	objects.addObject(sphereData, std::make_shared<Sphere>(sphere2));
+	objects.addObject(planeData, std::make_shared<Plane>(plane1));
+	objects.addObject(sphereData, pointLight1.getShape());
+	objects.addObject(sphereData, pointLight2.getShape());
+	objects.addObject(sphereData, pointLight3.getShape());
+	objects.addObject(sphereData, pointLight4.getShape());
+
+	objects.draw(camera.get_view_matrix(), camera.getProjectionMatrix());
+	//lightingShader.unbind();
+	/*Matrix4f projection = camera.getProjectionMatrix();
 	Matrix4f view = camera.get_view_matrix();
     lightingShader.set_uniform_mat_4f("view", view);
-    lightingShader.set_uniform_mat_4f("projection", projection);
+    lightingShader.set_uniform_mat_4f("projection", projection);*/
 
-	Plane plane1(Vector3(1.0f, 0.0f, 0.0f), Vector3(0.2f, 0.2f, 0.2f), 32.0f, 20.0f, Vector3(1.0f, 0.3f, 0.5f));
-	plane1.setScale(20.0f);
-	plane1.setTranslation(Vector3(0.0f, -10.0f, 0.0f));
-	if (callNumber <= 1)
-	{
-		/*Cube cube1(Vector3(0.0f, 0.0f, 1.0f), Vector3(0.2f, 0.2f, 0.2f), 32.0f, Vector3(0.0f, 0.0f, 0.0f), 1.0f, 20.0f,
-			Vector3(1.0f, 0.3f, 0.5f));
-		Cube cube2(Vector3(0.0f, 1.0f, 0.0f), Vector3(0.2f, 0.2f, 0.2f), 32.0f, Vector3(2.0f, 5.0f, -15.0f), 0.5f, 40.0f,
-			Vector3(1.0f, 0.3f, 0.5f));
-		Cube cube3(Vector3(1.0f, 0.0f, 0.0f), Vector3(0.2f, 0.2f, 0.2f), 32.0f, Vector3(-1.5f, -2.2f, -2.5f), 0.75f, 60.0f,
-			Vector3(1.0f, 0.3f, 0.5f));
-		Cube cube4(Vector3(0.3f, 0.2f, 0.75f), Vector3(0.2f, 0.2f, 0.2f), 32.0f, Vector3(-3.8f, -2.0f, -12.3f), 1.2f, 80.0f,
-			Vector3(1.0f, 0.3f, 0.5f));
-		Cube cube5(Vector3(0.4f, 0.75f, 0.85f), Vector3(0.2f, 0.2f, 0.2f), 32.0f, Vector3(2.4f, -0.4f, -3.5f), 0.25f, 100.0f,
-			Vector3(1.0f, 0.3f, 0.5f));*/
+	/*Cube cube1(Vector3(0.0f, 0.0f, 1.0f), Vector3(0.2f, 0.2f, 0.2f), 32.0f, Vector3(0.0f, 0.0f, 0.0f), 1.0f, 20.0f,
+		Vector3(1.0f, 0.3f, 0.5f));
+	Cube cube2(Vector3(0.0f, 1.0f, 0.0f), Vector3(0.2f, 0.2f, 0.2f), 32.0f, Vector3(2.0f, 5.0f, -15.0f), 0.5f, 40.0f,
+		Vector3(1.0f, 0.3f, 0.5f));
+	Cube cube3(Vector3(1.0f, 0.0f, 0.0f), Vector3(0.2f, 0.2f, 0.2f), 32.0f, Vector3(-1.5f, -2.2f, -2.5f), 0.75f, 60.0f,
+		Vector3(1.0f, 0.3f, 0.5f));
+	Cube cube4(Vector3(0.3f, 0.2f, 0.75f), Vector3(0.2f, 0.2f, 0.2f), 32.0f, Vector3(-3.8f, -2.0f, -12.3f), 1.2f, 80.0f,
+		Vector3(1.0f, 0.3f, 0.5f));
+	Cube cube5(Vector3(0.4f, 0.75f, 0.85f), Vector3(0.2f, 0.2f, 0.2f), 32.0f, Vector3(2.4f, -0.4f, -3.5f), 0.25f, 100.0f,
+		Vector3(1.0f, 0.3f, 0.5f));*/
 
-		//Vector3(-1.7f, 3.0f, -7.5f)
-		Sphere sphere1(Vector3(0.0f, 0.0f, 1.0f), Vector3(0.2f, 0.2f, 0.2f), 32.0f);
-		sphere1.setTranslation(Vector3(-1.7f, 3.0f, -7.5f));
-		Sphere sphere2(Vector3(0.0f, 1.0f, 0.0f), Vector3(0.2f, 0.2f, 0.2f), 32.0f);
-		sphere2.setTranslation(Vector3(1.3f, -2.0f, -2.5f));
-		/*Sphere sphere3(Vector3(1.0f, 0.0f, 0.0f), Vector3(0.2f, 0.2f, 0.2f), 32.0f, Vector3(1.5f, 2.0f, -2.5f), 0.5f);
-		Sphere sphere4(Vector3(0.3f, 0.2f, 0.75f), Vector3(0.2f, 0.2f, 0.2f), 32.0f, Vector3(1.5f, 0.2f, -1.5f), 1.2f);
-		Sphere sphere5(Vector3(0.4f, 0.75f, 0.85f), Vector3(0.2f, 0.2f, 0.2f), 32.0f, Vector3(-1.3f, 1.0f, -1.5f), 0.25f);*/
+	//Vector3(-1.7f, 3.0f, -7.5f)
 
-		/*objects.addObject("cube1", std::make_shared<Cube>(cube1));
-		objects.addObject("cube2", std::make_shared<Cube>(cube2));
-		objects.addObject("cube3", std::make_shared<Cube>(cube3));
-		objects.addObject("cube4", std::make_shared<Cube>(cube4));
-		objects.addObject("cube5", std::make_shared<Cube>(cube5));*/
-		objects.addObject("sphere1", std::make_shared<Sphere>(sphere1));
-		objects.addObject("sphere2", std::make_shared<Sphere>(sphere2));
-		/*objects.addObject("sphere3", std::make_shared<Sphere>(sphere3));
-		objects.addObject("sphere4", std::make_shared<Sphere>(sphere4));
-		objects.addObject("sphere5", std::make_shared<Sphere>(sphere5));*/
-	}
+	/*Sphere sphere3(Vector3(1.0f, 0.0f, 0.0f), Vector3(0.2f, 0.2f, 0.2f), 32.0f, Vector3(1.5f, 2.0f, -2.5f), 0.5f);
+	Sphere sphere4(Vector3(0.3f, 0.2f, 0.75f), Vector3(0.2f, 0.2f, 0.2f), 32.0f, Vector3(1.5f, 0.2f, -1.5f), 1.2f);
+	Sphere sphere5(Vector3(0.4f, 0.75f, 0.85f), Vector3(0.2f, 0.2f, 0.2f), 32.0f, Vector3(-1.3f, 1.0f, -1.5f), 0.25f);*/
 
-	pointLight1.getShape()->setScale(0.05f);
-	pointLight2.getShape()->setScale(0.05f);
-	pointLight3.getShape()->setScale(0.05f);
-	pointLight4.getShape()->setScale(0.05f);
+	/*objects.addObject("cube1", std::make_shared<Cube>(cube1));
+	objects.addObject("cube2", std::make_shared<Cube>(cube2));
+	objects.addObject("cube3", std::make_shared<Cube>(cube3));
+	objects.addObject("cube4", std::make_shared<Cube>(cube4));
+	objects.addObject("cube5", std::make_shared<Cube>(cube5));*/
+	/*objects.addObject(sphereData, std::make_shared<Sphere>(sphere1));
+	objects.addObject(sphereData, std::make_shared<Sphere>(sphere2));
+	objects.addObject(planeData, std::make_shared<Plane>(plane1));
+	objects.addObject(sphereData, pointLight1.getShape());
+	objects.addObject(sphereData, pointLight2.getShape());
+	objects.addObject(sphereData, pointLight3.getShape());
+	objects.addObject(sphereData, pointLight4.getShape());*/
+	/*objects.addObject("sphere3", std::make_shared<Sphere>(sphere3));
+	objects.addObject("sphere4", std::make_shared<Sphere>(sphere4));
+	objects.addObject("sphere5", std::make_shared<Sphere>(sphere5));*/
 
-	pointLight1.getShape()->setTranslation(Vector3(0.7f, 0.2f, 2.0f));
-	pointLight2.getShape()->setTranslation(Vector3(2.3f, -3.3f, -4.0f));
-	pointLight3.getShape()->setTranslation(Vector3(-4.0f, 2.0f, -12.0f));
-	pointLight4.getShape()->setTranslation(Vector3(0.0f, 0.0f, -3.0f));
-
-	plane1.draw(lightingShader, Object::ShaderType::LIGHTING, view, projection);
-	/*objects.getObjects()["cube1"]->draw(lightingShader, Object::ShaderType::LIGHTING);
-	objects.getObjects()["cube2"]->draw(lightingShader, Object::ShaderType::LIGHTING);
-	objects.getObjects()["cube3"]->draw(lightingShader, Object::ShaderType::LIGHTING);
-	objects.getObjects()["cube4"]->draw(lightingShader, Object::ShaderType::LIGHTING);
-	objects.getObjects()["cube5"]->draw(lightingShader, Object::ShaderType::LIGHTING);*/
-	objects.getObjects()["sphere1"]->draw(lightingShader, Object::ShaderType::LIGHTING, view, projection);
-	objects.getObjects()["sphere2"]->draw(lightingShader, Object::ShaderType::LIGHTING, view, projection);
-	/*objects.getObjects()["sphere3"]->draw(lightingShader, Object::ShaderType::LIGHTING);
-	objects.getObjects()["sphere4"]->draw(lightingShader, Object::ShaderType::LIGHTING);
-	objects.getObjects()["sphere5"]->draw(lightingShader, Object::ShaderType::LIGHTING);*/
-	lightingShader.unbind();
+	/*lightingShader.unbind();
 
 	lampShader.bind();
 	lampShader.set_uniform_mat_4f("view", view);
-	lampShader.set_uniform_mat_4f("projection", projection);
+	lampShader.set_uniform_mat_4f("projection", projection);*/
 	/*pointLight1.getShape()->draw(lampShader, Object::ShaderType::LAMP, view, projection);
 	pointLight2.getShape()->draw(lampShader, Object::ShaderType::LAMP, view, projection);
 	pointLight3.getShape()->draw(lampShader, Object::ShaderType::LAMP, view, projection);
 	pointLight4.getShape()->draw(lampShader, Object::ShaderType::LAMP, view, projection);*/
-	lampShader.unbind();
+	//lampShader.unbind();
 
 	glEnable(GL_DEBUG_OUTPUT);
 	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);

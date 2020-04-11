@@ -9,6 +9,9 @@ public:
 	void bind() const;
 	void unbind() const;
 	GLuint getCount() const;
+	friend bool operator==(IndexBuffer const& left, IndexBuffer const& right);
+	bool operator<(IndexBuffer const& right);
+	bool operator<(IndexBuffer const& right) const;
 	~IndexBuffer();
 
 private:
