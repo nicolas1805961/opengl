@@ -22,9 +22,13 @@ public:
 	enum class Force {GRAVITY, FRICTION};
 
 	Object() = default;
-	Object(Shader const& shader, Vector3 const& translation, float scale, Vector3 const& diffuse, Vector3 const& specular, float shininess,
-		float mass, Vector3 const& velocity);
-	Object(Shader const& shader, Vector3 const& translation, float scale, float shininess, float mass, Vector3 const& velocity);
+	Object(Shader const& shader, Vector3 const& translation, float scale, Vector3 const& diffuse, Vector3 const& specular,
+		bool light = false, float shininess = 32.0f, float mass = 1.0f, Vector3 const& velocity = Vector3(0.0f), bool doesModify = false,
+		bool isTexture = false, Vector3 const& acceleration = Vector3(0.0f), Vector3 const& sumForces = Vector3(0.0f),
+		Vector4 const& position = Vector4(0.0f, 0.0f, 0.0f, 1.0f));
+	Object(Shader const& shader, Vector3 const& translation, float scale, bool light = false, float shininess = 32.0f, float mass = 1.0f,
+		Vector3 const& velocity = Vector3(0.0f), bool doesModify = false, bool isTexture = false, Vector3 const& acceleration = Vector3(0.0f),
+		Vector3 const& sumForces = Vector3(0.0f), Vector4 const& position = Vector4(0.0f, 0.0f, 0.0f, 1.0f));
 	float getRadians(float degreeAngle);
 	Shader getShader() const;
 	Shader getShader();
@@ -34,6 +38,8 @@ public:
 	virtual bool intersectRay(Ray &ray) = 0;
 	//virtual bool intersectRay(int x, int y, Camera const& camera) = 0;
 	float getScale();
+	bool isLight();
+	bool isLight() const;
 	void addForce(Force force);
 	void setColor(Vector3 const& color);
 	void setScale(float scale);
@@ -42,6 +48,7 @@ public:
 	virtual void draw(Matrix4f const& view, Matrix4f const& projection, unsigned int indexCount) = 0;
 
 protected:
+	bool m_light;
 	Shader m_shader;
 	bool m_doesModify;
 	Vector4 m_position;

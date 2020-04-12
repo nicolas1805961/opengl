@@ -14,9 +14,9 @@ class Cube: public Object
 public:
 	Cube();
 	Cube(Shader const& shader, Vector3 const& diffuse, Vector3 const& specular, float degreeAngle, Vector3 const& axis, 
-		Vector3 const& translation, float scale = 1.0f, float shininess = 32.0f, float mass = 1.0f, Vector3 const& velocity = 0.0f);
-	Cube(Shader const& shader, float degreeAngle, Vector3 const& axis, Vector3 const& translation, float scale = 1.0f,
-		float shininess = 32.0f, float mass = 1.0f, Vector3 const& velocity = 0.0f);
+		Vector3 const& translation, bool light = false, float scale = 1.0f, float shininess = 32.0f, float mass = 1.0f, Vector3 const& velocity = Vector3(0.0f));
+	Cube(Shader const& shader, float degreeAngle, Vector3 const& axis, Vector3 const& translation, bool light = false, float scale = 1.0f,
+		float shininess = 32.0f, float mass = 1.0f, Vector3 const& velocity = Vector3(0.0f));
 	static std::pair<IndexBuffer, VertexArray> initializeLayout();
 	bool intersect(Objects const& objects);
 	bool intersectRay(Ray& ray);

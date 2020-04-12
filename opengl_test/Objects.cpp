@@ -1,43 +1,43 @@
 #include "Objects.h"
 
+int Objects::m_placesLeft = 7;
+
 Objects::Objects(unsigned int maxSize): m_maxSize(maxSize)
 {
-	m_objects = std::map<Shader, std::map<std::pair<IndexBuffer, VertexArray>, std::vector<std::shared_ptr<Object>>, comparePair>>();
+	m_objects = Objects::myMaps();
 }
 
-void Objects::addObject(std::pair<IndexBuffer, VertexArray> const& pair, std::shared_ptr<Object> const& object)
+void Objects::addObject(std::pair<IndexBuffer, VertexArray> const& pair, std::shared_ptr<Object> const& object, std::string const& name,
+	bool night)
 {
-	static unsigned int callNumber = 0;
-	callNumber++;
-	if (callNumber > m_maxSize)
+	if (m_placesLeft <= 0)
 		return;
-	m_objects[object->getShader()][pair].push_back(object);
+	if (!night && object->isLight())
+		return;
+	auto lastMap = m_objects[object->getShader()][pair];
+	if (lastMap.find(name) == lastMap.end())
+	{
+		m_placesLeft--;
+		m_objects[object->getShader()][pair][name] = object;
+	}
 }
 
-std::map<Shader, std::map<std::pair<IndexBuffer, VertexArray>, std::vector<std::shared_ptr<Object>>, comparePair>> Objects::getObjects()
+Objects::myMaps Objects::getObjects()
 {
 	return m_objects;
 }
 
-void Objects::draw(Matrix4f const& view, Matrix4f const& projection) const
+void Objects::draw(Matrix4f const& view, Matrix4f const& projection, bool night)
 {
-	for (auto it1 : m_objects)
+	if (!night)
 	{
-		it1.first.bind();
-		for (auto const& it2 : it1.second)
+		auto it = std::find_if(m_objects.begin(), m_objects.end(), [](auto x) {return x.first.getShaderType() == Shader::ShaderType::LAMP; });
+		if (it != m_objects.end())
 		{
-			it2.first.second.bind();
-			it2.first.first.bind();
-			for (auto const& it3 : it2.second)
-			{
-				it3->draw(view, projection, it2.first.first.getCount());
-			}
+			m_placesLeft += getSizeShaderMap(it);
+			m_objects.erase(it->first);
 		}
 	}
-}
-
-void Objects::draw(Matrix4f const& view, Matrix4f const& projection)
-{
 	for (auto it1 : m_objects)
 	{
 		it1.first.bind();
@@ -47,7 +47,7 @@ void Objects::draw(Matrix4f const& view, Matrix4f const& projection)
 			it2.first.first.bind();
 			for (auto const& it3 : it2.second)
 			{
-				it3->draw(view, projection, it2.first.first.getCount());
+				it3.second->draw(view, projection, it2.first.first.getCount());
 			}
 		}
 	}
@@ -58,6 +58,51 @@ void Objects::clear()
 	m_objects.clear();
 }
 
+unsigned int Objects::getSize()
+{
+	unsigned int size = 0;
+	for (auto it1 : m_objects)
+	{
+		for (auto const& it2 : it1.second)
+		{
+			for (auto const& it3 : it2.second)
+			{
+				size++;
+			}
+		}
+	}
+	return size;
+}
+
+unsigned int Objects::getSize() const
+{
+	unsigned int size = 0;
+	for (auto it1 : m_objects)
+	{
+		for (auto const& it2 : it1.second)
+		{
+			for (auto const& it3 : it2.second)
+			{
+				size++;
+			}
+		}
+	}
+	return size;
+}
+
+unsigned int Objects::getSizeShaderMap(myMaps::iterator const& it)
+{
+	unsigned int size = 0;
+	for (auto const& it2: it->second)
+	{
+		for (auto const& it3: it2.second)
+		{
+			size++;
+		}
+	}
+	return size;
+}
+
 bool Objects::trace(Ray& ray)
 {
 	for (auto const& it1 : m_objects)
@@ -66,12 +111,12 @@ bool Objects::trace(Ray& ray)
 		{
 			for (auto const& it3 : it2.second)
 			{
-				if (it3->intersectRay(ray))
+				if (it3.second->intersectRay(ray))
 				{
 					if (ray.get_t_distance() < ray.get_nearest())
 					{
 						ray.set_nearest(ray.get_t_distance());
-						ray.set_hit(it3);
+						ray.set_hit(it3.second);
 					}
 				}
 			}

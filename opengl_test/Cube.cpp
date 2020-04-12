@@ -6,14 +6,14 @@ Cube::Cube() : m_degreeAngle(1.0f), m_axis(1.0f)
 }
 
 Cube::Cube(Shader const& shader, Vector3 const& diffuse, Vector3 const& specular, float degreeAngle, Vector3 const& axis,
-	Vector3 const& translation, float scale /*= 1.0f*/, float shininess /*= 32.0f*/, float mass /*= 1.0f*/,
+	Vector3 const& translation, bool light /*= false*/, float scale /*= 1.0f*/, float shininess /*= 32.0f*/, float mass /*= 1.0f*/,
 	Vector3 const& velocity /*= 0.0f*/)
-	: Object(shader, translation, scale, diffuse, specular, shininess, mass, velocity), m_degreeAngle(degreeAngle), m_axis(axis)
+	: Object(shader, translation, scale, diffuse, specular, light), m_degreeAngle(degreeAngle), m_axis(axis)
 {}
 
-Cube::Cube(Shader const& shader, float degreeAngle, Vector3 const& axis, Vector3 const& translation, float scale /*= 1.0f*/,
+Cube::Cube(Shader const& shader, float degreeAngle, Vector3 const& axis, Vector3 const& translation, bool light /*= false*/, float scale /*= 1.0f*/,
 	float shininess /*= 32.0f*/, float mass /*= 1.0f*/, Vector3 const& velocity /*= 0.0f*/)
-	: Object(shader, translation, scale, shininess, mass, velocity), m_degreeAngle(degreeAngle), m_axis(axis)
+	: Object(shader, translation, scale, light), m_degreeAngle(degreeAngle), m_axis(axis)
 {}
 
 std::pair<IndexBuffer, VertexArray> Cube::initializeLayout()

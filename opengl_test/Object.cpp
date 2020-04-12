@@ -1,19 +1,18 @@
 #include "Object.h"
 
-Object::Object(Shader const& shader, Vector3 const& translation, float scale, Vector3 const& diffuse, Vector3 const& specular, float shininess, float mass,
-	Vector3 const& velocity): m_shader(shader), m_translation(translation), m_scale(scale), m_diffuse(diffuse), m_specular(specular),
-	m_shininess(shininess), m_isTexture(false), m_mass(mass), m_velocity(velocity), m_acceleration(0.0f), m_sumForces(0.0f),
-	m_doesModify(false)
-{
-	m_position = Vector4(0.0f, 0.0f, 0.0f, 1.0f);
-}
+Object::Object(Shader const& shader, Vector3 const& translation, float scale, Vector3 const& diffuse, Vector3 const& specular, bool light,
+	float shininess, float mass, Vector3 const& velocity, bool doesModify, bool isTexture, Vector3 const& acceleration,
+	Vector3 const& sumForces, Vector4 const& position): m_shader(shader), m_translation(translation), m_scale(scale), m_diffuse(diffuse),
+	m_specular(specular), m_shininess(shininess), m_isTexture(isTexture), m_mass(mass), m_velocity(velocity), m_acceleration(acceleration),
+	m_sumForces(sumForces), m_doesModify(doesModify), m_light(light), m_position(position)
+{}
 
-Object::Object(Shader const& shader, Vector3 const& translation, float scale, float shininess, float mass, Vector3 const& velocity)
-	: m_shader(shader), m_translation(translation), m_scale(scale), m_shininess(shininess), m_isTexture(true), m_mass(mass),
-	m_velocity(velocity), m_acceleration(0.0f), m_sumForces(0.0f), m_doesModify(false)
-{
-	m_position = Vector4(0.0f, 0.0f, 0.0f, 1.0f);
-}
+Object::Object(Shader const& shader, Vector3 const& translation, float scale, bool light, float shininess, float mass, Vector3 const& velocity,
+	bool doesModify, bool isTexture, Vector3 const& acceleration, Vector3 const& sumForces, Vector4 const& position)
+	: m_shader(shader), m_translation(translation), m_scale(scale), m_shininess(shininess), m_isTexture(isTexture), m_mass(mass),
+	m_velocity(velocity), m_acceleration(acceleration), m_sumForces(sumForces), m_doesModify(doesModify), m_light(light),
+	m_position(position)
+{}
 
 float Object::getRadians(float degreeAngle)
 {
@@ -55,6 +54,16 @@ void Object::keepTrack(Matrix4f const& model, Matrix4f const& view, Matrix4f con
 float Object::getScale()
 {
 	return m_scale;
+}
+
+bool Object::isLight()
+{
+	return m_light;
+}
+
+bool Object::isLight() const
+{
+	return m_light;
 }
 
 void Object::addForce(Force force)

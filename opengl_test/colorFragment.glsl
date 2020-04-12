@@ -48,11 +48,13 @@ uniform DirLight dirLight;
 uniform PointLight pointLights[4];
 uniform SpotLight spotLight;
 uniform Material material;
+uniform vec4 fogColor;
 
 out vec4 color;
 
 in vec3 Normal;
 in vec3 FragPos;
+in float visibility;
 
 uniform vec3 viewPos;
 
@@ -157,5 +159,5 @@ void main()
     // Spot light
     result += CalcSpotLight( spotLight, norm, FragPos, viewDir);
     
-    color = vec4( result, 1.0 );
+    color = mix(fogColor, vec4( result, 1.0 ), visibility);
 }

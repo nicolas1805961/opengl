@@ -3,14 +3,14 @@
 unsigned int Sphere::m_height = 100;
 unsigned int Sphere::m_width = 100;
 
-Sphere::Sphere(Shader const& shader, Vector3 const& diffuse, Vector3 const& specular, Vector3 const& translation, float scale /*= 1.0f*/,
-	 float shininess /*= 32.0f*/, float mass /*= 1.0f*/, Vector3 const& velocity /*= Vector3(0.0f)*/)
-	: Object(shader, translation, scale, diffuse, specular, shininess, mass, velocity)
+Sphere::Sphere(Shader const& shader, Vector3 const& diffuse, Vector3 const& specular, Vector3 const& translation, bool light /*=false*/,
+	float scale /*= 1.0f*/, float shininess /*= 32.0f*/, float mass /*= 1.0f*/, Vector3 const& velocity /*= Vector3(0.0f)*/)
+	: Object(shader, translation, scale, diffuse, specular, light)
 {}
 
-Sphere::Sphere(Shader const& shader, Vector3 const& translation, float scale /*= 1.0f*/,  float shininess /*= 32.0f*/,
+Sphere::Sphere(Shader const& shader, Vector3 const& translation, bool light /*=false*/, float scale /*= 1.0f*/, float shininess /*= 32.0f*/,
 	float mass /*= 1.0f*/, Vector3 const& velocity /*= Vector3(0.0f)*/)
-	: Object(shader, translation, scale, shininess, mass, velocity)
+	: Object(shader, translation, scale, light)
 {}
 
 std::pair<IndexBuffer, VertexArray> Sphere::initializeLayout()

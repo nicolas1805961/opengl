@@ -148,6 +148,8 @@
     <ClCompile Include="DirectionalLight.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Error.cpp" />
+    <ClCompile Include="Fog.cpp" />
+    <ClCompile Include="FrameBuffer.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="Matrix2f.cpp" />
     <ClCompile Include="Matrix3f.cpp" />
@@ -186,6 +188,8 @@
     <ClInclude Include="DirectionalLight.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Error.h" />
+    <ClInclude Include="Fog.h" />
+    <ClInclude Include="FrameBuffer.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="Matrix2f.h" />
     <ClInclude Include="Matrix3f.h" />

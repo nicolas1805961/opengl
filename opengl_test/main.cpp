@@ -25,6 +25,7 @@
 #include "Plane.h"
 #include "Vector4.h"
 #include "Ray.h"
+#include "Fog.h"
 
 void APIENTRY glDebugCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const GLvoid* userParam)
 {
@@ -96,6 +97,7 @@ GLfloat lastX = 1920.0f / 2.0f;
 GLfloat lastY = 1080.0f / 2.0f;
 bool doesIntersect = false;
 bool isFirstHit = false;
+bool night = false;
 
 //Vector3 lightPosition(1.2f, 1.0f, 2.0f);
 
@@ -216,7 +218,7 @@ void click(int button, int state, int x, int y)
 {
 	if (state == GLUT_UP && button == GLUT_LEFT_BUTTON)
 		doesIntersect = false;
-	else if (state == GLUT_DOWN)
+	else if (state == GLUT_DOWN && button == GLUT_LEFT_BUTTON)
 	{
 		Vector3 mousePosition = camera.get3dMousePosition(x, y);
 		Ray ray(camera.GetPosition(), (mousePosition - camera.GetPosition()).normalize());
@@ -225,6 +227,8 @@ void click(int button, int state, int x, int y)
 		else
 			isFirstHit = false;
 	}
+	else if (state == GLUT_DOWN && button == GLUT_RIGHT_BUTTON)
+		night = !night;
 }
 
 void mouseWheel(int wheel, int direction, int x, int y)
@@ -235,12 +239,16 @@ void mouseWheel(int wheel, int direction, int x, int y)
 
 
 void display() {
+	if (night)
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	else
+		glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	static unsigned int callNumber = 0;
 	callNumber++;
 	static auto sphereData = Sphere::initializeLayout();
 	static auto cubeData = Cube::initializeLayout();
 	static auto planeData = Plane::initializeLayout();
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	//lightPosition[0] -= 0.001f;
 	//lightPosition[2] -= 0.001f;
 	glEnable(GL_DEPTH_TEST);
@@ -278,22 +286,23 @@ void display() {
     
 	//directional light
     lightingShader.bind();
-	DirectionalLight directionalLight(lightingShader, Vector3(0.05f, 0.05f, 0.05f), Vector3(0.8f, 0.8f, 0.8f), Vector3(0.5f, 0.5f, 0.5f),
-		"dirLight", Vector3(0.0f, -10.0f, 0.0f));
+	Fog fog(lightingShader, 0.05f, 1.5f, Vector3(0.3f), Vector3(0.0f), night);
+	DirectionalLight directionalLight(lightingShader, Vector3(0.05f, 0.05f, 0.05f), Vector3(2.0f, 2.0f, 2.0f), Vector3(0.5f, 0.5f, 0.5f),
+		"dirLight", Vector3(0.0f, -10.0f, 0.0f), night);
 	//point light
 	PointLight pointLight1(lightingShader, Vector3(0.05f, 0.05f, 0.05f), Vector3(0.8f, 0.8f, 0.8f), Vector3(1.0f, 1.0f, 1.0f),
-		"pointLights[0]", 1.0f, 0.09f, 0.032f, std::make_shared<Sphere>(lampShader, Vector3(0.7f, 0.2f, 2.0f), 0.05f));
+		"pointLights[0]", 1.0f, 0.09f, 0.032f, std::make_shared<Sphere>(lampShader, Vector3(0.7f, 0.2f, 2.0f), true, 0.05f), night);
 	PointLight pointLight2(lightingShader, Vector3(0.05f, 0.05f, 0.05f), Vector3(0.8f, 0.8f, 0.8f), Vector3(1.0f, 1.0f, 1.0f),
-		"pointLights[1]", 1.0f, 0.09f, 0.032f, std::make_shared<Sphere>(lampShader, Vector3(2.3f, -3.3f, -4.0f), 0.05f));
+		"pointLights[1]", 1.0f, 0.09f, 0.032f, std::make_shared<Sphere>(lampShader, Vector3(2.3f, -3.3f, -4.0f), true, 0.05f), night);
 	PointLight pointLight3(lightingShader, Vector3(0.05f, 0.05f, 0.05f), Vector3(0.8f, 0.8f, 0.8f), Vector3(1.0f, 1.0f, 1.0f),
-		"pointLights[2]", 1.0f, 0.09f, 0.032f, std::make_shared<Sphere>(lampShader, Vector3(-4.0f, 2.0f, -12.0f), 0.05f));
+		"pointLights[2]", 1.0f, 0.09f, 0.032f, std::make_shared<Sphere>(lampShader, Vector3(-4.0f, 2.0f, -12.0f), true, 0.05f), night);
 	PointLight pointLight4(lightingShader, Vector3(0.05f, 0.05f, 0.05f), Vector3(0.8f, 0.8f, 0.8f), Vector3(1.0f, 1.0f, 1.0f),
-		"pointLights[3]", 1.0f, 0.09f, 0.032f, std::make_shared<Sphere>(lampShader, Vector3(0.0f, 0.0f, -3.0f), 0.05f));
+		"pointLights[3]", 1.0f, 0.09f, 0.032f, std::make_shared<Sphere>(lampShader, Vector3(0.0f, 0.0f, -3.0f), true, 0.05f), night);
 	//spotlight
 	SpotLight spotLight(lightingShader, Vector3(0.0f, 0.0f, 0.0f), Vector3(1.0f, 1.0f, 1.0f), Vector3(1.0f, 1.0f, 1.0f), "spotLight",
 		Vector3(camera.GetPosition().get_x(), camera.GetPosition().get_y(), camera.GetPosition().get_z()),
 		Vector3(camera.getFront().get_x(), camera.getFront().get_y(), camera.getFront().get_z()), cosf(camera.get_radians(12.5f)),
-		cosf(camera.get_radians(15.0f)), 1.0f, 0.09f, 0.032f);
+		cosf(camera.get_radians(15.0f)), 1.0f, 0.09f, 0.032f, night);
 
 	Plane plane1(lightingShader, Vector3(1.0f, 0.0f, 0.0f), Vector3(0.1f, 0.1f, 0.1f), 0.0f, Vector3(1.0f, 0.3f, 0.5f),
 		Vector3(0.0f, -10.0f, 0.0f), 20.0f);
@@ -302,15 +311,15 @@ void display() {
 
     lightingShader.set_uniform_3f("viewPos", camera.GetPosition().get_x(), camera.GetPosition().get_y(), camera.GetPosition().get_z());
 
-	objects.addObject(sphereData, std::make_shared<Sphere>(sphere1));
-	objects.addObject(sphereData, std::make_shared<Sphere>(sphere2));
-	objects.addObject(planeData, std::make_shared<Plane>(plane1));
-	objects.addObject(sphereData, pointLight1.getShape());
-	objects.addObject(sphereData, pointLight2.getShape());
-	objects.addObject(sphereData, pointLight3.getShape());
-	objects.addObject(sphereData, pointLight4.getShape());
+	objects.addObject(sphereData, std::make_shared<Sphere>(sphere1), "sphere1", night);
+	objects.addObject(sphereData, std::make_shared<Sphere>(sphere2), "sphere2", night);
+	objects.addObject(planeData, std::make_shared<Plane>(plane1), "plane1", night);
+	objects.addObject(sphereData, pointLight1.getShape(), "pointLight1", night);
+	objects.addObject(sphereData, pointLight2.getShape(), "pointLight2", night);
+	objects.addObject(sphereData, pointLight3.getShape(), "pointLight3", night);
+	objects.addObject(sphereData, pointLight4.getShape(), "pointLight4", night);
 
-	objects.draw(camera.get_view_matrix(), camera.getProjectionMatrix());
+	objects.draw(camera.get_view_matrix(), camera.getProjectionMatrix(), night);
 	//lightingShader.unbind();
 	/*Matrix4f projection = camera.getProjectionMatrix();
 	Matrix4f view = camera.get_view_matrix();
@@ -397,10 +406,14 @@ void initGlew() {
 }
 
 void initGL() {
-    glDisable(GL_DEPTH_TEST);
-    glDisable(GL_CULL_FACE);
+    //glDisable(GL_DEPTH_TEST);
+    //glDisable(GL_CULL_FACE);
     glViewport(0, 0, 1920, 1080);
-    glClearColor(0.0, 0, 0.0, 1.0);
+	/*if (night)
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	else
+		glClearColor(0.3f, 0.3f, 0.3f, 1.0f);*/
+
     //test_opengl_error();
 }
 

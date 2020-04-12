@@ -8,13 +8,13 @@ Plane::Plane()
 Plane::Plane(Shader const& shader, Vector3 const& diffuse, Vector3 const& specular, float degreeAngle, Vector3 const& axis,
 	Vector3 const& translation, float scale /*= 1.0f*/, float shininess /*= 32.0f*/, float mass /*= 1.0f*/,
 	Vector3 const& velocity /*= Vector3(0.0f)*/, Vector3 const& normal /*= Vector3(0.0f, 1.0f, 0.0f)*/)
-	: Object(shader, translation, scale, diffuse, specular, shininess, mass, velocity), m_degreeAngle(degreeAngle), m_axis(axis)
+	: Object(shader, translation, scale, diffuse, specular), m_degreeAngle(degreeAngle), m_axis(axis)
 {}
 
 Plane::Plane(Shader const& shader, float degreeAngle, Vector3 const& axis, Vector3 const& translation, float scale /*= 1.0f*/,
 	 float shininess /*= 32.0f*/, float mass /*= 1.0f*/, Vector3 const& velocity /*= Vector3(0.0f)*/,
 	Vector3 const& normal /*= Vector3(0.0f, 1.0f, 0.0f)*/)
-	: Object(shader, translation, scale, shininess, mass, velocity), m_degreeAngle(degreeAngle), m_axis(axis)
+	: Object(shader, translation, scale), m_degreeAngle(degreeAngle), m_axis(axis)
 {}
 
 bool Plane::intersectRay(Ray& ray)
