@@ -9,16 +9,21 @@
 #include <utility>
 #include "comparePair.h"
 #include <algorithm>
+#include "FrameBuffer.h"
 
 class Objects
 {
 	using myMaps = std::map<Shader, std::map<std::pair<IndexBuffer, VertexArray>, std::map<std::string, std::shared_ptr<Object>>, comparePair>>;
 public:
-	Objects(unsigned int maxSize);
-	void addObject(std::pair<IndexBuffer, VertexArray> const& pair, std::shared_ptr<Object> const& object, std::string const& name,
+	Objects();
+	void addObject(Shader const& shader, std::pair<IndexBuffer, VertexArray> const& pair, std::shared_ptr<Object> const& object, std::string const& name,
 		bool night);
 	myMaps getObjects();
-	void draw(Matrix4f const& view, Matrix4f const& projection, bool night);
+	void drawDay(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, std::pair<Matrix4f, Matrix4f> const& shadowViewProjMatrices,
+		Shader const& lightingShader, Shader const& shadowShader, FrameBuffer const& frameBuffer);
+	void drawNight(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, Shader const& lightingShader, Shader const& lampShader);
+	void draw(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, Shader const& shader, unsigned int frameBufferId);
+	void draw(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, Shader const& shader, unsigned int frameBufferId) const;
 	void clear();
 	unsigned int getSize();
 	unsigned int getSizeShaderMap(myMaps::iterator const& it);
@@ -27,6 +32,5 @@ public:
 
 private:
 	static int m_placesLeft;
-	unsigned int m_maxSize;
 	myMaps m_objects;
 };

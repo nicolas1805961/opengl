@@ -3,22 +3,19 @@
 unsigned int Sphere::m_height = 100;
 unsigned int Sphere::m_width = 100;
 
-Sphere::Sphere(Shader const& shader, Vector3 const& diffuse, Vector3 const& specular, Vector3 const& translation, bool light /*=false*/,
-	float scale /*= 1.0f*/, float shininess /*= 32.0f*/, float mass /*= 1.0f*/, Vector3 const& velocity /*= Vector3(0.0f)*/)
-	: Object(shader, translation, scale, diffuse, specular, light)
+Sphere::Sphere(Vector3 const& diffuse, Vector3 const& specular, Vector3 const& translation, bool light /*=false*/, float scale /*= 1.0f*/,
+	float degreeAngle /*=0.0f*/, Vector3 const& axis /*=Vector3(1.0f)*/, float shininess /*= 32.0f*/, float mass /*= 1.0f*/,
+	Vector3 const& velocity /*= Vector3(0.0f)*/)
+	: Object(translation, scale, diffuse, specular, light, degreeAngle, axis)
 {}
 
-Sphere::Sphere(Shader const& shader, Vector3 const& translation, bool light /*=false*/, float scale /*= 1.0f*/, float shininess /*= 32.0f*/,
-	float mass /*= 1.0f*/, Vector3 const& velocity /*= Vector3(0.0f)*/)
-	: Object(shader, translation, scale, light)
+Sphere::Sphere(Vector3 const& translation, bool light /*=false*/, float scale /*= 1.0f*/, float degreeAngle /*=0.0f*/,
+	Vector3 const& axis /*=Vector3(1.0f)*/, float shininess /*= 32.0f*/, float mass /*= 1.0f*/, Vector3 const& velocity /*= Vector3(0.0f)*/)
+	: Object(translation, scale, light, degreeAngle, axis)
 {}
 
 std::pair<IndexBuffer, VertexArray> Sphere::initializeLayout()
 {
-	/*static int callNumber = 0;
-	callNumber++;
-	if (callNumber > 1)
-		return std::make_pair(IndexBuffer(), VertexArray());*/
 	std::vector<unsigned int> m_indices;
 	std::vector<float> m_vertices;
 	unsigned int k1;
@@ -35,12 +32,16 @@ std::pair<IndexBuffer, VertexArray> Sphere::initializeLayout()
 			float nx = x;
 			float ny = y;
 			float nz = z;
+			float u = (atan2f(nx, nz) / (2 * M_PI)) + 0.5;
+			float v = 0.5 - (asinf(ny) / M_PI);
 			m_vertices.push_back(x);
 			m_vertices.push_back(y);
 			m_vertices.push_back(z);
 			m_vertices.push_back(nx);
 			m_vertices.push_back(ny);
 			m_vertices.push_back(nz);
+			m_vertices.push_back(u);
+			m_vertices.push_back(v);
 		}
 	}
 
@@ -73,7 +74,7 @@ std::pair<IndexBuffer, VertexArray> Sphere::initializeLayout()
 		}
 	}
 	VertexBuffer vb(&m_vertices[0], sizeof(float) * m_vertices.size());
-	VertexBufferLayout vbl(3, 3);
+	VertexBufferLayout vbl(3, 3, 2);
 	IndexBuffer ib(&m_indices[0], m_indices.size());
 	VertexArray va(vb, vbl);
 	return std::make_pair(ib, va);
@@ -124,23 +125,3 @@ bool Sphere::intersectRay(Ray& ray)
 	else
 		return Intersect(false, centerDistance - radiusDistance);
 }*/
-
-void Sphere::draw(Matrix4f const& view, Matrix4f const& projection, unsigned int indexCount)
-{
-	Matrix4f model(1.0f);
-	model = Matrix4f::gl_translate(model, m_translation);
-	model = Matrix4f::gl_scale(model, Vector3(m_scale));
-	keepTrack(model, view, projection);
-	m_shader.set_uniform_mat_4f("view", view);
-	m_shader.set_uniform_mat_4f("projection", projection);
-	m_shader.set_uniform_mat_4f("model", model);
-	if (m_shader.getShaderType() == Shader::ShaderType::LIGHTING)
-	{
-		if (m_isTexture)
-			m_material = Material(m_shader, m_shininess, "material");
-		else
-			m_material = Material(m_shader, m_shininess, "material", m_diffuse, m_specular);
-	}
-	glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, nullptr);
-	m_doesModify = false;
-}

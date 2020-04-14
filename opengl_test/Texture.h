@@ -7,18 +7,29 @@
 class Texture
 {
 public:
+
+	enum class TextureType {COLOR, DEPTH, PLAIN};
+
 	Texture(const std::string& path);
+	Texture(TextureType const& textureType);
+	Texture(Texture const& tecture);
 	void bind(unsigned int slot = 0);
+	void bind(unsigned int slot = 0) const;
 	void unbind();
+	void unbind() const;
 	int get_width() const;
+	TextureType getTextureType();
+	TextureType getTextureType() const;
+	unsigned int getId();
+	unsigned int getId() const;
 	int get_height() const;
 	int get_bpp() const;
 	~Texture();
 
 private:
+	TextureType m_textureType;
 	unsigned int m_renderer_id;
 	std::unique_ptr<unsigned char[]> m_local_buffer;
-	std::string m_filepath;
 	int m_width;
 	int m_height;
 	int m_bpp;

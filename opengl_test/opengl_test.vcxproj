@@ -177,8 +177,11 @@
   <ItemGroup>
     <None Include="colorFragment.glsl" />
     <None Include="colorVertex.glsl" />
+    <None Include="depthMapTestFragment.glsl" />
     <None Include="lampFragment.glsl" />
     <None Include="lampVertex.glsl" />
+    <None Include="shadowFragment.glsl" />
+    <None Include="shadowVertex.glsl" />
     <None Include="textureFragment.glsl" />
     <None Include="textureVertex.glsl" />
   </ItemGroup>

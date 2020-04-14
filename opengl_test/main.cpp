@@ -26,6 +26,7 @@
 #include "Vector4.h"
 #include "Ray.h"
 #include "Fog.h"
+#include "FrameBuffer.h"
 
 void APIENTRY glDebugCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const GLvoid* userParam)
 {
@@ -86,7 +87,7 @@ void APIENTRY glDebugCallback(GLenum source, GLenum type, GLuint id, GLenum seve
 	printf("glDebugMessage:\n%s \n type = %s source = %s severity = %s\n", message, msgType.c_str(), msgSource.c_str(), msgSeverity.c_str());
 }
 
-Objects objects(7);
+Objects objects;
 std::unique_ptr<bool[]> keys = std::make_unique<bool[]>(256);
 std::unique_ptr<bool[]> keysSpecial = std::make_unique<bool[]>(256);
 Camera camera(Vector3(0.0f, 0.0f, 3.0f));
@@ -281,8 +282,15 @@ void display() {
     /*glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);*/
 	
+	static Texture texture(Texture::TextureType::DEPTH);
+	static FrameBuffer frameBuffer(texture);
+
 	static Shader lampShader("lampVertex.glsl", "lampFragment.glsl", Shader::ShaderType::LAMP);
 	static Shader lightingShader("colorVertex.glsl", "colorFragment.glsl", Shader::ShaderType::LIGHTING);
+	static Shader depthShader("shadowVertex.glsl", "shadowFragment.glsl", Shader::ShaderType::DEPTH);
+
+	static auto dayTexture = std::make_pair(lightingShader, depthShader);
+	static auto nightTexture = std::make_pair(lightingShader, lampShader);
     
 	//directional light
     lightingShader.bind();
@@ -291,35 +299,47 @@ void display() {
 		"dirLight", Vector3(0.0f, -10.0f, 0.0f), night);
 	//point light
 	PointLight pointLight1(lightingShader, Vector3(0.05f, 0.05f, 0.05f), Vector3(0.8f, 0.8f, 0.8f), Vector3(1.0f, 1.0f, 1.0f),
-		"pointLights[0]", 1.0f, 0.09f, 0.032f, std::make_shared<Sphere>(lampShader, Vector3(0.7f, 0.2f, 2.0f), true, 0.05f), night);
+		"pointLights[0]", 1.0f, 0.09f, 0.032f, std::make_shared<Sphere>(Vector3(0.7f, 0.2f, 2.0f), true, 0.05f), night);
 	PointLight pointLight2(lightingShader, Vector3(0.05f, 0.05f, 0.05f), Vector3(0.8f, 0.8f, 0.8f), Vector3(1.0f, 1.0f, 1.0f),
-		"pointLights[1]", 1.0f, 0.09f, 0.032f, std::make_shared<Sphere>(lampShader, Vector3(2.3f, -3.3f, -4.0f), true, 0.05f), night);
+		"pointLights[1]", 1.0f, 0.09f, 0.032f, std::make_shared<Sphere>(Vector3(2.3f, -3.3f, -4.0f), true, 0.05f), night);
 	PointLight pointLight3(lightingShader, Vector3(0.05f, 0.05f, 0.05f), Vector3(0.8f, 0.8f, 0.8f), Vector3(1.0f, 1.0f, 1.0f),
-		"pointLights[2]", 1.0f, 0.09f, 0.032f, std::make_shared<Sphere>(lampShader, Vector3(-4.0f, 2.0f, -12.0f), true, 0.05f), night);
+		"pointLights[2]", 1.0f, 0.09f, 0.032f, std::make_shared<Sphere>(Vector3(-4.0f, 2.0f, -12.0f), true, 0.05f), night);
 	PointLight pointLight4(lightingShader, Vector3(0.05f, 0.05f, 0.05f), Vector3(0.8f, 0.8f, 0.8f), Vector3(1.0f, 1.0f, 1.0f),
-		"pointLights[3]", 1.0f, 0.09f, 0.032f, std::make_shared<Sphere>(lampShader, Vector3(0.0f, 0.0f, -3.0f), true, 0.05f), night);
+		"pointLights[3]", 1.0f, 0.09f, 0.032f, std::make_shared<Sphere>(Vector3(0.0f, 0.0f, -3.0f), true, 0.05f), night);
 	//spotlight
 	SpotLight spotLight(lightingShader, Vector3(0.0f, 0.0f, 0.0f), Vector3(1.0f, 1.0f, 1.0f), Vector3(1.0f, 1.0f, 1.0f), "spotLight",
 		Vector3(camera.GetPosition().get_x(), camera.GetPosition().get_y(), camera.GetPosition().get_z()),
 		Vector3(camera.getFront().get_x(), camera.getFront().get_y(), camera.getFront().get_z()), cosf(camera.get_radians(12.5f)),
 		cosf(camera.get_radians(15.0f)), 1.0f, 0.09f, 0.032f, night);
 
-	Plane plane1(lightingShader, Vector3(1.0f, 0.0f, 0.0f), Vector3(0.1f, 0.1f, 0.1f), 0.0f, Vector3(1.0f, 0.3f, 0.5f),
-		Vector3(0.0f, -10.0f, 0.0f), 20.0f);
-	Sphere sphere1(lightingShader, Vector3(0.0f, 0.0f, 1.0f), Vector3(0.1f, 0.1f, 0.1f), Vector3(-1.7f, 3.0f, -7.5f));
-	Sphere sphere2(lightingShader, Vector3(0.0f, 1.0f, 0.0f), Vector3(0.1f, 0.1f, 0.1f), Vector3(1.3f, -2.0f, -2.5f));
+	Plane plane1(Vector3(1.0f, 0.0f, 0.0f), Vector3(0.1f, 0.1f, 0.1f), Vector3(0.0f, -10.0f, 0.0f), 20.0f);
+	Sphere sphere1(Vector3(0.0f, 0.0f, 1.0f), Vector3(0.1f, 0.1f, 0.1f), Vector3(-1.7f, 3.0f, -7.5f));
+	Sphere sphere2(Vector3(0.0f, 1.0f, 0.0f), Vector3(0.1f, 0.1f, 0.1f), Vector3(1.3f, -2.0f, -2.5f));
+
+	auto view = camera.get_view_matrix();
+	auto projection = camera.getProjectionMatrix();
+	auto viewProjPair = std::make_pair(view, projection);
 
     lightingShader.set_uniform_3f("viewPos", camera.GetPosition().get_x(), camera.GetPosition().get_y(), camera.GetPosition().get_z());
 
-	objects.addObject(sphereData, std::make_shared<Sphere>(sphere1), "sphere1", night);
-	objects.addObject(sphereData, std::make_shared<Sphere>(sphere2), "sphere2", night);
-	objects.addObject(planeData, std::make_shared<Plane>(plane1), "plane1", night);
-	objects.addObject(sphereData, pointLight1.getShape(), "pointLight1", night);
-	objects.addObject(sphereData, pointLight2.getShape(), "pointLight2", night);
-	objects.addObject(sphereData, pointLight3.getShape(), "pointLight3", night);
-	objects.addObject(sphereData, pointLight4.getShape(), "pointLight4", night);
+	objects.addObject(lightingShader, sphereData, std::make_shared<Sphere>(sphere1), "sphere1", night);
+	objects.addObject(lightingShader, sphereData, std::make_shared<Sphere>(sphere2), "sphere2", night);
+	objects.addObject(lightingShader, planeData, std::make_shared<Plane>(plane1), "plane1", night);
+	objects.addObject(lampShader, sphereData, pointLight1.getShape(), "pointLight1", night);
+	objects.addObject(lampShader, sphereData, pointLight2.getShape(), "pointLight2", night);
+	objects.addObject(lampShader, sphereData, pointLight3.getShape(), "pointLight3", night);
+	objects.addObject(lampShader, sphereData, pointLight4.getShape(), "pointLight4", night);
 
-	objects.draw(camera.get_view_matrix(), camera.getProjectionMatrix(), night);
+	static Matrix4f shadowProjection = Matrix4f::gl_ortho(-10.0f, 10.0f, -10.0f, 10.0f, 1.0f, 7.5f);
+	static Matrix4f shadowView = Matrix4f::gl_look_at(Vector3(-2.0f, 4.0f, -1.0f), Vector3(0.0f, -10.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f));
+	static auto shadowMatrices = std::make_pair(shadowView, shadowProjection);
+
+	if (!night)
+		objects.drawDay(viewProjPair, shadowMatrices, lightingShader, depthShader, frameBuffer);
+	else
+		objects.drawNight(viewProjPair, lightingShader, lampShader);
+
+
 	//lightingShader.unbind();
 	/*Matrix4f projection = camera.getProjectionMatrix();
 	Matrix4f view = camera.get_view_matrix();
@@ -358,17 +378,6 @@ void display() {
 	/*objects.addObject("sphere3", std::make_shared<Sphere>(sphere3));
 	objects.addObject("sphere4", std::make_shared<Sphere>(sphere4));
 	objects.addObject("sphere5", std::make_shared<Sphere>(sphere5));*/
-
-	/*lightingShader.unbind();
-
-	lampShader.bind();
-	lampShader.set_uniform_mat_4f("view", view);
-	lampShader.set_uniform_mat_4f("projection", projection);*/
-	/*pointLight1.getShape()->draw(lampShader, Object::ShaderType::LAMP, view, projection);
-	pointLight2.getShape()->draw(lampShader, Object::ShaderType::LAMP, view, projection);
-	pointLight3.getShape()->draw(lampShader, Object::ShaderType::LAMP, view, projection);
-	pointLight4.getShape()->draw(lampShader, Object::ShaderType::LAMP, view, projection);*/
-	//lampShader.unbind();
 
 	glEnable(GL_DEBUG_OUTPUT);
 	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);

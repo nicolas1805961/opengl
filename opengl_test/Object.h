@@ -22,16 +22,16 @@ public:
 	enum class Force {GRAVITY, FRICTION};
 
 	Object() = default;
-	Object(Shader const& shader, Vector3 const& translation, float scale, Vector3 const& diffuse, Vector3 const& specular,
-		bool light = false, float shininess = 32.0f, float mass = 1.0f, Vector3 const& velocity = Vector3(0.0f), bool doesModify = false,
+	Object(Vector3 const& translation, float scale, Vector3 const& diffuse, Vector3 const& specular, bool light = false,
+		float degreeAngle = 0.0f, Vector3 const& axis = Vector3(1.0f), float shininess = 32.0f, float mass = 1.0f,
+		Vector3 const& velocity = Vector3(0.0f), bool doesModify = false, bool isTexture = false,
+		Vector3 const& acceleration = Vector3(0.0f), Vector3 const& sumForces = Vector3(0.0f),
+		Vector4 const& position = Vector4(0.0f, 0.0f, 0.0f, 1.0f));
+	Object(Vector3 const& translation, float scale, bool light = false, float degreeAngle = 0.0f, Vector3 const& axis = Vector3(1.0f),
+		float shininess = 32.0f, float mass = 1.0f, Vector3 const& velocity = Vector3(0.0f), bool doesModify = false,
 		bool isTexture = false, Vector3 const& acceleration = Vector3(0.0f), Vector3 const& sumForces = Vector3(0.0f),
 		Vector4 const& position = Vector4(0.0f, 0.0f, 0.0f, 1.0f));
-	Object(Shader const& shader, Vector3 const& translation, float scale, bool light = false, float shininess = 32.0f, float mass = 1.0f,
-		Vector3 const& velocity = Vector3(0.0f), bool doesModify = false, bool isTexture = false, Vector3 const& acceleration = Vector3(0.0f),
-		Vector3 const& sumForces = Vector3(0.0f), Vector4 const& position = Vector4(0.0f, 0.0f, 0.0f, 1.0f));
 	float getRadians(float degreeAngle);
-	Shader getShader() const;
-	Shader getShader();
 	Vector3 getTranslation();
 	Vector3 getTranslation() const;
 	void keepTrack(Matrix4f const& model, Matrix4f const& view, Matrix4f const& projection);
@@ -45,11 +45,10 @@ public:
 	void setScale(float scale);
 	void updateVelocityAndPosition(float dt);
 	void setTranslation(Vector3 const& translation);
-	virtual void draw(Matrix4f const& view, Matrix4f const& projection, unsigned int indexCount) = 0;
+	void draw(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, unsigned int indexCount, Shader const& shader, unsigned int frameBufferId);
 
 protected:
 	bool m_light;
-	Shader m_shader;
 	bool m_doesModify;
 	Vector4 m_position;
 	Vector3 m_sumForces;
@@ -63,4 +62,6 @@ protected:
 	float m_shininess;
 	Vector3 m_translation;
 	float m_scale;
+	float m_degreeAngle;
+	Vector3 m_axis;
 };

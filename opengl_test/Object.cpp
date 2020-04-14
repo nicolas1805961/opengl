@@ -1,33 +1,25 @@
 #include "Object.h"
 
-Object::Object(Shader const& shader, Vector3 const& translation, float scale, Vector3 const& diffuse, Vector3 const& specular, bool light,
-	float shininess, float mass, Vector3 const& velocity, bool doesModify, bool isTexture, Vector3 const& acceleration,
-	Vector3 const& sumForces, Vector4 const& position): m_shader(shader), m_translation(translation), m_scale(scale), m_diffuse(diffuse),
-	m_specular(specular), m_shininess(shininess), m_isTexture(isTexture), m_mass(mass), m_velocity(velocity), m_acceleration(acceleration),
-	m_sumForces(sumForces), m_doesModify(doesModify), m_light(light), m_position(position)
+Object::Object(Vector3 const& translation, float scale, Vector3 const& diffuse, Vector3 const& specular, bool light, float degreeAngle,
+	Vector3 const& axis, float shininess, float mass, Vector3 const& velocity, bool doesModify, bool isTexture, Vector3 const& acceleration,
+	Vector3 const& sumForces, Vector4 const& position)
+	: m_translation(translation), m_scale(scale), m_diffuse(diffuse), m_specular(specular), m_shininess(shininess), m_isTexture(isTexture),
+	m_mass(mass), m_velocity(velocity), m_acceleration(acceleration), m_sumForces(sumForces), m_doesModify(doesModify), m_light(light),
+	m_position(position), m_degreeAngle(degreeAngle), m_axis(axis)
 {}
 
-Object::Object(Shader const& shader, Vector3 const& translation, float scale, bool light, float shininess, float mass, Vector3 const& velocity,
-	bool doesModify, bool isTexture, Vector3 const& acceleration, Vector3 const& sumForces, Vector4 const& position)
-	: m_shader(shader), m_translation(translation), m_scale(scale), m_shininess(shininess), m_isTexture(isTexture), m_mass(mass),
-	m_velocity(velocity), m_acceleration(acceleration), m_sumForces(sumForces), m_doesModify(doesModify), m_light(light),
-	m_position(position)
+Object::Object(Vector3 const& translation, float scale, bool light, float degreeAngle, Vector3 const& axis, float shininess, float mass,
+	Vector3 const& velocity, bool doesModify, bool isTexture, Vector3 const& acceleration, Vector3 const& sumForces,
+	Vector4 const& position)
+	: m_translation(translation), m_scale(scale), m_shininess(shininess), m_isTexture(isTexture), m_mass(mass), m_velocity(velocity),
+	m_acceleration(acceleration), m_sumForces(sumForces), m_doesModify(doesModify), m_light(light), m_position(position),
+	m_degreeAngle(degreeAngle), m_axis(axis)
 {}
 
 float Object::getRadians(float degreeAngle)
 {
 	float y = M_PI / 180;
 	return degreeAngle * y;
-}
-
-Shader Object::getShader() const
-{
-	return m_shader;
-}
-
-Shader Object::getShader()
-{
-	return m_shader;
 }
 
 Vector3 Object::getTranslation()
@@ -109,4 +101,26 @@ void Object::setTranslation(Vector3 const& translation)
 {
 	m_translation = translation;
 	m_doesModify = true;
+}
+
+void Object::draw(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, unsigned int indexCount, Shader const& shader, unsigned int frameBufferId)
+{
+	Matrix4f model(1.0f);
+	model = Matrix4f::gl_translate(model, m_translation);
+	model = Matrix4f::gl_scale(model, Vector3(m_scale));
+	model = Matrix4f::gl_rotate(model, getRadians(m_degreeAngle), m_axis);
+	//keepTrack(model, view, projection);
+	shader.set_uniform_mat_4f("view", viewProjMatrices.first);
+	shader.set_uniform_mat_4f("projection", viewProjMatrices.second);
+	shader.set_uniform_mat_4f("model", model);
+	if (shader.getShaderType() == Shader::ShaderType::LIGHTING)
+	{
+		if (m_isTexture)
+			m_material = Material(shader, m_shininess, "material");
+		else
+			m_material = Material(shader, m_shininess, "material", m_diffuse, m_specular);
+	}
+	//glViewport(0, 0, 1920, 1080);
+	glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, nullptr);
+	m_doesModify = false;
 }

@@ -231,5 +231,14 @@
     <None Include="textureVertex.glsl">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="shadowVertex.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="shadowFragment.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="depthMapTestFragment.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>
