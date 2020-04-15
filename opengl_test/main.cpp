@@ -90,7 +90,7 @@ void APIENTRY glDebugCallback(GLenum source, GLenum type, GLuint id, GLenum seve
 Objects objects;
 std::unique_ptr<bool[]> keys = std::make_unique<bool[]>(256);
 std::unique_ptr<bool[]> keysSpecial = std::make_unique<bool[]>(256);
-Camera camera(Vector3(0.0f, 0.0f, 3.0f));
+Camera camera(Vector3(0.0f, 3.0f, 3.0f));
 GLfloat dt = 0.0f;
 GLfloat lastTime = 0.0f;
 bool firstMouse = true;
@@ -243,7 +243,7 @@ void display() {
 	if (night)
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	else
-		glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
+		glClearColor(0.32f, 0.6f, 0.92f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	static unsigned int callNumber = 0;
 	callNumber++;
@@ -286,7 +286,7 @@ void display() {
 	static FrameBuffer frameBuffer(texture);
 
 	static Shader lampShader("lampVertex.glsl", "lampFragment.glsl", Shader::ShaderType::LAMP);
-	static Shader lightingShader("colorVertex.glsl", "colorFragment.glsl", Shader::ShaderType::LIGHTING);
+	static Shader lightingShader("dayVertex.glsl", "DayFragment.glsl", Shader::ShaderType::LIGHTING);
 	static Shader depthShader("shadowVertex.glsl", "shadowFragment.glsl", Shader::ShaderType::DEPTH);
 
 	static auto dayTexture = std::make_pair(lightingShader, depthShader);
@@ -294,8 +294,8 @@ void display() {
     
 	//directional light
     lightingShader.bind();
-	Fog fog(lightingShader, 0.05f, 1.5f, Vector3(0.3f), Vector3(0.0f), night);
-	DirectionalLight directionalLight(lightingShader, Vector3(0.05f, 0.05f, 0.05f), Vector3(2.0f, 2.0f, 2.0f), Vector3(0.5f, 0.5f, 0.5f),
+	//Fog fog(lightingShader, 0.05f, 1.5f, Vector3(0.3f), Vector3(0.0f), night);
+	DirectionalLight directionalLight(lightingShader, Vector3(0.3f, 0.3f, 0.3f), Vector3(2.0f, 2.0f, 2.0f), Vector3(0.5f, 0.5f, 0.5f),
 		"dirLight", Vector3(0.0f, -10.0f, 0.0f), night);
 	//point light
 	PointLight pointLight1(lightingShader, Vector3(0.05f, 0.05f, 0.05f), Vector3(0.8f, 0.8f, 0.8f), Vector3(1.0f, 1.0f, 1.0f),
@@ -312,9 +312,9 @@ void display() {
 		Vector3(camera.getFront().get_x(), camera.getFront().get_y(), camera.getFront().get_z()), cosf(camera.get_radians(12.5f)),
 		cosf(camera.get_radians(15.0f)), 1.0f, 0.09f, 0.032f, night);
 
-	Plane plane1(Vector3(1.0f, 0.0f, 0.0f), Vector3(0.1f, 0.1f, 0.1f), Vector3(0.0f, -10.0f, 0.0f), 20.0f);
-	Sphere sphere1(Vector3(0.0f, 0.0f, 1.0f), Vector3(0.1f, 0.1f, 0.1f), Vector3(-1.7f, 3.0f, -7.5f));
-	Sphere sphere2(Vector3(0.0f, 1.0f, 0.0f), Vector3(0.1f, 0.1f, 0.1f), Vector3(1.3f, -2.0f, -2.5f));
+	Plane plane1(Vector3(1.0f, 0.0f, 0.0f), Vector3(0.1f, 0.1f, 0.1f), Vector3(0.0f, 0.0f, 0.0f), 20.0f);
+	Sphere sphere1(Vector3(0.0f, 0.0f, 1.0f), Vector3(0.1f, 0.1f, 0.1f), Vector3(-1.7f, 2.0f, -7.5f));
+	Sphere sphere2(Vector3(0.0f, 1.0f, 0.0f), Vector3(0.1f, 0.1f, 0.1f), Vector3(1.3f, 2.0f, -2.5f));
 
 	auto view = camera.get_view_matrix();
 	auto projection = camera.getProjectionMatrix();
@@ -331,13 +331,13 @@ void display() {
 	objects.addObject(lampShader, sphereData, pointLight4.getShape(), "pointLight4", night);
 
 	static Matrix4f shadowProjection = Matrix4f::gl_ortho(-10.0f, 10.0f, -10.0f, 10.0f, 1.0f, 7.5f);
-	static Matrix4f shadowView = Matrix4f::gl_look_at(Vector3(-2.0f, 4.0f, -1.0f), Vector3(0.0f, -10.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f));
+	static Matrix4f shadowView = Matrix4f::gl_look_at(Vector3(-2.0f, 4.0f, -1.0f), Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f));
 	static auto shadowMatrices = std::make_pair(shadowView, shadowProjection);
 
 	if (!night)
 		objects.drawDay(viewProjPair, shadowMatrices, lightingShader, depthShader, frameBuffer);
 	else
-		objects.drawNight(viewProjPair, lightingShader, lampShader);
+		objects.drawNight(viewProjPair, shadowMatrices, lightingShader, lampShader, depthShader, frameBuffer);
 
 
 	//lightingShader.unbind();

@@ -34,20 +34,30 @@ void Objects::drawDay(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, std
 	draw(shadowViewProjMatrices, shadowShader, frameBuffer.getId());
 	frameBuffer.unbind();
 	frameBuffer.bindTexture();
-	draw(viewProjMatrices, lightingShader, 0);
+	draw(viewProjMatrices, shadowViewProjMatrices, lightingShader, 0);
 	frameBuffer.unbindTexture();
 }
 
-void Objects::drawNight(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, Shader const& lightingShader, Shader const& lampShader)
+void Objects::drawNight(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, std::pair<Matrix4f, Matrix4f> const& shadowViewProjMatrices,
+	Shader const& lightingShader, Shader const& lampShader, Shader const& shadowShader, FrameBuffer const& frameBuffer)
 {
-	draw(viewProjMatrices, lightingShader, 0);
+	frameBuffer.bind();
+	draw(shadowViewProjMatrices, shadowShader, frameBuffer.getId());
+	frameBuffer.unbind();
+	frameBuffer.bindTexture();
+	draw(viewProjMatrices, shadowViewProjMatrices, lightingShader, 0);
+	frameBuffer.unbindTexture();
 	draw(viewProjMatrices, lampShader, 0);
 }
 
 void Objects::draw(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, Shader const& shader, unsigned int frameBufferId)
 {
+	if (frameBufferId == 0)
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	else
+		glClear(GL_DEPTH_BUFFER_BIT);
 	myMaps::iterator it;
-	if (shader.getShaderType() == Shader::ShaderType::DEPTH || shader.getShaderType() == Shader::ShaderType::LIGHTING)
+	if (shader.getShaderType() == Shader::ShaderType::DEPTH)
 		it = std::find_if(m_objects.begin(), m_objects.end(), [](auto x) {return x.first.getShaderType() == Shader::ShaderType::LIGHTING; });
 	else
 		it = std::find_if(m_objects.begin(), m_objects.end(), [](auto x) {return x.first.getShaderType() == Shader::ShaderType::LAMP; });
@@ -60,7 +70,7 @@ void Objects::draw(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, Shader
 			it1.first.first.bind();
 			for (auto const& it2 : it1.second)
 			{
-				it2.second->draw(viewProjMatrices, it1.first.first.getCount(), shader, frameBufferId);
+				it2.second->draw(viewProjMatrices, it1.first.first.getCount(), shader);
 			}
 		}
 	}
@@ -75,7 +85,7 @@ void Objects::draw(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, Shader
 	else
 		glClear(GL_DEPTH_BUFFER_BIT);
 	myMaps::const_iterator it;
-	if (shader.getShaderType() == Shader::ShaderType::DEPTH || shader.getShaderType() == Shader::ShaderType::LIGHTING)
+	if (shader.getShaderType() == Shader::ShaderType::DEPTH)
 		it = std::find_if(m_objects.begin(), m_objects.end(), [](auto x) {return x.first.getShaderType() == Shader::ShaderType::LIGHTING; });
 	else
 		it = std::find_if(m_objects.begin(), m_objects.end(), [](auto x) {return x.first.getShaderType() == Shader::ShaderType::LAMP; });
@@ -88,7 +98,32 @@ void Objects::draw(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, Shader
 			it1.first.first.bind();
 			for (auto const& it2 : it1.second)
 			{
-				it2.second->draw(viewProjMatrices, it1.first.first.getCount(), shader, frameBufferId);
+				it2.second->draw(viewProjMatrices, it1.first.first.getCount(), shader);
+			}
+		}
+	}
+	else
+		std::cout << "ERROR\n";
+}
+
+void Objects::draw(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, std::pair<Matrix4f, Matrix4f> const& shadowMatrices,
+	Shader const& shader, unsigned int frameBufferId)
+{
+	if (frameBufferId == 0)
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	else
+		glClear(GL_DEPTH_BUFFER_BIT);
+	auto it = std::find_if(m_objects.begin(), m_objects.end(), [](auto x) {return x.first.getShaderType() == Shader::ShaderType::LIGHTING; });
+	if (it != m_objects.end())
+	{
+		shader.bind();
+		for (auto const& it1 : it->second)
+		{
+			it1.first.second.bind();
+			it1.first.first.bind();
+			for (auto const& it2 : it1.second)
+			{
+				it2.second->draw(viewProjMatrices, shadowMatrices, it1.first.first.getCount(), shader);
 			}
 		}
 	}

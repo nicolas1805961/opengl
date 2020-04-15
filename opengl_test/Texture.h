@@ -3,6 +3,7 @@
 #include <memory>
 #include <GL/glew.h>
 #include "stb_image.h"
+#include <GL/freeglut.h>
 
 class Texture
 {

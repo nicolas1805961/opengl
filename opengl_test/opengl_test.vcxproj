@@ -175,11 +175,12 @@
     <ClCompile Include="VertexBufferElement.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="colorFragment.glsl" />
-    <None Include="colorVertex.glsl" />
-    <None Include="depthMapTestFragment.glsl" />
+    <None Include="DayFragment.glsl" />
+    <None Include="dayVertex.glsl" />
     <None Include="lampFragment.glsl" />
     <None Include="lampVertex.glsl" />
+    <None Include="nightFragment.glsl" />
+    <None Include="nightVertex.glsl" />
     <None Include="shadowFragment.glsl" />
     <None Include="shadowVertex.glsl" />
     <None Include="textureFragment.glsl" />

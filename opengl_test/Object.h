@@ -45,7 +45,9 @@ public:
 	void setScale(float scale);
 	void updateVelocityAndPosition(float dt);
 	void setTranslation(Vector3 const& translation);
-	void draw(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, unsigned int indexCount, Shader const& shader, unsigned int frameBufferId);
+	void draw(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, std::pair<Matrix4f, Matrix4f> const& shadowMatrices,
+		unsigned int indexCount, Shader const& shader);
+	void draw(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, unsigned int indexCount, Shader const& shader);
 
 protected:
 	bool m_light;

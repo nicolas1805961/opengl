@@ -219,12 +219,6 @@
     <None Include="lampVertex.glsl">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="colorFragment.glsl">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="colorVertex.glsl">
-      <Filter>Resource Files</Filter>
-    </None>
     <None Include="textureFragment.glsl">
       <Filter>Resource Files</Filter>
     </None>
@@ -237,7 +231,16 @@
     <None Include="shadowFragment.glsl">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="depthMapTestFragment.glsl">
+    <None Include="nightVertex.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="nightFragment.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="DayFragment.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="dayVertex.glsl">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>

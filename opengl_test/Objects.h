@@ -21,8 +21,11 @@ public:
 	myMaps getObjects();
 	void drawDay(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, std::pair<Matrix4f, Matrix4f> const& shadowViewProjMatrices,
 		Shader const& lightingShader, Shader const& shadowShader, FrameBuffer const& frameBuffer);
-	void drawNight(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, Shader const& lightingShader, Shader const& lampShader);
+	void drawNight(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, std::pair<Matrix4f, Matrix4f> const& shadowViewProjMatrices,
+		Shader const& lightingShader, Shader const& lampShader, Shader const& shadowShader, FrameBuffer const& frameBuffer);
 	void draw(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, Shader const& shader, unsigned int frameBufferId);
+	void draw(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, std::pair<Matrix4f, Matrix4f> const& shadowMatrices,
+		Shader const& shader, unsigned int frameBufferId);
 	void draw(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, Shader const& shader, unsigned int frameBufferId) const;
 	void clear();
 	unsigned int getSize();
