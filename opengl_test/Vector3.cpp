@@ -70,6 +70,11 @@ Vector3 Vector3::operator+(Vector3 const& rhs) const
 	return Vector3(this->x + rhs.x, this->y + rhs.y, this->z + rhs.z);
 }
 
+bool Vector3::operator<(Vector3 const& right)
+{
+	return this->norm() < right.norm();
+}
+
 float& Vector3::operator[](int index)
 {
 	switch (index)

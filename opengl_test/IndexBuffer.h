@@ -8,6 +8,8 @@ public:
 	IndexBuffer(const GLuint *data, GLuint count);
 	void bind() const;
 	void unbind() const;
+	unsigned int getId();
+	unsigned int getId() const;
 	GLuint getCount() const;
 	friend bool operator==(IndexBuffer const& left, IndexBuffer const& right);
 	bool operator<(IndexBuffer const& right);

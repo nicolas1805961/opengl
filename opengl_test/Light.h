@@ -8,11 +8,10 @@
 class Light
 {
 public:
-	Light(const Shader& shader, const Vector3& ambient, const Vector3& diffuse, const Vector3& specular, std::string const& name,
-		bool night);
+
+	Light(const Shader& shader, const Vector3& ambient, const Vector3& diffuse, const Vector3& specular, std::string const& name);
 
 protected:
-	bool m_night;
 	std::string m_name;
 	Shader m_shader;
 	Vector3 m_ambient;

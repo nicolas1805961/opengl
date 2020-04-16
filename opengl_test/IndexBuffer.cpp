@@ -18,6 +18,17 @@ void IndexBuffer::unbind() const
 }
 
 
+unsigned int IndexBuffer::getId()
+{
+	return m_renderer_id;
+}
+
+
+unsigned int IndexBuffer::getId() const
+{
+	return m_renderer_id;
+}
+
 GLuint IndexBuffer::getCount() const
 {
 	return m_count;

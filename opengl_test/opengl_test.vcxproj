@@ -154,7 +154,7 @@
     <ClCompile Include="Matrix2f.cpp" />
     <ClCompile Include="Matrix3f.cpp" />
     <ClCompile Include="Object.cpp" />
-    <ClCompile Include="Objects.cpp" />
+    <ClCompile Include="Manager.cpp" />
     <ClCompile Include="Plane.cpp" />
     <ClCompile Include="PointLight.cpp" />
     <ClCompile Include="IndexBuffer.cpp" />
@@ -163,6 +163,7 @@
     <ClCompile Include="Matrix4f.cpp" />
     <ClCompile Include="Ray.cpp" />
     <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="Shape.cpp" />
     <ClCompile Include="Sphere.cpp" />
     <ClCompile Include="SpotLight.cpp" />
     <ClCompile Include="stb_image.cpp" />
@@ -179,8 +180,6 @@
     <None Include="dayVertex.glsl" />
     <None Include="lampFragment.glsl" />
     <None Include="lampVertex.glsl" />
-    <None Include="nightFragment.glsl" />
-    <None Include="nightVertex.glsl" />
     <None Include="shadowFragment.glsl" />
     <None Include="shadowVertex.glsl" />
     <None Include="textureFragment.glsl" />
@@ -188,6 +187,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="comparePair.h" />
+    <ClInclude Include="comparePointers.h" />
     <ClInclude Include="Cube.h" />
     <ClInclude Include="DirectionalLight.h" />
     <ClInclude Include="Camera.h" />
@@ -198,12 +198,13 @@
     <ClInclude Include="Matrix2f.h" />
     <ClInclude Include="Matrix3f.h" />
     <ClInclude Include="Object.h" />
-    <ClInclude Include="Objects.h" />
+    <ClInclude Include="Manager.h" />
     <ClInclude Include="Plane.h" />
     <ClInclude Include="PointLight.h" />
     <ClInclude Include="Light.h" />
     <ClInclude Include="Matrix4f.h" />
     <ClInclude Include="Ray.h" />
+    <ClInclude Include="Shape.h" />
     <ClInclude Include="Sphere.h" />
     <ClInclude Include="SpotLight.h" />
     <ClInclude Include="stb_image.h" />
@@ -221,7 +222,6 @@
   <ItemGroup>
     <Image Include="container2.png" />
     <Image Include="container2_specular.png" />
-    <Image Include="Mauritius_beach.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

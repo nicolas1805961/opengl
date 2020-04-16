@@ -32,6 +32,17 @@ void VertexArray::unbind() const
 }
 
 
+unsigned int VertexArray::getId()
+{
+	return m_renderer_id;
+}
+
+
+unsigned int VertexArray::getId() const
+{
+	return m_renderer_id;
+}
+
 bool VertexArray::operator<(VertexArray const& rhs)
 {
 	return m_renderer_id < rhs.m_renderer_id;

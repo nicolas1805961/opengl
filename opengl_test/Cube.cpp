@@ -1,13 +1,13 @@
 #include "Cube.h"
 
-Cube::Cube(Vector3 const& diffuse, Vector3 const& specular, Vector3 const& translation, float degreeAngle, Vector3 const& axis,
-	bool light /*= false*/, float scale /*= 1.0f*/, float shininess /*= 32.0f*/, float mass /*= 1.0f*/, Vector3 const& velocity /*= 0.0f*/)
-	: Object(translation, scale, diffuse, specular, light, degreeAngle, axis)
+Cube::Cube(std::string const& name, Vector3 const& diffuse, Vector3 const& specular, Vector3 const& translation, bool isLamp /*=false*/, float degreeAngle, Vector3 const& axis,
+	 float scale /*= 1.0f*/, float shininess /*= 32.0f*/, float mass /*= 1.0f*/, Vector3 const& velocity /*= 0.0f*/)
+	: Object(name, translation, scale, diffuse, specular, isLamp, degreeAngle, axis)
 {}
 
-Cube::Cube(Vector3 const& translation, float degreeAngle, Vector3 const& axis, bool light /*= false*/, float scale /*= 1.0f*/,
+Cube::Cube(std::string const& name, Vector3 const& translation, bool isLamp /*=false*/, float degreeAngle, Vector3 const& axis, float scale /*= 1.0f*/,
 	float shininess /*= 32.0f*/, float mass /*= 1.0f*/, Vector3 const& velocity /*= 0.0f*/)
-	: Object(translation, scale, light, degreeAngle, axis)
+	: Object(name, translation, scale, isLamp, degreeAngle, axis)
 {}
 
 std::pair<IndexBuffer, VertexArray> Cube::initializeLayout()

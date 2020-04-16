@@ -44,6 +44,7 @@ struct SpotLight
     vec3 specular;
 };
 
+uniform bool night;
 uniform sampler2D shadowMap;
 uniform DirLight dirLight;
 uniform PointLight pointLights[4];
@@ -91,6 +92,8 @@ vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir)
     vec3 diffuse = light.diffuse * diff * material.diffuse;
     vec3 specular = light.specular * spec * material.specular;
     
+    if (night)
+        return ((ambient + diffuse + specular) * (1 / 150000));
     return (ambient + (isInShadow(positionToLight, diff) * (diffuse + specular)));
 }
 
@@ -164,12 +167,15 @@ void main()
     vec3 result = CalcDirLight(dirLight, norm, viewDir);
     
     // Point lights
-    for (int i = 0; i < 4; i++)
+    if (night)
     {
-        result += CalcPointLight(pointLights[i], norm, FragPos, viewDir);
+        for (int i = 0; i < 4; i++)
+        {
+            result += CalcPointLight(pointLights[i], norm, FragPos, viewDir);
+        }
+        // Spot light
+        result += CalcSpotLight(spotLight, norm, FragPos, viewDir);
     }
-    // Spot light
-    result += CalcSpotLight(spotLight, norm, FragPos, viewDir);
     
     color = vec4(result, 1.0);
     //color = mix(fogColor, vec4( result, 1.0 ), visibility);

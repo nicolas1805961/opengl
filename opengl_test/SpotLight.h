@@ -8,8 +8,7 @@ class SpotLight: public Light
 {
 public:
 	SpotLight(const Shader& shader, const Vector3& ambient, const Vector3& diffuse, const Vector3& specular, std::string const& name,
-		const Vector3& position, const Vector3& direction, float cutOff, float outerCutOff, float constant, float linear, float quadratic,
-		bool night);
+		const Vector3& position, const Vector3& direction, float cutOff, float outerCutOff, float constant, float linear, float quadratic);
 	
 private:
 	Vector3 m_translation;

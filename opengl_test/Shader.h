@@ -12,7 +12,7 @@ class Shader
 {
 public:
 
-	enum class ShaderType { LAMP = 1, LIGHTING = 0 , DEPTH = 2};
+	enum class ShaderType { LAMP = 2, LIGHTING = 1 , DEPTH = 0};
 
 	Shader() = default;
 	Shader(const std::string& vertex_shader, const std::string& fragment_shader, ShaderType const& shaderType);

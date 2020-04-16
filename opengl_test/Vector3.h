@@ -23,6 +23,7 @@ public:
 	Vector3& operator+=(Vector3 const& rhs);
 	Vector3& operator-=(Vector3 const& rhs);
 	Vector3& operator/=(float const& rhs);
+	bool operator<(Vector3 const& right);
 	float& operator[](int index);
 	float operator[](int index) const;
 	bool operator==(const Vector3& rhs);

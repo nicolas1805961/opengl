@@ -84,9 +84,6 @@
     <ClCompile Include="Object.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Objects.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Ray.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -106,6 +103,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="FrameBuffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Shape.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Manager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -173,9 +176,6 @@
     <ClInclude Include="Object.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Objects.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Ray.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -200,11 +200,17 @@
     <ClInclude Include="FrameBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Shape.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="comparePointers.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Manager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="Mauritius_beach.png">
-      <Filter>Resource Files</Filter>
-    </Image>
     <Image Include="container2.png">
       <Filter>Resource Files</Filter>
     </Image>
@@ -229,12 +235,6 @@
       <Filter>Resource Files</Filter>
     </None>
     <None Include="shadowFragment.glsl">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="nightVertex.glsl">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="nightFragment.glsl">
       <Filter>Resource Files</Filter>
     </None>
     <None Include="DayFragment.glsl">

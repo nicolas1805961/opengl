@@ -5,16 +5,16 @@ Plane::Plane()
 
 }
 
-Plane::Plane(Vector3 const& diffuse, Vector3 const& specular, Vector3 const& translation, float scale /*= 1.0f*/, float degreeAngle,
+Plane::Plane(std::string const& name, Vector3 const& diffuse, Vector3 const& specular, Vector3 const& translation, bool isLamp /*=false*/, float scale /*= 1.0f*/, float degreeAngle,
 	Vector3 const& axis, bool light /*=false*/, float shininess /*= 32.0f*/, float mass /*= 1.0f*/,
 	Vector3 const& velocity /*= Vector3(0.0f)*/, Vector3 const& normal /*= Vector3(0.0f, 1.0f, 0.0f)*/)
-	: Object(translation, scale, diffuse, specular, light, degreeAngle, axis)
+	: Object(name, translation, scale, diffuse, specular, isLamp, degreeAngle, axis)
 {}
 
-Plane::Plane(Vector3 const& translation, float scale /*= 1.0f*/, float degreeAngle, Vector3 const& axis, bool light /*=false*/,
+Plane::Plane(std::string const& name, Vector3 const& translation, bool isLamp /*=false*/, float scale /*= 1.0f*/, float degreeAngle, Vector3 const& axis, bool light /*=false*/,
 	float shininess /*= 32.0f*/, float mass /*= 1.0f*/, Vector3 const& velocity /*= Vector3(0.0f)*/,
 	Vector3 const& normal /*= Vector3(0.0f, 1.0f, 0.0f)*/)
-	: Object(translation, scale, light, degreeAngle, axis)
+	: Object(name, translation, scale, isLamp, degreeAngle, axis)
 {}
 
 bool Plane::intersectRay(Ray& ray)
