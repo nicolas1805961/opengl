@@ -62,7 +62,6 @@ protected:
 	Vector3 m_acceleration;
 	Vector3 m_velocity;
 	float m_mass;
-	Material m_material;
 	bool m_isTexture;
 	Vector3 m_diffuse;
 	Vector3 m_specular;

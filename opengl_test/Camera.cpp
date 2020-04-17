@@ -1,109 +1,61 @@
 #include "Camera.h"
 
-Camera::Camera(Vector3 position /*= Vector3(0.0f, 0.0f, 0.0f)*/, Vector3 up /*= Vector3(0.0f, 0.1f, 0.0f)*/,
-	GLfloat yaw /*= -90.0f*/, GLfloat pitch /*= 0.0f*/)
-	: front(Vector3(0.0f, 0.0f, -1.0f)), movementSpeed(0.006f), mouseSensitivity(0.25f), zoom(45.0f)
+Camera::Camera(Vector3 const& target, Vector3 const& position)
+	: m_target(target), m_position(position), m_up(0.0f, 1.0f, 0.0f)
 {
-	this->position = position;
-	this->worldUp = up;
-	this->yaw = yaw;
-	this->pitch = pitch;
-	this->updateCameraVectors();
+	m_direction = (m_target - position).normalize();
+	m_left = m_up.cross_product(m_direction).normalize();
+	m_phi = toDegree(asin(m_direction.get_y()));
+	m_theta = toDegree(atan2(m_direction.get_z(), m_direction.get_x()));
+	std::cout << m_theta << "\n";
+	std::cout << m_phi << "\n";
 }
 
-Camera::Camera(GLfloat posX, GLfloat posY, GLfloat posZ, GLfloat upX, GLfloat upY, GLfloat upZ, GLfloat yaw, GLfloat pitch)
-	:front(Vector3(0.0f, 0.0f, -1.0f)), movementSpeed(0.006f), mouseSensitivity(0.25f), zoom(45.0f)
+void Camera::updateDirection(float x, float y)
 {
-	this->position = Vector3(posX, posY, posZ);
-	this->worldUp = Vector3(upX, upY, upZ);
-	this->yaw = yaw;
-	this->pitch = pitch;
-	this->updateCameraVectors();
+	m_theta += (x * 0.5);
+	m_phi += (y * 0.5);
+	//std::cout << m_longitude << "\n";
+	if (m_phi >= 89.0f)
+		m_phi = 89.0f;
+	else if (m_phi <= -89.0f)
+		m_phi = -89.0f;
+	m_direction[0] = cos(toRadian(m_phi)) * cos(toRadian(m_theta));
+	m_direction[1] = sin(toRadian(m_phi));
+	m_direction[2] = sin(toRadian(m_theta)) * cos(toRadian(m_phi));
+	m_direction = m_direction.normalize();
+	m_left = m_up.cross_product(m_direction).normalize();
+	m_target = m_direction + m_position;
 }
 
-Matrix4f Camera::get_view_matrix()
+void Camera::updatePosition(Mouvement const& mouvement)
 {
-	return Matrix4f::gl_look_at(this->position, this->position + this->front, this->up);
+	if (mouvement == Mouvement::FORWARD)
+		m_position += m_direction * 0.5;
+	if (mouvement == Mouvement::BACKWARD)
+		m_position -= m_direction * 0.5;
+	if (mouvement == Mouvement::LEFT)
+		m_position += m_left * 0.5;
+	if (mouvement == Mouvement::RIGHT)
+		m_position -= m_left * 0.5;
+	m_target = m_direction + m_position;
 }
 
-Matrix4f Camera::get_view_matrix() const
+Matrix4f Camera::getViewMatrix()
 {
-	return Matrix4f::gl_look_at(this->position, this->position + this->front, this->up);
+	return Matrix4f::gl_look_at(m_position, m_target, m_up);
 }
 
-Matrix4f Camera::getProjectionMatrix()
+float Camera::toRadian(float degreeAngle)
 {
-	return Matrix4f::gl_perspective(GetZoom(), 1920.0f / 1080.0f, 0.1f, 1000.0f);
+	float y = M_PI / 180;
+	return degreeAngle * y;
 }
 
-Matrix4f Camera::getProjectionMatrix() const
+float Camera::toDegree(float radianAngle)
 {
-	return Matrix4f::gl_perspective(GetZoom(), 1920.0f / 1080.0f, 0.1f, 1000.0f);
-}
-
-void Camera::ProcessKeyboard(Camera_movement direction, GLfloat deltaTime)
-{
-	GLfloat velocity = this->movementSpeed * deltaTime;
-	if (direction == Camera_movement::FORWARD)
-		this->position += this->front * velocity;
-
-	if (direction == Camera_movement::BACKWARD)
-		this->position -= this->front * velocity;
-
-	if (direction == Camera_movement::LEFT)
-		this->position -= this->right * velocity;
-
-	if (direction == Camera_movement::RIGHT)
-		this->position += this->right * velocity;
-}
-
-void Camera::ProcessMouseMovement(GLfloat xOffset, GLfloat yOffset, GLboolean constrainPitch /*= true*/)
-{
-	xOffset *= this->mouseSensitivity;
-	yOffset *= this->mouseSensitivity;
-	this->yaw += xOffset;
-	this->pitch += yOffset;
-	// Make sure that when pitch is out of bounds, screen doesn't get flipped
-	if (constrainPitch)
-	{
-		if (this->pitch > 89.0f)
-			this->pitch = 89.0f;
-
-		if (this->pitch < -89.0f)
-			this->pitch = -89.0f;
-	}
-	// Update Front, Right and Up Vectors using the updated Eular angles
-	this->updateCameraVectors();
-}
-
-void Camera::ProcessMouseScroll(GLfloat yOffset)
-{
-	if (yOffset > 0)
-		this->zoom -= 0.1f;
-	else if (yOffset < 0)
-		this->zoom += 0.1f;
-	/*if (this->zoom <= 1.0f)
-		this->zoom = 1.0f;
-	if (this->zoom >= 45.0f)
-		this->zoom = 45.0f;*/
-	/*if (this->zoom >= 1.0f && this->zoom <= 45.0f)
-		this->zoom -= yOffset;
-
-	if (this->zoom <= 1.0f)
-		this->zoom = 1.0f;
-
-	if (this->zoom >= 45.0f)
-		this->zoom = 45.0f;*/
-}
-
-GLfloat Camera::GetZoom()
-{
-	return this->zoom;
-}
-
-GLfloat Camera::GetZoom() const
-{
-	return this->zoom;
+	float y = 180 / M_PI;
+	return radianAngle * y;
 }
 
 Vector3 Camera::get3dMousePosition(int xMouse, int yMouse)
@@ -112,42 +64,23 @@ Vector3 Camera::get3dMousePosition(int xMouse, int yMouse)
 	float y = 1.0f - (2.0f * yMouse) / glutGet(GLUT_WINDOW_HEIGHT);
 	Vector4 to = Vector4(x, y, 1.0, 1.0);
 	to = Matrix4f::inverse(getProjectionMatrix()) * to;
-	to = Matrix4f::inverse(get_view_matrix()) * to;
+	to = Matrix4f::inverse(getViewMatrix()) * to;
 	to.perspectiveDivision();
 	Vector3 to3f = Vector3(to.get_x(), to.get_y(), to.get_z());
 	return to3f;
 }
 
-Vector3 Camera::getFront()
+Matrix4f Camera::getProjectionMatrix()
 {
-	return this->front;
+	return Matrix4f::gl_perspective(45, 1920.0f / 1080.0f, 0.1f, 1000.0f);
 }
 
 Vector3 Camera::GetPosition()
 {
-	return this->position;
+	return m_position;
 }
 
-Vector3 Camera::GetPosition() const
+Vector3 Camera::getDirection()
 {
-	return this->position;
-}
-
-GLfloat Camera::get_radians(GLfloat x)
-{
-	float y = M_PI / 180;
-	return x * y;
-}
-
-void Camera::updateCameraVectors()
-{
-	// Calculate the new Front vector
-	Vector3 front;
-	front.set_x(cosf(get_radians(this->yaw)) * cosf(get_radians(this->pitch)));
-	front.set_y(sinf(get_radians(this->pitch)));
-	front.set_z(sinf(get_radians(this->yaw)) * cosf(get_radians(this->pitch)));
-	this->front = front.normalize();
-	// Also re-calculate the Right and Up vector
-	this->right = this->front.cross_product(this->worldUp).normalize();
-	this->up = this->right.cross_product(this->front).normalize();
+	return m_direction;
 }

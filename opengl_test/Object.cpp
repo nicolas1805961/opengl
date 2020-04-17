@@ -116,11 +116,14 @@ void Object::drawDay(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, std:
 	shader.set_uniform_mat_4f("model", model);
 	shader.set_uniform_mat_4f("shadowView", shadowMatrices.first);
 	shader.set_uniform_mat_4f("shadowProjection", shadowMatrices.second);
-	if (m_isTexture)
+	shader.set_uniform_3f("objectDiffuse", m_diffuse.get_x(), m_diffuse.get_y(), m_diffuse.get_z());
+	shader.set_uniform_3f("objectSpecular", m_specular.get_x(), m_specular.get_y(), m_specular.get_z());
+	shader.set_uniform_1f("shininess", m_shininess);
+	/*if (m_isTexture)
 		m_material = Material(shader, m_shininess, "material");
 	else
 		m_material = Material(shader, m_shininess, "material", m_diffuse, m_specular);
-	//glViewport(0, 0, 1920, 1080);
+	glViewport(0, 0, 1920, 1080);*/
 	glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, nullptr);
 	m_doesModify = false;
 }
@@ -165,11 +168,14 @@ void Object::drawNight(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, un
 	shader.set_uniform_mat_4f("view", viewProjMatrices.first);
 	shader.set_uniform_mat_4f("projection", viewProjMatrices.second);
 	shader.set_uniform_mat_4f("model", model);
-	if (m_isTexture)
+	shader.set_uniform_3f("objectDiffuse", m_diffuse.get_x(), m_diffuse.get_y(), m_diffuse.get_z());
+	shader.set_uniform_3f("objectSpecular", m_specular.get_x(), m_specular.get_y(), m_specular.get_z());
+	shader.set_uniform_1f("shininess", m_shininess);
+	/*if (m_isTexture)
 		m_material = Material(shader, m_shininess, "material");
 	else
 		m_material = Material(shader, m_shininess, "material", m_diffuse, m_specular);
-	//glViewport(0, 0, 1920, 1080);
+	glViewport(0, 0, 1920, 1080);*/
 	glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, nullptr);
 	m_doesModify = false;
 }

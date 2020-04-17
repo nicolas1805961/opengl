@@ -146,13 +146,14 @@
   <ItemGroup>
     <ClCompile Include="Cube.cpp" />
     <ClCompile Include="DirectionalLight.cpp" />
-    <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Error.cpp" />
+    <ClCompile Include="Event.cpp" />
     <ClCompile Include="Fog.cpp" />
     <ClCompile Include="FrameBuffer.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="Matrix2f.cpp" />
     <ClCompile Include="Matrix3f.cpp" />
+    <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="Manager.cpp" />
     <ClCompile Include="Plane.cpp" />
@@ -190,13 +191,14 @@
     <ClInclude Include="comparePointers.h" />
     <ClInclude Include="Cube.h" />
     <ClInclude Include="DirectionalLight.h" />
-    <ClInclude Include="Camera.h" />
     <ClInclude Include="Error.h" />
+    <ClInclude Include="Event.h" />
     <ClInclude Include="Fog.h" />
     <ClInclude Include="FrameBuffer.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="Matrix2f.h" />
     <ClInclude Include="Matrix3f.h" />
+    <ClInclude Include="Camera.h" />
     <ClInclude Include="Object.h" />
     <ClInclude Include="Manager.h" />
     <ClInclude Include="Plane.h" />
