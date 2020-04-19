@@ -3,18 +3,19 @@
 unsigned int Sphere::m_height = 100;
 unsigned int Sphere::m_width = 100;
 
-Sphere::Sphere(std::string const& name, Vector3 const& diffuse, Vector3 const& specular, Vector3 const& translation, bool isLamp /*=false*/, float scale /*= 1.0f*/,
-	float degreeAngle /*=0.0f*/, Vector3 const& axis /*=Vector3(1.0f)*/, float shininess /*= 32.0f*/, float mass /*= 1.0f*/,
-	Vector3 const& velocity /*= Vector3(0.0f)*/)
+Sphere::Sphere(std::string const& name, Vector3 const& diffuse, Vector3 const& specular, Vector3 const& translation, bool isLamp /*=false*/,
+	float scale /*= 1.0f*/, float degreeAngle /*=0.0f*/, Vector3 const& axis /*=Vector3(1.0f)*/, float shininess /*= 32.0f*/,
+	float mass /*= 1.0f*/, Vector3 const& velocity /*= Vector3(0.0f)*/)
 	: Object(name, translation, scale, diffuse, specular, isLamp, degreeAngle, axis)
 {}
 
-Sphere::Sphere(std::string const& name, Vector3 const& translation, bool isLamp /*=false*/, float scale /*= 1.0f*/, float degreeAngle /*=0.0f*/,
-	Vector3 const& axis /*=Vector3(1.0f)*/, float shininess /*= 32.0f*/, float mass /*= 1.0f*/, Vector3 const& velocity /*= Vector3(0.0f)*/)
+Sphere::Sphere(std::string const& name, Vector3 const& translation, bool isLamp /*=false*/, float scale /*= 1.0f*/,
+	float degreeAngle /*=0.0f*/, Vector3 const& axis /*=Vector3(1.0f)*/, float shininess /*= 32.0f*/, float mass /*= 1.0f*/,
+	Vector3 const& velocity /*= Vector3(0.0f)*/)
 	: Object(name, translation, scale, isLamp, degreeAngle, axis)
 {}
 
-std::pair<IndexBuffer, VertexArray> Sphere::initializeLayout()
+std::pair<VertexArray, unsigned int> Sphere::initializeLayout()
 {
 	std::vector<unsigned int> m_indices;
 	std::vector<float> m_vertices;
@@ -73,25 +74,27 @@ std::pair<IndexBuffer, VertexArray> Sphere::initializeLayout()
 			k2++;
 		}
 	}
+	VertexArray vertexArray;
 	VertexBuffer vb(&m_vertices[0], sizeof(float) * m_vertices.size());
-	VertexBufferLayout vbl(3, 3, 2);
 	IndexBuffer ib(&m_indices[0], m_indices.size());
-	VertexArray va(vb, vbl);
-	return std::make_pair(ib, va);
+	VertexBufferLayout vbl(3, 3, 2);
+	vertexArray.linkVerticesAndElements(vb, vbl, ib);
+	return std::make_pair(vertexArray, ib.getCount());
 }
 
-bool Sphere::intersectPlane(Plane const& plane)
+/*bool Sphere::intersectPlane(Plane const& plane)
 {
 	Vector3 distanceSphereCenterToPlanePoint = (m_translation - plane.getTranslation()).normalize();
-	float minimalDistanceSphereToPlane = distanceSphereCenterToPlanePoint.dot_product(plane.getNormal()) / plane.getNormal().norm();
+	Vector3 planeNormal(plane.getNormal().get_x(), plane.getNormal().get_y(), plane.getNormal().get_z());
+	float minimalDistanceSphereToPlane = distanceSphereCenterToPlanePoint.dot_product(planeNormal / planeNormal).norm();
 	if (minimalDistanceSphereToPlane < m_scale)
 		return true;
 	return false;
-}
+}*/
 
 bool Sphere::intersectRay(Ray& ray)
 {
-	auto k = ray.get_origin() - Vector3(m_translation.get_x(), m_translation.get_y(), m_translation.get_z());
+	auto k = ray.get_origin() - Vector3(m_position.get_x(), m_position.get_y(), m_position.get_z());
 	float a = ray.get_direction().dot_product(ray.get_direction());
 	float b = 2 * ray.get_direction().dot_product(k);
 	float c = k.dot_product(k) - pow(m_scale, 2);
@@ -114,6 +117,11 @@ bool Sphere::intersectRay(Ray& ray)
 			ray.set_t_distance(x1);
 	}
 	return true;
+}
+
+void Sphere::keepTrack()
+{
+	Object::keepTrack();
 }
 
 /*Intersect Sphere::intersectBoundingSphere(Sphere const& other)

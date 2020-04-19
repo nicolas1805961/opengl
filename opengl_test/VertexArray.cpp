@@ -1,10 +1,16 @@
 #include "VertexArray.h"
 
-VertexArray::VertexArray(const VertexBuffer& vb, const VertexBufferLayout& layout)
+VertexArray::VertexArray()
 {
 	glGenVertexArrays(1, &m_renderer_id);
 	bind();
-	vb.bind();
+}
+
+
+void VertexArray::linkVerticesAndElements(const VertexBuffer& vertexBuffer, const VertexBufferLayout& layout, IndexBuffer const& indexBuffer)
+{
+	vertexBuffer.bind();
+	indexBuffer.bind();
 	unsigned int offset = 0;
 	auto elements = layout.get_elements();
 	for (std::size_t i = 0; i < elements.size(); i++)

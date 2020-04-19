@@ -22,6 +22,7 @@ public:
 	bool isNight();
 	Manager getManager();
 	Camera getCamera();
+	void keepTrack();
 
 private:
 	void processIntersection(Vector3 const& currentMousePosition, Vector3 const& lastMousePosition, Ray& ray);

@@ -64,11 +64,8 @@ void Event::processIntersection(Vector3 const& currentMousePosition, Vector3 con
 {
 	m_doesIntersect = true;
 	Vector3 distanceMousePositions = (currentMousePosition - lastMousePosition).normalize();
-	if (isnan(distanceMousePositions.get_x()))
-	{
-		std::cout << "ok\n";
-	}
 	ray.get_hit()->setTranslation(ray.get_hit()->getTranslation() + distanceMousePositions);
+	ray.get_hit()->keepTrack();
 	glutPostRedisplay();
 }
 
@@ -136,4 +133,12 @@ Manager Event::getManager()
 Camera Event::getCamera()
 {
 	return m_camera;
+}
+
+void Event::keepTrack()
+{
+	static unsigned int callNumber = 0;
+	callNumber++;
+	if (callNumber <= 1)
+		m_manager.keepTrack();
 }

@@ -23,10 +23,11 @@ public:
 		Vector3 const& velocity = Vector3(0.0f));
 	Sphere(std::string const& name, Vector3 const& translation, bool isLamp = false, float scale = 1.0f, float degreeAngle = 0.0f,
 		Vector3 const& axis = Vector3(1.0f), float shininess = 32.0f, float mass = 1.0f, Vector3 const& velocity = Vector3(0.0f));
-	static std::pair<IndexBuffer, VertexArray> initializeLayout();
-	bool intersectPlane(Plane const& plane);
+	static std::pair<VertexArray, unsigned int> initializeLayout();
+	//bool intersectPlane(Plane const& plane);
 	//bool intersect(Manager const& Manager);
 	bool intersectRay(Ray& ray);
+	void keepTrack();
 
 private:
 	static unsigned int m_height;

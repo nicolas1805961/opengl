@@ -24,20 +24,20 @@ public:
 	enum class IsLamp { LAMP, NOLAMP };
 
 	Object() = default;
-	Object(std::string const& name, Vector3 const& translation, float scale, Vector3 const& diffuse, Vector3 const& specular, bool isLamp = false, float degreeAngle = 0.0f,
+	Object(std::string const& name, Vector3 const& translation, float scale, Vector3 const& diffuse, Vector3 const& specular,
+		bool isLamp = false, float degreeAngle = 0.0f, Vector3 const& axis = Vector3(1.0f), float shininess = 32.0f, float mass = 1.0f,
+		Vector3 const& velocity = Vector3(0.0f), bool isTexture = false, Vector3 const& acceleration = Vector3(0.0f),
+		Vector3 const& sumForces = Vector3(0.0f));
+	Object(std::string const& name, Vector3 const& translation, float scale, bool isLamp = false, float degreeAngle = 0.0f,
 		Vector3 const& axis = Vector3(1.0f), float shininess = 32.0f, float mass = 1.0f, Vector3 const& velocity = Vector3(0.0f),
-		bool doesModify = false, bool isTexture = false, Vector3 const& acceleration = Vector3(0.0f),
-		Vector3 const& sumForces = Vector3(0.0f), Vector4 const& position = Vector4(0.0f, 0.0f, 0.0f, 1.0f));
-	Object(std::string const& name, Vector3 const& translation, float scale, bool isLamp = false, float degreeAngle = 0.0f, Vector3 const& axis = Vector3(1.0f), float shininess = 32.0f,
-		float mass = 1.0f, Vector3 const& velocity = Vector3(0.0f), bool doesModify = false, bool isTexture = false,
-		Vector3 const& acceleration = Vector3(0.0f), Vector3 const& sumForces = Vector3(0.0f),
-		Vector4 const& position = Vector4(0.0f, 0.0f, 0.0f, 1.0f));
+		bool isTexture = false, Vector3 const& acceleration = Vector3(0.0f), Vector3 const& sumForces = Vector3(0.0f));
 	float getRadians(float degreeAngle);
 	Vector3 getTranslation();
 	Vector3 getTranslation() const;
+	Vector4 getPosition();
+	Vector4 getPosition() const;
 	std::string getName();
 	std::string getName() const;
-	void keepTrack(Matrix4f const& model, Matrix4f const& view, Matrix4f const& projection);
 	virtual bool intersectRay(Ray &ray) = 0;
 	//virtual bool intersectRay(int x, int y, Camera const& camera) = 0;
 	float getScale();
@@ -46,17 +46,19 @@ public:
 	void setScale(float scale);
 	void updateVelocityAndPosition(float dt);
 	void setTranslation(Vector3 const& translation);
+	void setPosition(Vector4 const& position);
 	void drawDay(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, std::pair<Matrix4f, Matrix4f> const& shadowMatrices,
 		unsigned int indexCount, Shader const& shader);
 	void drawLamp(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, unsigned int indexCount, Shader const& shader);
 	void drawShadow(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, unsigned int indexCount, Shader const& shader);
 	void drawNight(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, unsigned int indexCount, Shader const& shader);
+	virtual void keepTrack();
 	bool isLamp();
 
 protected:
+	Matrix4f m_model;
 	std::string m_name;
 	bool m_isLamp;
-	bool m_doesModify;
 	Vector4 m_position;
 	Vector3 m_sumForces;
 	Vector3 m_acceleration;

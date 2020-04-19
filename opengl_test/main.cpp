@@ -257,7 +257,7 @@ void click(int button, int state, int x, int y)
 
 void display() {
 	if (input.isNight())
-		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+		glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
 	else
 		glClearColor(0.37f, 0.65f, 0.92f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -331,11 +331,11 @@ void display() {
 		Vector3(input.getCamera().getDirection().get_x(), input.getCamera().getDirection().get_y(), input.getCamera().getDirection().get_z()), cosf(input.getCamera().toRadian(12.5f)),
 		cosf(input.getCamera().toRadian(15.0f)), 1.0f, 0.09f, 0.032f);
 
+	Cube cube1("cube1", Vector3(0.0f, 1.0f, 1.0f), Vector3(1.0f, 1.0f, 1.0f), Vector3(5.0, 1.0, -10.0));
 	Plane plane1("plane1", Vector3(1.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f), 20.0f);
 	Sphere sphere1("sphere1", Vector3(0.0f, 1.0f, 0.0f), Vector3(1.0f, 1.0f, 1.0f), Vector3(-2.0f, 1.0f, -10.0f));
 	Sphere sphere2("sphere2", Vector3(0.0f, 0.0f, 1.0f), Vector3(0.3f, 0.3f, 0.3f), Vector3(2.0f, 1.0f, -10.0f));
 
-	/*auto view = input.getCamera().get_view_matrix();*/
 	auto view = input.getCamera().getViewMatrix();
 	auto projection = input.getCamera().getProjectionMatrix();
 	auto viewProjPair = std::make_pair(view, projection);
@@ -344,6 +344,7 @@ void display() {
 	lightingShader.set_uniform_1i("night", input.isNight());
 	lightingShader.set_uniform_3f("viewPos", input.getCamera().GetPosition().get_x(), input.getCamera().GetPosition().get_y(), input.getCamera().GetPosition().get_z());
 
+	input.addObject(std::make_shared<Cube>(cube1), cubeData);
 	input.addObject(std::make_shared<Sphere>(sphere1), sphereData);
 	input.addObject(std::make_shared<Sphere>(sphere2), sphereData);
 	input.addObject(std::make_shared<Plane>(plane1), planeData);
@@ -351,6 +352,8 @@ void display() {
 	input.addObject(pointLight2.getShape(), sphereData);
 	input.addObject(pointLight3.getShape(), sphereData);
 	input.addObject(pointLight4.getShape(), sphereData);
+
+	//input.keepTrack(view, projection);
 
 	//-10.0f, 10.0f, -10.0f, 10.0f, 1.0f, 7.5f
 	//-2.0f, 4.0f, -1.0f
@@ -367,9 +370,7 @@ void display() {
     dayShader.set_uniform_mat_4f("view", view);
     dayShader.set_uniform_mat_4f("projection", projection);*/
 
-	/*Cube cube1(Vector3(0.0f, 0.0f, 1.0f), Vector3(0.2f, 0.2f, 0.2f), 32.0f, Vector3(0.0f, 0.0f, 0.0f), 1.0f, 20.0f,
-		Vector3(1.0f, 0.3f, 0.5f));
-	Cube cube2(Vector3(0.0f, 1.0f, 0.0f), Vector3(0.2f, 0.2f, 0.2f), 32.0f, Vector3(2.0f, 5.0f, -15.0f), 0.5f, 40.0f,
+	/*Cube cube2(Vector3(0.0f, 1.0f, 0.0f), Vector3(0.2f, 0.2f, 0.2f), 32.0f, Vector3(2.0f, 5.0f, -15.0f), 0.5f, 40.0f,
 		Vector3(1.0f, 0.3f, 0.5f));
 	Cube cube3(Vector3(1.0f, 0.0f, 0.0f), Vector3(0.2f, 0.2f, 0.2f), 32.0f, Vector3(-1.5f, -2.2f, -2.5f), 0.75f, 60.0f,
 		Vector3(1.0f, 0.3f, 0.5f));

@@ -1,22 +1,12 @@
 #include "Shape.h"
 
-Shape::Shape(std::pair<IndexBuffer, VertexArray> pair)
-	: m_indexBuffer(pair.first), m_vertexArray(pair.second)
+Shape::Shape(std::pair<VertexArray, unsigned int> pair)
+	: m_vertexArray(pair.first), m_indexCount(pair.second)
 {}
 
 bool Shape::operator==(Shape const& right)
 {
-	return (m_indexBuffer.getId() == right.m_indexBuffer.getId()) && (m_vertexArray.getId() == right.m_vertexArray.getId());
-}
-
-IndexBuffer Shape::getIndexBuffer()
-{
-	return m_indexBuffer;
-}
-
-IndexBuffer Shape::getIndexBuffer() const
-{
-	return m_indexBuffer;
+	return (m_vertexArray.getId() == right.m_vertexArray.getId());
 }
 
 VertexArray Shape::getVertexArray()
@@ -27,4 +17,14 @@ VertexArray Shape::getVertexArray()
 VertexArray Shape::getVertexArray() const
 {
 	return m_vertexArray;
+}
+
+unsigned int Shape::getIndexCount()
+{
+	return m_indexCount;
+}
+
+unsigned int Shape::getIndexCount() const
+{
+	return m_indexCount;
 }

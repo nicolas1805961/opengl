@@ -49,4 +49,5 @@ public:
 	friend Vector3 operator*(float scalar, Vector3 const& rhs);
 	friend Vector3 operator*(Vector3 const& lhs, float scalar);
 	friend Vector3 operator/(Vector3 const& lhs, float scalar);
+	friend Vector3 operator/(Vector3 const& lhs, Vector3 const& rhs);
 };

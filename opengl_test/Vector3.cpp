@@ -25,6 +25,15 @@ Vector3& Vector3::operator/=(float const& rhs)
 	return *this;
 }
 
+Vector3 operator/(Vector3 const& lhs, Vector3 const& rhs)
+{
+	Vector3 res;
+	res[0] = lhs[0] / rhs[0];
+	res[1] = lhs[1] / rhs[1];
+	res[2] = lhs[2] / rhs[2];
+	return res;
+}
+
 Vector3 Vector3::operator*(std::vector<Vector3> const& rhs)
 {
 	Vector3 res(0);

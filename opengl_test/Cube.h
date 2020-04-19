@@ -18,10 +18,13 @@ public:
 		Vector3 const& velocity = Vector3(0.0f));
 	Cube(std::string const& name, Vector3 const& translation, bool isLamp = false, float degreeAngle = 0.0f, Vector3 const& axis = Vector3(1.0f), float scale = 1.0f,
 		float shininess = 32.0f, float mass = 1.0f, Vector3 const& velocity = Vector3(0.0f));
-	static std::pair<IndexBuffer, VertexArray> initializeLayout();
+	static std::pair<VertexArray, unsigned int> initializeLayout();
 	bool intersect(Manager const& Manager);
 	bool intersectRay(Ray& ray);
+	void keepTrack();
 
 private:
+	Vector4 m_minExtent;
+	Vector4 m_maxExtent;
 	
 };

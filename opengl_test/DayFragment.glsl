@@ -23,8 +23,8 @@ struct SpotLight
 {
     vec3 position;
     vec3 direction;
-    float cutOff;
-    float outerCutOff;
+    float nearBorder;
+    float farBorder;
     float constant;
     float linear;
     float quadratic;
@@ -129,8 +129,8 @@ vec3 addSpotLight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
     
     // Spotlight intensity
     float theta = dot(lightDir, normalize(-light.direction));
-    float epsilon = light.cutOff - light.outerCutOff;
-    float intensity = clamp((theta - light.outerCutOff) / epsilon, 0.0, 1.0);
+    float epsilon = light.nearBorder - light.farBorder;
+    float intensity = clamp((theta - light.farBorder) / epsilon, 0.0, 1.0);
     
     // Combine results
     vec3 ambient = light.ambient * objectDiffuse;

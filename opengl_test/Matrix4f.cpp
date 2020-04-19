@@ -91,7 +91,7 @@ Matrix4f Matrix4f::gl_frustum(const float& left, const float& right,
     return frustum;
 }
 
-Matrix4f Matrix4f::gl_translate(Matrix4f& m, Vector3 const& v)
+Matrix4f Matrix4f::gl_translate(Matrix4f const& m, Vector3 const& v)
 {
     Matrix4f translation;
     translation[0][0] = 1.0f;

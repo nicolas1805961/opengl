@@ -7,14 +7,14 @@
 class Shape
 {
 public:
-	Shape(std::pair<IndexBuffer, VertexArray> pair);
+	Shape(std::pair<VertexArray, unsigned int> pair);
 	bool operator==(Shape const& right);
-	IndexBuffer getIndexBuffer();
-	IndexBuffer getIndexBuffer() const;
 	VertexArray getVertexArray();
 	VertexArray getVertexArray() const;
+	unsigned int getIndexCount();
+	unsigned int getIndexCount() const;
 	
 private:
-	IndexBuffer m_indexBuffer;
+	unsigned int m_indexCount;
 	VertexArray m_vertexArray;
 };

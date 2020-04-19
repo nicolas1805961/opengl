@@ -19,7 +19,7 @@ struct MyHashMap
 {
 	std::size_t operator()(Shape const& s) const noexcept
 	{
-		std::size_t h1 = std::hash<unsigned int>{}(s.getIndexBuffer().getId());
+		std::size_t h1 = std::hash<unsigned int>{}(s.getIndexCount());
 		std::size_t h2 = std::hash<unsigned int>{}(s.getVertexArray().getId());
 		return h1 ^ (h2 << 1);
 	}
@@ -39,11 +39,11 @@ struct MyComparatorMap
 {
 	bool operator()(Shape const& left, Shape const& right) const
 	{
-		auto leftIndexBuffer = left.getIndexBuffer();
-		auto rightIndexBuffer = right.getIndexBuffer();
+		auto leftIndexCount = left.getIndexCount();
+		auto rightIndexCount = right.getIndexCount();
 		auto leftVertexArray = left.getVertexArray();
 		auto rightVertexArray = right.getVertexArray();
-		return (leftIndexBuffer.getId() == rightIndexBuffer.getId()) 
+		return (leftIndexCount == rightIndexCount) 
 			&& (leftVertexArray.getId() == rightVertexArray.getId());
 	}
 };
@@ -76,6 +76,7 @@ public:
 	bool trace(Ray& ray);
 	void getSizeShaders();
 	void getSizeObjects();
+	void keepTrack();
 
 private:
 	static int m_placesLeft;

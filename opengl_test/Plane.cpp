@@ -5,16 +5,15 @@ Plane::Plane()
 
 }
 
-Plane::Plane(std::string const& name, Vector3 const& diffuse, Vector3 const& specular, Vector3 const& translation,
-	float scale /*= 1.0f*/, bool isLamp /*=false*/, float degreeAngle, Vector3 const& axis, bool light /*=false*/,
-	float shininess /*= 32.0f*/, float mass /*= 1.0f*/, Vector3 const& velocity /*= Vector3(0.0f)*/,
-	Vector3 const& normal /*= Vector3(0.0f, 1.0f, 0.0f)*/)
+Plane::Plane(std::string const& name, Vector3 const& diffuse, Vector3 const& specular, Vector3 const& translation, float scale /*= 1.0*/,
+	bool isLamp /*=false*/, float degreeAngle, Vector3 const& axis, bool light /*=false*/, float shininess /*= 32.0*/,
+	float mass /*= 1.0*/, Vector3 const& velocity /*= Vector3(0.0)*/, Vector4 const& normal /*= Vector4(0.0, 1.0, 0.0, 1.0)*/)
 	: Object(name, translation, scale, diffuse, specular, isLamp, degreeAngle, axis)
 {}
 
-Plane::Plane(std::string const& name, Vector3 const& translation, bool isLamp /*=false*/, float scale /*= 1.0f*/, float degreeAngle,
-	Vector3 const& axis, bool light /*=false*/, float shininess /*= 32.0f*/, float mass /*= 1.0f*/,
-	Vector3 const& velocity /*= Vector3(0.0f)*/, Vector3 const& normal /*= Vector3(0.0f, 1.0f, 0.0f)*/)
+Plane::Plane(std::string const& name, Vector3 const& translation, bool isLamp /*=false*/, float scale /*= 1.0*/, float degreeAngle,
+	Vector3 const& axis, bool light /*=false*/, float shininess /*= 32.0*/, float mass /*= 1.0*/,
+	Vector3 const& velocity /*= Vector3(0.0)*/, Vector4 const& normal /*= Vector4(0.0, 1.0, 0.0, 1.0)*/)
 	: Object(name, translation, scale, isLamp, degreeAngle, axis)
 {}
 
@@ -23,12 +22,15 @@ bool Plane::intersectRay(Ray& ray)
 	return false;
 }
 
-std::pair<IndexBuffer, VertexArray> Plane::initializeLayout()
+void Plane::keepTrack()
 {
-	/*static int callNumber = 0;
-	callNumber++;
-	if (callNumber > 1)
-		return std::make_pair(IndexBuffer(), VertexArray());*/
+	Object::keepTrack();
+	m_normal = m_model * Vector4(0.0, 1.0, 0.0, 1.0);
+	m_normal.perspectiveDivision();
+}
+
+std::pair<VertexArray, unsigned int> Plane::initializeLayout()
+{
 	std::vector<float> vertices;
 	std::vector<unsigned int> indices;
 	float halfHeight = m_height / 2;
@@ -61,23 +63,24 @@ std::pair<IndexBuffer, VertexArray> Plane::initializeLayout()
 			indices.push_back(j + i * m_width + m_width + 1);
 		}
 	}
+	VertexArray vertexArray;
 	VertexBuffer vb(&vertices[0], sizeof(float) * vertices.size());
-	VertexBufferLayout vbl(3, 3);
 	IndexBuffer ib(&indices[0], indices.size());
-	VertexArray va(vb, vbl);
-	return std::make_pair(ib, va);
+	VertexBufferLayout vbl(3, 3);
+	vertexArray.linkVerticesAndElements(vb, vbl, ib);
+	return std::make_pair(vertexArray, ib.getCount());
 }
 
-Vector3 Plane::getNormal()
+Vector4 Plane::getNormal()
 {
 	return m_normal;
 }
 
-Vector3 Plane::getNormal() const
+Vector4 Plane::getNormal() const
 {
 	return m_normal;
 }
 
-unsigned int Plane::m_height = 100.0f;
+unsigned int Plane::m_height = 50.0f;
 
-unsigned int Plane::m_width = 100.0f;
+unsigned int Plane::m_width = 50.0f;

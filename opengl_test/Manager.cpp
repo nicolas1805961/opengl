@@ -168,12 +168,11 @@ void Manager::drawLighting(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices
 	frameBuffer.bindTexture();
 	for (auto& it1 : m_objects)
 	{
-		it1.first.getIndexBuffer().bind();
 		it1.first.getVertexArray().bind();
 		for (auto const& it2 : it1.second)
 		{
 			if (!it2->isLamp())
-				it2->drawDay(viewProjMatrices, shadowMatrices, it1.first.getIndexBuffer().getCount(), shader);
+				it2->drawDay(viewProjMatrices, shadowMatrices, it1.first.getIndexCount(), shader);
 		}
 	}
 	frameBuffer.unbindTexture();
@@ -183,12 +182,11 @@ void Manager::drawLamp(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, Sh
 {
 	for (auto& it1 : m_objects)
 	{
-		it1.first.getIndexBuffer().bind();
 		it1.first.getVertexArray().bind();
 		for (auto const& it2 : it1.second)
 		{
 			if (it2->isLamp())
-				it2->drawLamp(viewProjMatrices, it1.first.getIndexBuffer().getCount(), shader);
+				it2->drawLamp(viewProjMatrices, it1.first.getIndexCount(), shader);
 		}
 	}
 }
@@ -199,12 +197,11 @@ void Manager::drawShadow(std::pair<Matrix4f, Matrix4f> const& shadowMatrices, Fr
 	glClear(GL_DEPTH_BUFFER_BIT);
 	for (auto& it1 : m_objects)
 	{
-		it1.first.getIndexBuffer().bind();
 		it1.first.getVertexArray().bind();
 		for (auto const& it2 : it1.second)
 		{
 			if (!it2->isLamp())
-				it2->drawShadow(shadowMatrices, it1.first.getIndexBuffer().getCount(), shader);
+				it2->drawShadow(shadowMatrices, it1.first.getIndexCount(), shader);
 		}
 	}
 	frameBuffer.unbind();
@@ -247,4 +244,15 @@ void Manager::getSizeObjects()
 			size++;
 	}
 	std::cout << size << "\n";
+}
+
+void Manager::keepTrack()
+{
+	for (auto const& it : m_objects)
+	{
+		for (auto const& it2 : it.second)
+		{
+			it2->keepTrack();
+		}
+	}
 }

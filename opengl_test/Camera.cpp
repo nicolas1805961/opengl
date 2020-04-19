@@ -7,8 +7,6 @@ Camera::Camera(Vector3 const& target, Vector3 const& position)
 	m_left = m_up.cross_product(m_direction).normalize();
 	m_phi = toDegree(asin(m_direction.get_y()));
 	m_theta = toDegree(atan2(m_direction.get_z(), m_direction.get_x()));
-	std::cout << m_theta << "\n";
-	std::cout << m_phi << "\n";
 }
 
 void Camera::updateDirection(float x, float y)

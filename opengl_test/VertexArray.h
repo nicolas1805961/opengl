@@ -3,12 +3,13 @@
 #include <GL/glew.h>
 #include "VertexBuffer.h"
 #include "VertexBufferLayout.h"
+#include "IndexBuffer.h"
 
 class VertexArray
 {
 public:
-	VertexArray() = default;
-	VertexArray(const VertexBuffer& vb, const VertexBufferLayout& layout);
+	VertexArray();
+	void linkVerticesAndElements(const VertexBuffer& vb, const VertexBufferLayout& layout, IndexBuffer const& indexBuffer);
 	void bind() const;
 	void unbind() const;
 	unsigned int getId();
