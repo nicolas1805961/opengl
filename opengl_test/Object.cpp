@@ -5,7 +5,7 @@ Object::Object(std::string const& name, Vector3 const& translation, float scale,
 	Vector3 const& sumForces)
 	: m_translation(translation), m_scale(scale), m_diffuse(diffuse), m_specular(specular), m_shininess(shininess), m_isTexture(isTexture),
 	m_mass(mass), m_velocity(velocity), m_acceleration(acceleration), m_sumForces(sumForces),
-	m_degreeAngle(degreeAngle), m_axis(axis), m_isLamp(isLamp), m_name(name)
+	m_degreeAngle(degreeAngle), m_axis(axis), m_isLamp(isLamp), m_name(name), m_firstPosition(translation)
 {
 	keepTrack();
 }
@@ -14,7 +14,7 @@ Object::Object(std::string const& name, Vector3 const& translation, float scale,
 	Vector3 const& velocity, bool isTexture, Vector3 const& acceleration, Vector3 const& sumForces)
 	: m_translation(translation), m_scale(scale), m_shininess(shininess), m_isTexture(isTexture), m_mass(mass), m_velocity(velocity),
 	m_acceleration(acceleration), m_sumForces(sumForces), m_degreeAngle(degreeAngle), m_axis(axis), m_isLamp(isLamp),
-	m_name(name)
+	m_name(name), m_firstPosition(translation)
 {
 	keepTrack();
 }
@@ -64,6 +64,23 @@ void Object::keepTrack()
 	m_position.perspectiveDivision();
 }
 
+void Object::reset()
+{
+	m_acceleration = Vector3(0.0);
+	m_sumForces = Vector3(0.0);
+	m_velocity = Vector3(0.0);
+}
+
+Vector3 Object::getFirstPosition()
+{
+	return m_firstPosition;
+}
+
+void Object::setVelocity(float velocity)
+{
+	m_velocity = Vector3(velocity);
+}
+
 float Object::getScale()
 {
 	return m_scale;
@@ -79,8 +96,6 @@ void Object::addForce(Force force)
 		m_sumForces += gravityForce;
 		break;
 	}
-	case Object::Force::FRICTION:
-		break;
 	default:
 		break;
 	}
@@ -103,6 +118,7 @@ void Object::updateVelocityAndPosition(float dt)
 	m_velocity = m_velocity + accelerationDt;
 	Vector3 velocityDt = m_velocity * dt;
 	m_translation = m_translation + velocityDt;
+	keepTrack();
 }
 
 void Object::setTranslation(Vector3 const& translation)
@@ -113,6 +129,14 @@ void Object::setTranslation(Vector3 const& translation)
 void Object::setPosition(Vector4 const& position)
 {
 	m_position = position;
+}
+
+void Object::setPosition(Vector3 const& position)
+{
+	m_position[0] = position[0];
+	m_position[1] = position[1];
+	m_position[2] = position[2];
+	m_position[3] = 1.0;
 }
 
 void Object::drawDay(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, std::pair<Matrix4f, Matrix4f> const& shadowMatrices,

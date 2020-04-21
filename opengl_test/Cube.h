@@ -8,6 +8,7 @@
 #include "Object.h"
 #include <algorithm>
 #include "Ray.h"
+#include "Plane.h"
 
 class Cube: public Object
 {
@@ -22,6 +23,7 @@ public:
 	bool intersect(Manager const& Manager);
 	bool intersectRay(Ray& ray);
 	void keepTrack();
+	bool intersectPlane(Plane const& plane);
 
 private:
 	Vector4 m_minExtent;

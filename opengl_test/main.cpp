@@ -331,10 +331,13 @@ void display() {
 		Vector3(input.getCamera().getDirection().get_x(), input.getCamera().getDirection().get_y(), input.getCamera().getDirection().get_z()), cosf(input.getCamera().toRadian(12.5f)),
 		cosf(input.getCamera().toRadian(15.0f)), 1.0f, 0.09f, 0.032f);
 
-	Cube cube1("cube1", Vector3(0.0f, 1.0f, 1.0f), Vector3(1.0f, 1.0f, 1.0f), Vector3(5.0, 1.0, -10.0));
-	Plane plane1("plane1", Vector3(1.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f), 20.0f);
-	Sphere sphere1("sphere1", Vector3(0.0f, 1.0f, 0.0f), Vector3(1.0f, 1.0f, 1.0f), Vector3(-2.0f, 1.0f, -10.0f));
-	Sphere sphere2("sphere2", Vector3(0.0f, 0.0f, 1.0f), Vector3(0.3f, 0.3f, 0.3f), Vector3(2.0f, 1.0f, -10.0f));
+	//Cube cube1("cube1", Vector3(0.0f, 1.0f, 1.0f), Vector3(1.0f, 1.0f, 1.0f), Vector3(5.0, 1.0, -10.0));
+	//Plane plane1("plane1", Vector3(1.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f), 20.0f);
+	auto sphere1 = std::make_shared<Sphere>("sphere1", Vector3(0.0f, 1.0f, 0.0f), Vector3(1.0f, 1.0f, 1.0f), Vector3(-2.0f, 20.0f, -10.0f));
+	auto plane1 = std::make_shared<Plane>("plane1", Vector3(1.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f), 20.0f);
+	auto cube1 = std::make_shared<Cube>("cube1", Vector3(0.0f, 1.0f, 1.0f), Vector3(1.0f, 1.0f, 1.0f), Vector3(5.0, 20.0, -10.0));
+	//Sphere sphere1("sphere1", Vector3(0.0f, 1.0f, 0.0f), Vector3(1.0f, 1.0f, 1.0f), Vector3(-2.0f, 10.0f, -10.0f));
+	//Sphere sphere2("sphere2", Vector3(0.0f, 0.0f, 1.0f), Vector3(0.3f, 0.3f, 0.3f), Vector3(2.0f, 1.0f, -10.0f));
 
 	auto view = input.getCamera().getViewMatrix();
 	auto projection = input.getCamera().getProjectionMatrix();
@@ -344,14 +347,25 @@ void display() {
 	lightingShader.set_uniform_1i("night", input.isNight());
 	lightingShader.set_uniform_3f("viewPos", input.getCamera().GetPosition().get_x(), input.getCamera().GetPosition().get_y(), input.getCamera().GetPosition().get_z());
 
-	input.addObject(std::make_shared<Cube>(cube1), cubeData);
-	input.addObject(std::make_shared<Sphere>(sphere1), sphereData);
-	input.addObject(std::make_shared<Sphere>(sphere2), sphereData);
-	input.addObject(std::make_shared<Plane>(plane1), planeData);
+	input.addIntersection(cube1, *plane1);
+	input.addIntersection(sphere1, *plane1);
+	//input.addObject(std::make_shared<Cube>(cube1), cubeData);
+	input.addObject(cube1, cubeData);
+	input.addObject(sphere1, sphereData);
+	//input.addObject(std::make_shared<Sphere>(sphere2), sphereData);
+	input.addObject(plane1, planeData);
 	input.addObject(pointLight1.getShape(), sphereData);
 	input.addObject(pointLight2.getShape(), sphereData);
 	input.addObject(pointLight3.getShape(), sphereData);
 	input.addObject(pointLight4.getShape(), sphereData);
+
+	/*for (auto const& it : input.getManager().getIntersections())
+	{
+		for (auto const& it2 : it.second)
+		{
+			std::cout << it2->getTranslation() << "\n";
+		}
+	}*/
 
 	//input.keepTrack(view, projection);
 

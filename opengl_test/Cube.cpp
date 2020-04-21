@@ -4,9 +4,9 @@ Cube::Cube(std::string const& name, Vector3 const& diffuse, Vector3 const& specu
 	 float scale /*= 1.0f*/, float shininess /*= 32.0f*/, float mass /*= 1.0f*/, Vector3 const& velocity /*= 0.0f*/)
 	: Object(name, translation, scale, diffuse, specular, isLamp, degreeAngle, axis)
 {
-	m_minExtent = m_model * Vector4(-0.5, -0.5, 0.5, 1.0);
+	m_minExtent = m_model * Vector4(-1.0, -1.0, 1.0, 1.0);
 	m_minExtent.perspectiveDivision();
-	m_maxExtent = m_model * Vector4(0.5, 0.5, -0.5, 1.0);
+	m_maxExtent = m_model * Vector4(1.0, 1.0, -1.0, 1.0);
 	m_maxExtent.perspectiveDivision();
 }
 
@@ -14,9 +14,9 @@ Cube::Cube(std::string const& name, Vector3 const& translation, bool isLamp /*=f
 	float shininess /*= 32.0f*/, float mass /*= 1.0f*/, Vector3 const& velocity /*= 0.0f*/)
 	: Object(name, translation, scale, isLamp, degreeAngle, axis)
 {
-	m_minExtent = m_model * Vector4(-0.5, -0.5, 0.5, 1.0);
+	m_minExtent = m_model * Vector4(-1.0, -1.0, 1.0, 1.0);
 	m_minExtent.perspectiveDivision();
-	m_maxExtent = m_model * Vector4(0.5, 0.5, -0.5, 1.0);
+	m_maxExtent = m_model * Vector4(1.0, 1.0, -1.0, 1.0);
 	m_maxExtent.perspectiveDivision();
 }
 
@@ -110,10 +110,24 @@ bool Cube::intersectRay(Ray& ray)
 void Cube::keepTrack()
 {
 	Object::keepTrack();
-	m_minExtent = m_model * Vector4(-0.5, -0.5, 0.5, 1.0);
+	m_minExtent = m_model * Vector4(-1.0, -1.0, 1.0, 1.0);
 	m_minExtent.perspectiveDivision();
-	m_maxExtent = m_model * Vector4(0.5, 0.5, -0.5, 1.0);
+	m_maxExtent = m_model * Vector4(1.0, 1.0, -1.0, 1.0);
 	m_maxExtent.perspectiveDivision();
+}
+
+bool Cube::intersectPlane(Plane const& plane)
+{
+	Vector3 f = m_position.xyz() - m_minExtent.xyz();
+	Vector3 distanceCenterToPlane = m_position.xyz() - plane.getPosition().xyz();
+
+	float dot1 = distanceCenterToPlane.dot_product(plane.getNormal().xyz());
+	float distanceCenterToPlaneProj = dot1 / plane.getNormal().xyz().norm();
+
+	float dot2 = f.dot_product(plane.getNormal().xyz());
+	float distanceCenterToEdgeProj = dot2 / plane.getNormal().xyz().norm();
+
+	return distanceCenterToEdgeProj >= distanceCenterToPlaneProj;
 }
 
 /*bool Cube::intersectRay(int x, int y, Camera const& camera)

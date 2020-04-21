@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iostream>
+#include "Vector3.h"
 
 class Vector4
 {
@@ -21,9 +22,12 @@ public:
 	float get_z();
 	float get_w();
 	void perspectiveDivision();
+	Vector3 xyz();
 	Vector4& operator*(float rhs);
 	float& operator[](int index);
 	float operator[](int index) const;
+	friend Vector4 operator-(Vector4 const& left, Vector4 const& right);
+	friend Vector4 operator/(Vector4 const& left, float right);
 	friend std::ostream& operator<<(std::ostream& os, const Vector4& v);
 };
 

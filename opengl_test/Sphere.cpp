@@ -82,15 +82,13 @@ std::pair<VertexArray, unsigned int> Sphere::initializeLayout()
 	return std::make_pair(vertexArray, ib.getCount());
 }
 
-/*bool Sphere::intersectPlane(Plane const& plane)
+bool Sphere::intersectPlane(Plane const& plane)
 {
-	Vector3 distanceSphereCenterToPlanePoint = (m_translation - plane.getTranslation()).normalize();
-	Vector3 planeNormal(plane.getNormal().get_x(), plane.getNormal().get_y(), plane.getNormal().get_z());
-	float minimalDistanceSphereToPlane = distanceSphereCenterToPlanePoint.dot_product(planeNormal / planeNormal).norm();
-	if (minimalDistanceSphereToPlane < m_scale)
-		return true;
-	return false;
-}*/
+	Vector3 distanceSphereCenterToPlanePoint = m_position.xyz() - plane.getPosition().xyz();
+	float f = distanceSphereCenterToPlanePoint.dot_product(plane.getNormal().xyz());
+	float minimalDistanceSphereToPlane = f / plane.getNormal().xyz().norm();
+	return minimalDistanceSphereToPlane <= m_scale;
+}
 
 bool Sphere::intersectRay(Ray& ray)
 {

@@ -6,6 +6,7 @@ Manager::Manager()
 {
 	m_shaders = std::set<Shader>();
 	m_objects = ObjectType();
+	m_intersections = intersectionType();
 }
 
 void Manager::addShader(Shader const& shader)
@@ -17,6 +18,25 @@ void Manager::addShader(Shader const& shader)
 void Manager::addObject(std::shared_ptr<Object> const& object, Shape const& shape)
 {
 	m_objects[shape].insert(object);
+}
+
+void Manager::addObjectIntersection(std::shared_ptr<Object> const& object, Plane const& plane)
+{
+	m_intersections[plane].insert(object);
+}
+
+void Manager::testIntersection(float dt)
+{
+	for (auto const& it : m_intersections)
+	{
+		for (auto const& it2 : it.second)
+		{
+			if (it2->intersectPlane(it.first))
+				it2->reset();
+			else
+				it2->updateVelocityAndPosition(dt);
+		}
+	}
 }
 
 std::set<Shader> Manager::getShaders()
@@ -256,3 +276,20 @@ void Manager::keepTrack()
 		}
 	}
 }
+
+Manager::intersectionType Manager::getIntersections()
+{
+	return m_intersections;
+}
+
+/*void Manager::resetFirstPosition()
+{
+	for (auto const& it : m_intersections)
+	{
+		for (auto const& it2 : it.second)
+		{
+			it2->setTranslation(it2->getFirstPosition());
+			it2->setPosition(it2->getFirstPosition());
+		}
+	}
+}*/

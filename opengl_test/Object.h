@@ -9,6 +9,8 @@
 #include <cmath>
 #include "Camera.h"
 
+class Plane;
+
 class Manager;
 
 class Ray;
@@ -19,7 +21,7 @@ public:
 
 	enum class objectType {PLANE, SPHERE, CUBE};
 
-	enum class Force {GRAVITY, FRICTION};
+	enum class Force {GRAVITY};
 
 	enum class IsLamp { LAMP, NOLAMP };
 
@@ -39,7 +41,9 @@ public:
 	std::string getName();
 	std::string getName() const;
 	virtual bool intersectRay(Ray &ray) = 0;
+	virtual bool intersectPlane(Plane const& plane) = 0;
 	//virtual bool intersectRay(int x, int y, Camera const& camera) = 0;
+	void setVelocity(float velocity);
 	float getScale();
 	void addForce(Force force);
 	void setColor(Vector3 const& color);
@@ -47,15 +51,19 @@ public:
 	void updateVelocityAndPosition(float dt);
 	void setTranslation(Vector3 const& translation);
 	void setPosition(Vector4 const& position);
+	void setPosition(Vector3 const& position);
 	void drawDay(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, std::pair<Matrix4f, Matrix4f> const& shadowMatrices,
 		unsigned int indexCount, Shader const& shader);
 	void drawLamp(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, unsigned int indexCount, Shader const& shader);
 	void drawShadow(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, unsigned int indexCount, Shader const& shader);
 	void drawNight(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, unsigned int indexCount, Shader const& shader);
 	virtual void keepTrack();
+	void reset();
+	Vector3 getFirstPosition();
 	bool isLamp();
 
 protected:
+	Vector3 m_firstPosition;
 	Matrix4f m_model;
 	std::string m_name;
 	bool m_isLamp;

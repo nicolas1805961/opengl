@@ -25,6 +25,16 @@ struct MyHashMap
 	}
 };
 
+struct MyHashMapIntersection
+{
+	std::size_t operator()(Plane const& s) const noexcept
+	{
+		std::size_t h1 = std::hash<unsigned int>{}(s.getNormal().get_x());
+		std::size_t h2 = std::hash<unsigned int>{}(s.getNormal().get_y());
+		return h1 ^ (h2 << 1);
+	}
+};
+
 struct MyHashSet
 {
 	std::size_t operator()(std::shared_ptr<Object> const& s) const noexcept
@@ -48,6 +58,19 @@ struct MyComparatorMap
 	}
 };
 
+struct MyComparatorMapIntersection
+{
+	bool operator()(Plane const& left, Plane const& right) const
+	{
+		auto leftPosition = left.getPosition().xyz();
+		auto rightPosition = right.getPosition().xyz();
+		auto leftNormal = left.getNormal().xyz();
+		auto rightNormal = right.getNormal().xyz();
+		return (leftPosition == rightPosition)
+			&& (leftNormal == rightNormal);
+	}
+};
+
 struct MyComparatorSet
 {
 	bool operator()(std::shared_ptr<Object> const& left, std::shared_ptr<Object> const& right) const
@@ -61,10 +84,13 @@ class Manager
 public:
 
 	using ObjectType = std::unordered_map<Shape, std::unordered_set<std::shared_ptr<Object>, MyHashSet, MyComparatorSet>, MyHashMap, MyComparatorMap>;
+	using intersectionType = std::unordered_map<Plane, std::unordered_set<std::shared_ptr<Object>, MyHashSet, MyComparatorSet>, MyHashMapIntersection, MyComparatorMapIntersection>;
 
 	Manager();
 	void addShader(Shader const& shader);
 	void addObject(std::shared_ptr<Object> const& object, Shape const& shape);
+	void addObjectIntersection(std::shared_ptr<Object> const& object, Plane const& plane);
+	void testIntersection(float dt);
 	std::set<Shader> getShaders();
 	ObjectType getObjects();
 	void draw(FrameBuffer const& frameBuffer, std::pair<Matrix4f, Matrix4f> const& viewProjMatrices,
@@ -77,9 +103,12 @@ public:
 	void getSizeShaders();
 	void getSizeObjects();
 	void keepTrack();
+	intersectionType getIntersections();
+	//void resetFirstPosition();
 
 private:
 	static int m_placesLeft;
 	std::set<Shader> m_shaders;
 	ObjectType m_objects;
+	intersectionType m_intersections;
 };

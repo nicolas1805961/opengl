@@ -23,6 +23,7 @@ public:
 	Vector4 getNormal();
 	bool intersectRay(Ray& ray);
 	void keepTrack();
+	bool intersectPlane(Plane const& plane);
 	//bool intersect(Manager const& Manager);
 	//bool intersectRay(int x, int y, Camera const& camera);
 

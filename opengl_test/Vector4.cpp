@@ -62,6 +62,12 @@ void Vector4::perspectiveDivision()
 	w /= w;
 }
 
+Vector3 Vector4::xyz()
+{
+	Vector3 res(x, y, z);
+	return res;
+}
+
 float& Vector4::operator[](int index)
 {
 	switch (index)
@@ -75,6 +81,28 @@ float& Vector4::operator[](int index)
 	case 3:
 		return w;
 	}
+}
+
+Vector4 operator-(Vector4 const& left, Vector4 const& right)
+{
+	Vector4 res;
+	res[0] = left[0] - right[0];
+	res[1] = left[1] - right[1];
+	res[2] = left[2] - right[2];
+	res[3] = left[3] - right[3];
+	res.perspectiveDivision();
+	return res;
+}
+
+Vector4 operator/(Vector4 const& left, float right)
+{
+	Vector4 res;
+	res[0] = left[0] / right;
+	res[1] = left[1] / right;
+	res[2] = left[2] / right;
+	res[3] = left[3] / right;
+	res.perspectiveDivision();
+	return res;
 }
 
 float Vector4::operator[](int index) const

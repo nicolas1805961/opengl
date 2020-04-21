@@ -1,7 +1,8 @@
 #include "Event.h"
 
 Event::Event(Manager const& manager, Camera const& camera)
-	: m_camera(camera), m_manager(manager), m_lastTime(0.0f), m_night(false), m_isFirstHit(false), m_dt(0.0f), m_doesIntersect(false)
+	: m_camera(camera), m_manager(manager), m_lastTime(0.0f), m_night(false), m_isFirstHit(false), m_dt(0.0f), m_doesIntersect(false),
+	m_isRunning(false)
 {
 	m_keys = std::make_unique<bool[]>(256);
 }
@@ -12,6 +13,8 @@ void Event::idle()
 	GLfloat currentTime = glutGet(GLUT_ELAPSED_TIME);
 	m_dt = currentTime - m_lastTime;
 	m_lastTime = currentTime;
+	if (m_isRunning)
+		m_manager.testIntersection(m_dt / 1000.0);
 	/*for (auto const& it : Manager.getObjects())
 		it.second->updateVelocityAndPosition(dt / 10000.0f);*/
 	keyOperation();
@@ -33,6 +36,26 @@ void Event::clickFunction(int button, int state, int x, int y)
 	}
 	else if (state == GLUT_DOWN && button == GLUT_RIGHT_BUTTON)
 		m_night = !m_night;
+	else if (state == GLUT_DOWN && button == GLUT_MIDDLE_BUTTON && m_isRunning == false)
+	{
+		m_isRunning = true;
+		for (auto const& it : m_manager.getIntersections())
+		{
+			for (auto const& it2 : it.second)
+				it2->addForce(Object::Force::GRAVITY);
+		}
+	}
+	else if (state == GLUT_DOWN && button == GLUT_MIDDLE_BUTTON)
+	{
+		m_isRunning = false;
+		for (auto const& it : m_manager.getIntersections())
+		{
+			for (auto const& it2 : it.second)
+			{
+				it2->setVelocity(0);
+			}
+		}
+	}
 }
 
 void Event::motionFunction(int x, int y)
@@ -92,6 +115,8 @@ void Event::keyOperation(void)
 		m_camera.updatePosition(Camera::Mouvement::RIGHT);
 	else if (m_keys[27])
 		exit(0);
+	/*else if (m_keys['u'])
+		m_manager.resetFirstPosition();*/
 }
 
 void Event::keyUp(unsigned char key, int xmouse, int ymouse)
@@ -133,6 +158,11 @@ Manager Event::getManager()
 Camera Event::getCamera()
 {
 	return m_camera;
+}
+
+void Event::addIntersection(std::shared_ptr<Object> const& object, Plane const& plane)
+{
+	m_manager.addObjectIntersection(object, plane);
 }
 
 void Event::keepTrack()

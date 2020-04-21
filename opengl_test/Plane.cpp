@@ -8,13 +8,13 @@ Plane::Plane()
 Plane::Plane(std::string const& name, Vector3 const& diffuse, Vector3 const& specular, Vector3 const& translation, float scale /*= 1.0*/,
 	bool isLamp /*=false*/, float degreeAngle, Vector3 const& axis, bool light /*=false*/, float shininess /*= 32.0*/,
 	float mass /*= 1.0*/, Vector3 const& velocity /*= Vector3(0.0)*/, Vector4 const& normal /*= Vector4(0.0, 1.0, 0.0, 1.0)*/)
-	: Object(name, translation, scale, diffuse, specular, isLamp, degreeAngle, axis)
+	: Object(name, translation, scale, diffuse, specular, isLamp, degreeAngle, axis), m_normal(normal)
 {}
 
 Plane::Plane(std::string const& name, Vector3 const& translation, bool isLamp /*=false*/, float scale /*= 1.0*/, float degreeAngle,
 	Vector3 const& axis, bool light /*=false*/, float shininess /*= 32.0*/, float mass /*= 1.0*/,
 	Vector3 const& velocity /*= Vector3(0.0)*/, Vector4 const& normal /*= Vector4(0.0, 1.0, 0.0, 1.0)*/)
-	: Object(name, translation, scale, isLamp, degreeAngle, axis)
+	: Object(name, translation, scale, isLamp, degreeAngle, axis), m_normal(normal)
 {}
 
 bool Plane::intersectRay(Ray& ray)
@@ -27,6 +27,11 @@ void Plane::keepTrack()
 	Object::keepTrack();
 	m_normal = m_model * Vector4(0.0, 1.0, 0.0, 1.0);
 	m_normal.perspectiveDivision();
+}
+
+bool Plane::intersectPlane(Plane const& plane)
+{
+	return true;
 }
 
 std::pair<VertexArray, unsigned int> Plane::initializeLayout()
