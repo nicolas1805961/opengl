@@ -60,9 +60,6 @@
     <ClCompile Include="PointLight.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SpotLight.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Material.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -114,6 +111,9 @@
     <ClCompile Include="Event.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Torch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stb_image.h">
@@ -153,9 +153,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="PointLight.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="SpotLight.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Material.h">
@@ -215,26 +212,15 @@
     <ClInclude Include="Event.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="container2.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="container2_specular.png">
-      <Filter>Resource Files</Filter>
-    </Image>
+    <ClInclude Include="Torch.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="lampFragment.glsl">
       <Filter>Resource Files</Filter>
     </None>
     <None Include="lampVertex.glsl">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="textureFragment.glsl">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="textureVertex.glsl">
       <Filter>Resource Files</Filter>
     </None>
     <None Include="shadowVertex.glsl">

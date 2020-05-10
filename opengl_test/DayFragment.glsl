@@ -19,7 +19,7 @@ struct PointLight
     vec3 specular;
 };
 
-struct SpotLight
+struct Torch
 {
     vec3 position;
     vec3 direction;
@@ -38,8 +38,8 @@ uniform float shininess;
 uniform bool night;
 uniform sampler2D shadowMap;
 uniform DirLight dirLight;
-uniform PointLight pointLights[4];
-uniform SpotLight spotLight;
+uniform PointLight pointLights[5];
+uniform Torch torch;
 //uniform vec4 fogColor;
 
 out vec4 color;
@@ -86,14 +86,10 @@ vec3 addPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
     vec3 ambient = light.ambient * objectDiffuse;
     vec3 diffuse = light.diffuse * diffuseCoefficient * objectDiffuse;
     vec3 specular = light.specular * specularCoefficient * objectSpecular;
-    //ambient *= distanceFading;
-    //diffuse *= distanceFading;
-    //specular *= distanceFading;
     return ((ambient + diffuse + specular) * distanceFading);
-
 }
 
-vec3 addSpotLight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
+vec3 addTorch(Torch light, vec3 normal, vec3 fragPos, vec3 viewDir)
 {
     vec3 lightDir = normalize(light.position - fragPos);
     float diffuseCoefficient = max(dot(normal, lightDir), 0.0);
@@ -107,9 +103,6 @@ vec3 addSpotLight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
     vec3 ambient = light.ambient * objectDiffuse;
     vec3 diffuse = light.diffuse * diffuseCoefficient * objectDiffuse;
     vec3 specular = light.specular * specularCoefficient * objectSpecular;
-    //ambient *= distanceFading * intensity;
-    //diffuse *= distanceFading * intensity;
-    //specular *= distanceFading * intensity;
     return ((ambient + diffuse + specular) * distanceFading * intensity);
 }
 
@@ -120,11 +113,11 @@ void main()
     vec3 result = addDirLight(dirLight, norm, viewDir);
     if (night)
     {
-        for (int i = 0; i < 4; i++)
+        for (int i = 0; i < 5; i++)
         {
             result += addPointLight(pointLights[i], norm, FragPos, viewDir);
         }
-        result += addSpotLight(spotLight, norm, FragPos, viewDir);
+        result += addTorch(torch, norm, FragPos, viewDir);
     }
     color = vec4(result, 1.0);
     //color = mix(fogColor, vec4( result, 1.0 ), visibility);

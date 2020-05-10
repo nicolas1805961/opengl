@@ -18,6 +18,16 @@ Texture::Texture(TextureType const& textureType)
 		glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderDepthValue);
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
+	else if (m_textureType == TextureType::COLOR)
+	{
+		glGenTextures(1, &m_renderer_id);
+		glBindTexture(GL_TEXTURE_2D, m_renderer_id);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, glutGet(GLUT_WINDOW_WIDTH), glutGet(GLUT_WINDOW_HEIGHT), 0, GL_RGB,
+			GL_UNSIGNED_BYTE, nullptr);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glBindTexture(GL_TEXTURE_2D, 0);
+	}
 }
 
 Texture::Texture(const std::string& path)

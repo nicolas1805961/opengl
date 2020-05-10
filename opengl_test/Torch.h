@@ -4,10 +4,10 @@
 #include "Shader.h"
 #include "Light.h"
 
-class SpotLight: public Light
+class Torch: public Light
 {
 public:
-	SpotLight(const Shader& shader, const Vector3& ambient, const Vector3& diffuse, const Vector3& specular, std::string const& name,
+	Torch(const Shader& shader, const Vector3& ambient, const Vector3& diffuse, const Vector3& specular, std::string const& name,
 		const Vector3& position, const Vector3& direction, float nearBorder, float farBorder, float constant, float linear, float quadratic);
 	
 private:

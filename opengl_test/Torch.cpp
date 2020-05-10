@@ -1,6 +1,6 @@
-#include "SpotLight.h"
+#include "Torch.h"
 
-SpotLight::SpotLight(const Shader& shader, const Vector3& ambient, const Vector3& diffuse, const Vector3& specular, std::string const& name,
+Torch::Torch(const Shader& shader, const Vector3& ambient, const Vector3& diffuse, const Vector3& specular, std::string const& name,
 	const Vector3& position, const Vector3& direction, float nearBorder, float farBorder, float constant, float linear, float quadratic)
 	: Light(shader, ambient, diffuse, specular, name), m_translation(position), m_direction(direction), m_nearBorder(nearBorder),
 	m_farBorder(farBorder), m_constant(constant), m_linear(linear), m_quadratic(quadratic)

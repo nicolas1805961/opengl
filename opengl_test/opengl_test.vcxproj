@@ -166,7 +166,7 @@
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="Shape.cpp" />
     <ClCompile Include="Sphere.cpp" />
-    <ClCompile Include="SpotLight.cpp" />
+    <ClCompile Include="Torch.cpp" />
     <ClCompile Include="stb_image.cpp" />
     <ClCompile Include="Texture.cpp" />
     <ClCompile Include="Vector2.cpp" />
@@ -183,8 +183,6 @@
     <None Include="lampVertex.glsl" />
     <None Include="shadowFragment.glsl" />
     <None Include="shadowVertex.glsl" />
-    <None Include="textureFragment.glsl" />
-    <None Include="textureVertex.glsl" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="comparePair.h" />
@@ -208,7 +206,7 @@
     <ClInclude Include="Ray.h" />
     <ClInclude Include="Shape.h" />
     <ClInclude Include="Sphere.h" />
-    <ClInclude Include="SpotLight.h" />
+    <ClInclude Include="Torch.h" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="IndexBuffer.h" />
     <ClInclude Include="Shader.h" />
@@ -220,10 +218,6 @@
     <ClInclude Include="VertexBuffer.h" />
     <ClInclude Include="VertexBufferElement.h" />
     <ClInclude Include="VertexBufferLayout.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="container2.png" />
-    <Image Include="container2_specular.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
