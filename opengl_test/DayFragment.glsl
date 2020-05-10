@@ -61,53 +61,34 @@ float isInShadow(vec4 positionToLight, float angle)
     return (normalizedLightPosition.z - bias > nearest ? 0.0: 1.0);
 }
 
-// Calculates the color when using a directional light.
 vec3 addDirLight(DirLight light, vec3 normal, vec3 viewDir)
 {
     vec3 lightDir = normalize(-light.direction);
-    
-    // Diffuse shading
     float diffuseCoefficient = max(dot(normal, lightDir), 0.0);
-    
-    // Specular shading
     vec3 reflectionDirection = reflect(-lightDir, normal);
     float specularCoefficient = pow(max(dot(viewDir, reflectionDirection), 0.0), shininess);
-    
-    // Combine results
     vec3 ambientLighting = light.ambient * objectDiffuse;
     vec3 diffuseLighting = light.diffuse * diffuseCoefficient * objectDiffuse;
     vec3 specularLighting = light.specular * specularCoefficient * objectSpecular;
-    
     if (night)
         return ((ambientLighting + diffuseLighting + specularLighting) * (1 / 150000));
     return (ambientLighting + (isInShadow(positionToLight, diffuseCoefficient) * (diffuseLighting + specularLighting)));
 }
 
-// Calculates the color when using a point light.
 vec3 addPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
 {
     vec3 lightDir = normalize(light.position - fragPos);
-    
-    // Diffuse shading
     float diffuseCoefficient = max(dot(normal, lightDir), 0.0);
-    
-    // Specular shading
     vec3 reflectionDirection = reflect(-lightDir, normal);
     float specularCoefficient = pow(max(dot(viewDir, reflectionDirection), 0.0), shininess);
-    
-    // Attenuation
     float distance = length(light.position - fragPos);
     float distanceFading = 1.0f / (light.constant + light.linear * distance + light.quadratic * (distance * distance));
-    
-    // Combine results
     vec3 ambient = light.ambient * objectDiffuse;
     vec3 diffuse = light.diffuse * diffuseCoefficient * objectDiffuse;
     vec3 specular = light.specular * specularCoefficient * objectSpecular;
-    
     //ambient *= distanceFading;
     //diffuse *= distanceFading;
     //specular *= distanceFading;
-    
     return ((ambient + diffuse + specular) * distanceFading);
 
 }
@@ -115,55 +96,36 @@ vec3 addPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
 vec3 addSpotLight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
 {
     vec3 lightDir = normalize(light.position - fragPos);
-    
-    // Diffuse shading
     float diffuseCoefficient = max(dot(normal, lightDir), 0.0);
-    
-    // Specular shading
     vec3 reflectionDirection = reflect(-lightDir, normal);
     float specularCoefficient = pow(max(dot(viewDir, reflectionDirection), 0.0), shininess);
-    
-    // Attenuation
     float distance = length( light.position - fragPos );
     float distanceFading = 1.0f / (light.constant + light.linear * distance + light.quadratic * (distance * distance));
-    
-    // Spotlight intensity
     float theta = dot(lightDir, normalize(-light.direction));
     float epsilon = light.nearBorder - light.farBorder;
     float intensity = clamp((theta - light.farBorder) / epsilon, 0.0, 1.0);
-    
-    // Combine results
     vec3 ambient = light.ambient * objectDiffuse;
     vec3 diffuse = light.diffuse * diffuseCoefficient * objectDiffuse;
     vec3 specular = light.specular * specularCoefficient * objectSpecular;
-    
     //ambient *= distanceFading * intensity;
     //diffuse *= distanceFading * intensity;
     //specular *= distanceFading * intensity;
-    
     return ((ambient + diffuse + specular) * distanceFading * intensity);
 }
 
 void main()
 {
-	// Properties
     vec3 norm = normalize(Normal);
     vec3 viewDir = normalize(viewPos - FragPos);
-    
-    // Directional lighting
     vec3 result = addDirLight(dirLight, norm, viewDir);
-    
-    // Point lights
     if (night)
     {
         for (int i = 0; i < 4; i++)
         {
             result += addPointLight(pointLights[i], norm, FragPos, viewDir);
         }
-        // Spot light
         result += addSpotLight(spotLight, norm, FragPos, viewDir);
     }
-    
     color = vec4(result, 1.0);
     //color = mix(fogColor, vec4( result, 1.0 ), visibility);
 }
