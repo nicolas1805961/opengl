@@ -331,7 +331,7 @@ void display() {
 	Torch torch(lightingShader, Vector3(0.0f, 0.0f, 0.0f), Vector3(1.0f, 1.0f, 1.0f), Vector3(1.0f, 1.0f, 1.0f), "torch",
 		Vector3(input.getCamera().GetPosition().get_x(), input.getCamera().GetPosition().get_y(), input.getCamera().GetPosition().get_z()),
 		Vector3(input.getCamera().getDirection().get_x(), input.getCamera().getDirection().get_y(), input.getCamera().getDirection().get_z()),
-		cosf(input.getCamera().toRadian(10.0f)), cosf(input.getCamera().toRadian(12.0f)), 1.0f, 0.1f, 0.03f);
+		cosf(input.getCamera().toRadian(10.0f)), cosf(input.getCamera().toRadian(20.0f)), 1.0f, 0.1f, 0.03f);
 
 	//Cube cube1("cube1", Vector3(0.0f, 1.0f, 1.0f), Vector3(1.0f, 1.0f, 1.0f), Vector3(5.0, 1.0, -10.0));
 	//Plane plane1("plane1", Vector3(1.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f), 20.0f);
@@ -347,6 +347,7 @@ void display() {
 
     lightingShader.bind();
 	lightingShader.set_uniform_1i("night", input.isNight());
+	lightingShader.set_uniform_1i("torchOn", input.isTorchOn());
 	lightingShader.set_uniform_3f("viewPos", input.getCamera().GetPosition().get_x(), input.getCamera().GetPosition().get_y(), input.getCamera().GetPosition().get_z());
 
 	input.addIntersection(cube1, *plane1);

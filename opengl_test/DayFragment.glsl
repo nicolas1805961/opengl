@@ -36,6 +36,7 @@ uniform vec3 objectDiffuse;
 uniform vec3 objectSpecular;
 uniform float shininess;
 uniform bool night;
+uniform bool torchOn;
 uniform sampler2D shadowMap;
 uniform DirLight dirLight;
 uniform PointLight pointLights[5];
@@ -46,7 +47,7 @@ out vec4 color;
 
 in vec4 positionToLight;
 in vec3 Normal;
-in vec3 FragPos;
+in vec3 vertexPosition;
 //in float visibility;
 
 uniform vec3 viewPos;
@@ -63,9 +64,9 @@ float isInShadow(vec4 positionToLight, float angle)
 
 vec3 addDirLight(DirLight light, vec3 normal, vec3 viewDir)
 {
-    vec3 lightDir = normalize(-light.direction);
-    float diffuseCoefficient = max(dot(normal, lightDir), 0.0);
-    vec3 reflectionDirection = reflect(-lightDir, normal);
+    vec3 lightDirection = normalize(light.direction);
+    float diffuseCoefficient = max(dot(normal, -lightDirection), 0.0);
+    vec3 reflectionDirection = reflect(lightDirection, normal);
     float specularCoefficient = pow(max(dot(viewDir, reflectionDirection), 0.0), shininess);
     vec3 ambientLighting = light.ambient * objectDiffuse;
     vec3 diffuseLighting = light.diffuse * diffuseCoefficient * objectDiffuse;
@@ -75,13 +76,13 @@ vec3 addDirLight(DirLight light, vec3 normal, vec3 viewDir)
     return (ambientLighting + (isInShadow(positionToLight, diffuseCoefficient) * (diffuseLighting + specularLighting)));
 }
 
-vec3 addPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
+vec3 addPointLight(PointLight light, vec3 normal, vec3 vertexPos, vec3 viewDir)
 {
-    vec3 lightDir = normalize(light.position - fragPos);
-    float diffuseCoefficient = max(dot(normal, lightDir), 0.0);
-    vec3 reflectionDirection = reflect(-lightDir, normal);
+    vec3 lightDirection = normalize(vertexPos - light.position);
+    float diffuseCoefficient = max(dot(normal, -lightDirection), 0.0);
+    vec3 reflectionDirection = reflect(lightDirection, normal);
     float specularCoefficient = pow(max(dot(viewDir, reflectionDirection), 0.0), shininess);
-    float distance = length(light.position - fragPos);
+    float distance = length(light.position - vertexPos);
     float distanceFading = 1.0f / (light.constant + light.linear * distance + light.quadratic * (distance * distance));
     vec3 ambient = light.ambient * objectDiffuse;
     vec3 diffuse = light.diffuse * diffuseCoefficient * objectDiffuse;
@@ -89,15 +90,15 @@ vec3 addPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
     return ((ambient + diffuse + specular) * distanceFading);
 }
 
-vec3 addTorch(Torch light, vec3 normal, vec3 fragPos, vec3 viewDir)
+vec3 addTorch(Torch light, vec3 normal, vec3 vertexPos, vec3 viewDir)
 {
-    vec3 lightDir = normalize(light.position - fragPos);
-    float diffuseCoefficient = max(dot(normal, lightDir), 0.0);
-    vec3 reflectionDirection = reflect(-lightDir, normal);
+    vec3 lightDirection = normalize(vertexPos - light.position);
+    float diffuseCoefficient = max(dot(normal, -lightDirection), 0.0);
+    vec3 reflectionDirection = reflect(lightDirection, normal);
     float specularCoefficient = pow(max(dot(viewDir, reflectionDirection), 0.0), shininess);
-    float distance = length( light.position - fragPos );
+    float distance = length(light.position - vertexPos);
     float distanceFading = 1.0f / (light.constant + light.linear * distance + light.quadratic * (distance * distance));
-    float theta = dot(lightDir, normalize(-light.direction));
+    float theta = dot(-lightDirection, normalize(-light.direction));
     float epsilon = light.nearBorder - light.farBorder;
     float intensity = clamp((theta - light.farBorder) / epsilon, 0.0, 1.0);
     vec3 ambient = light.ambient * objectDiffuse;
@@ -109,15 +110,14 @@ vec3 addTorch(Torch light, vec3 normal, vec3 fragPos, vec3 viewDir)
 void main()
 {
     vec3 norm = normalize(Normal);
-    vec3 viewDir = normalize(viewPos - FragPos);
+    vec3 viewDir = normalize(viewPos - vertexPosition);
     vec3 result = addDirLight(dirLight, norm, viewDir);
     if (night)
     {
         for (int i = 0; i < 5; i++)
-        {
-            result += addPointLight(pointLights[i], norm, FragPos, viewDir);
-        }
-        result += addTorch(torch, norm, FragPos, viewDir);
+            result += addPointLight(pointLights[i], norm, vertexPosition, viewDir);
+        if (torchOn)
+            result += addTorch(torch, norm, vertexPosition, viewDir);
     }
     color = vec4(result, 1.0);
     //color = mix(fogColor, vec4( result, 1.0 ), visibility);

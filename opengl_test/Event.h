@@ -22,6 +22,7 @@ public:
 	bool isNight();
 	Manager getManager();
 	Camera getCamera();
+	bool isTorchOn();
 	void addIntersection(std::shared_ptr<Object> const& object, Plane const& plane);
 	void keepTrack();
 
@@ -36,5 +37,6 @@ private:
 	bool m_isRunning;
 	bool m_isFirstHit;
 	bool m_night;
+	bool torchOn;
 	std::unique_ptr<bool[]> m_keys;
 };

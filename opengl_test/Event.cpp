@@ -2,7 +2,7 @@
 
 Event::Event(Manager const& manager, Camera const& camera)
 	: m_camera(camera), m_manager(manager), m_lastTime(0.0f), m_night(false), m_isFirstHit(false), m_dt(0.0f), m_doesIntersect(false),
-	m_isRunning(false)
+	m_isRunning(false), torchOn(false)
 {
 	m_keys = std::make_unique<bool[]>(256);
 }
@@ -115,6 +115,8 @@ void Event::keyOperation(void)
 		m_camera.updatePosition(Camera::Mouvement::RIGHT);
 	else if (m_keys[27])
 		exit(0);
+	else if (m_keys['p'])
+		torchOn = !torchOn;
 	/*else if (m_keys['u'])
 		m_manager.resetFirstPosition();*/
 }
@@ -158,6 +160,11 @@ Manager Event::getManager()
 Camera Event::getCamera()
 {
 	return m_camera;
+}
+
+bool Event::isTorchOn()
+{
+	return torchOn;
 }
 
 void Event::addIntersection(std::shared_ptr<Object> const& object, Plane const& plane)
