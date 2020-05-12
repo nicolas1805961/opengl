@@ -9,7 +9,7 @@ class Texture
 {
 public:
 
-	enum class TextureType {COLOR, DEPTH, PLAIN};
+	enum class TextureType {FULL, DEPTH, PLAIN};
 
 	Texture(const std::string& path);
 	Texture(TextureType const& textureType);

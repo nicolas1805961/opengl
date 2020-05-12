@@ -4,6 +4,7 @@
 #include "Matrix4f.h"
 #include "Shader.h"
 #include "Texture.h"
+#include "RenderBuffer.h"
 
 class FrameBuffer
 {
@@ -24,5 +25,6 @@ public:
 
 private:
 	Texture m_texture;
+	RenderBuffer m_renderBuffer;
 	unsigned int m_id;
 };

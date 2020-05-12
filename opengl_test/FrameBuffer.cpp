@@ -11,8 +11,10 @@ FrameBuffer::FrameBuffer(Texture const& texture): m_texture(texture)
 		glReadBuffer(GL_NONE);
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
-	else if (texture.getTextureType() == Texture::TextureType::COLOR)
+	else if (texture.getTextureType() == Texture::TextureType::FULL)
 	{
+		m_renderBuffer = RenderBuffer();
+		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, m_renderBuffer.getID());
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture.getId(), 0);
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}

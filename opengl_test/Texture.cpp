@@ -18,7 +18,7 @@ Texture::Texture(TextureType const& textureType)
 		glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderDepthValue);
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
-	else if (m_textureType == TextureType::COLOR)
+	else if (m_textureType == TextureType::FULL)
 	{
 		glGenTextures(1, &m_renderer_id);
 		glBindTexture(GL_TEXTURE_2D, m_renderer_id);
