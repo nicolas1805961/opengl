@@ -164,6 +164,7 @@
     <ClCompile Include="Matrix4f.cpp" />
     <ClCompile Include="Ray.cpp" />
     <ClCompile Include="RenderBuffer.cpp" />
+    <ClCompile Include="Screen.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="Shape.cpp" />
     <ClCompile Include="Sphere.cpp" />
@@ -176,12 +177,15 @@
     <ClCompile Include="VertexArray.cpp" />
     <ClCompile Include="VertexBuffer.cpp" />
     <ClCompile Include="VertexBufferElement.cpp" />
+    <ClCompile Include="VertexBufferLayout.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="DayFragment.glsl" />
     <None Include="dayVertex.glsl" />
     <None Include="lampFragment.glsl" />
     <None Include="lampVertex.glsl" />
+    <None Include="renderFragment.glsl" />
+    <None Include="renderVertex.glsl" />
     <None Include="shadowFragment.glsl" />
     <None Include="shadowVertex.glsl" />
   </ItemGroup>
@@ -206,6 +210,7 @@
     <ClInclude Include="Matrix4f.h" />
     <ClInclude Include="Ray.h" />
     <ClInclude Include="RenderBuffer.h" />
+    <ClInclude Include="Screen.h" />
     <ClInclude Include="Shape.h" />
     <ClInclude Include="Sphere.h" />
     <ClInclude Include="Torch.h" />

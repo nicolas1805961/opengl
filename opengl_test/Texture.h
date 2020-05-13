@@ -11,9 +11,11 @@ public:
 
 	enum class TextureType {FULL, DEPTH, PLAIN};
 
+	Texture();
 	Texture(const std::string& path);
 	Texture(TextureType const& textureType);
 	Texture(Texture const& tecture);
+	Texture& operator=(Texture const& rhs);
 	void bind(unsigned int slot = 0);
 	void bind(unsigned int slot = 0) const;
 	void unbind();

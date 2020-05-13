@@ -1,5 +1,9 @@
 #include "FrameBuffer.h"
 
+FrameBuffer::FrameBuffer()
+{
+}
+
 FrameBuffer::FrameBuffer(Texture const& texture): m_texture(texture)
 {
 	glGenFramebuffers(1, &m_id);
@@ -73,6 +77,11 @@ void FrameBuffer::unbindTexture() const
 unsigned int FrameBuffer::getId()
 {
 	return m_id;
+}
+
+Texture FrameBuffer::getTexture() const
+{
+	return m_texture;
 }
 
 unsigned int FrameBuffer::getId() const

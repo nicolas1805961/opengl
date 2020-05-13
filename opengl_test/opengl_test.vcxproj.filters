@@ -117,6 +117,12 @@
     <ClCompile Include="RenderBuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="VertexBufferLayout.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Screen.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stb_image.h">
@@ -221,6 +227,9 @@
     <ClInclude Include="RenderBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Screen.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="lampFragment.glsl">
@@ -239,6 +248,12 @@
       <Filter>Resource Files</Filter>
     </None>
     <None Include="dayVertex.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="renderFragment.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="renderVertex.glsl">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>

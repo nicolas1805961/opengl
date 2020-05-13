@@ -1,8 +1,8 @@
 #include "Event.h"
 
-Event::Event(Manager const& manager, Camera const& camera)
-	: m_camera(camera), m_manager(manager), m_lastTime(0.0f), m_night(false), m_isFirstHit(false), m_dt(0.0f), m_doesIntersect(false),
-	m_isRunning(false), torchOn(false)
+Event::Event()
+	: m_camera(Vector3(0.0f, 1.0f, -10.0f)), m_manager(false), m_lastTime(0.0f), m_night(false), m_isFirstHit(false), m_dt(0.0f),
+	m_doesIntersect(false), m_isRunning(false), torchOn(false)
 {
 	m_keys = std::make_unique<bool[]>(256);
 }
@@ -11,6 +11,7 @@ void Event::idle()
 {
 	// Set frame time
 	GLfloat currentTime = glutGet(GLUT_ELAPSED_TIME);
+	m_manager.setElapsedTime(currentTime);
 	m_dt = currentTime - m_lastTime;
 	m_lastTime = currentTime;
 	if (m_isRunning)
@@ -113,10 +114,12 @@ void Event::keyOperation(void)
 		m_camera.updatePosition(Camera::Mouvement::LEFT);
 	else if (m_keys['d'])
 		m_camera.updatePosition(Camera::Mouvement::RIGHT);
-	else if (m_keys[27])
+	/*else if (m_keys[27])
 		exit(0);
 	else if (m_keys['p'])
 		torchOn = !torchOn;
+	else if (m_keys['o'])
+		m_manager.toggleNightVision();*/
 	/*else if (m_keys['u'])
 		m_manager.resetFirstPosition();*/
 }
@@ -128,7 +131,14 @@ void Event::keyUp(unsigned char key, int xmouse, int ymouse)
 
 void Event::keyDown(unsigned char key, int xmouse, int ymouse)
 {
-	m_keys[key] = true;
+	if (key == 'p')
+		torchOn = !torchOn;
+	else if (key == 'o')
+		m_manager.toggleNightVision();
+	else if (key == 27)
+		exit(0);
+	else
+		m_keys[key] = true;
 }
 
 void Event::addShader(Shader const& shader)
@@ -141,10 +151,10 @@ void Event::addObject(std::shared_ptr<Object> const& object, Shape const& shape)
 	m_manager.addObject(object, shape);
 }
 
-void Event::draw(FrameBuffer const& frameBuffer, std::pair<Matrix4f, Matrix4f> const& viewProjMatrices,
-	std::pair<Matrix4f, Matrix4f> const& shadowMatrices)
+void Event::draw(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, std::pair<Matrix4f, Matrix4f> const& shadowMatrices,
+	Shape const& screenData, Shader const& screenShader)
 {
-	m_manager.draw(frameBuffer, viewProjMatrices, shadowMatrices, m_night);
+	m_manager.draw(viewProjMatrices, shadowMatrices, m_night, screenData, screenShader);
 }
 
 bool Event::isNight()
@@ -170,6 +180,11 @@ bool Event::isTorchOn()
 void Event::addIntersection(std::shared_ptr<Object> const& object, Plane const& plane)
 {
 	m_manager.addObjectIntersection(object, plane);
+}
+
+void Event::addFrameBuffer(std::string const& name, FrameBuffer const& frameBuffer)
+{
+	m_manager.addFrameBuffer(name, frameBuffer);
 }
 
 void Event::keepTrack()

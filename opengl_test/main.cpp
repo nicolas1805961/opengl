@@ -28,6 +28,7 @@
 #include "FrameBuffer.h"
 #include "Camera.h"
 #include "Event.h"
+#include "Screen.h"
 
 void APIENTRY glDebugCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const GLvoid* userParam)
 {
@@ -88,9 +89,7 @@ void APIENTRY glDebugCallback(GLenum source, GLenum type, GLuint id, GLenum seve
 	printf("glDebugMessage:\n%s \n type = %s source = %s severity = %s\n", message, msgType.c_str(), msgSource.c_str(), msgSeverity.c_str());
 }
 
-Camera camera(Vector3(0.0f, 1.0f, -10.0f));
-Manager manager;
-Event input(manager, camera);
+Event input;
 void idle()
 {
 	input.idle();
@@ -266,6 +265,7 @@ void display() {
 	static Shape sphereData(Sphere::initializeLayout());
 	static Shape cubeData(Cube::initializeLayout());
 	static Shape planeData(Plane::initializeLayout());
+	static Shape screenData(Screen::initializeLayout());
 	glEnable(GL_DEPTH_TEST);
 	/*Vector3 cubePositions[] =
 	{
@@ -293,15 +293,21 @@ void display() {
 		Vector3(0.0f,  0.0f, -3.0f)
 	};
     
-    /*glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);*/
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	
-	static Texture texture(Texture::TextureType::DEPTH);
-	static FrameBuffer frameBuffer(texture);
+	static Texture textureShadows(Texture::TextureType::DEPTH);
+	static Texture textureScene(Texture::TextureType::FULL);
+	static FrameBuffer shadowFrameBuffer(textureShadows);
+	static FrameBuffer sceneFrameBuffer(textureScene);
+
+	input.addFrameBuffer("shadowFrameBuffer", shadowFrameBuffer);
+	input.addFrameBuffer("sceneFrameBuffer", sceneFrameBuffer);
 
 	static Shader lampShader("lampVertex.glsl", "lampFragment.glsl", Shader::ShaderType::LAMP);
 	static Shader lightingShader("dayVertex.glsl", "DayFragment.glsl", Shader::ShaderType::LIGHTING);
 	static Shader depthShader("shadowVertex.glsl", "shadowFragment.glsl", Shader::ShaderType::DEPTH);
+	static Shader screenShader("renderVertex.glsl", "renderFragment.glsl", Shader::ShaderType::SCREEN);
 
 	input.addShader(lightingShader);
 	input.addShader(depthShader);
@@ -331,7 +337,7 @@ void display() {
 	Torch torch(lightingShader, Vector3(0.0f, 0.0f, 0.0f), Vector3(1.0f, 1.0f, 1.0f), Vector3(1.0f, 1.0f, 1.0f), "torch",
 		Vector3(input.getCamera().GetPosition().get_x(), input.getCamera().GetPosition().get_y(), input.getCamera().GetPosition().get_z()),
 		Vector3(input.getCamera().getDirection().get_x(), input.getCamera().getDirection().get_y(), input.getCamera().getDirection().get_z()),
-		cosf(input.getCamera().toRadian(10.0f)), cosf(input.getCamera().toRadian(20.0f)), 1.0f, 0.1f, 0.03f);
+		cosf(input.getCamera().toRadian(10.0f)), cosf(input.getCamera().toRadian(20.0f)), 1.0f, 0.01f, 0.003f);
 
 	//Cube cube1("cube1", Vector3(0.0f, 1.0f, 1.0f), Vector3(1.0f, 1.0f, 1.0f), Vector3(5.0, 1.0, -10.0));
 	//Plane plane1("plane1", Vector3(1.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f), 20.0f);
@@ -379,7 +385,7 @@ void display() {
 	static Matrix4f shadowView = Matrix4f::gl_look_at(Vector3(1.0f, 5.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f));
 	static auto shadowMatrices = std::make_pair(shadowView, shadowProjection);
 
-	input.draw(frameBuffer, viewProjPair, shadowMatrices);
+	input.draw(viewProjPair, shadowMatrices, screenData, screenShader);
 
 
 	//dayShader.unbind();

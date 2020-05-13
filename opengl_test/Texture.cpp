@@ -30,6 +30,10 @@ Texture::Texture(TextureType const& textureType)
 	}
 }
 
+Texture::Texture()
+{
+}
+
 Texture::Texture(const std::string& path)
 	: m_renderer_id(0), m_local_buffer(nullptr),
 	m_width(0), m_height(0), m_bpp(0), m_textureType(TextureType::PLAIN)
@@ -55,6 +59,17 @@ Texture::Texture(Texture const& texture)
 	this->m_width = texture.m_width;
 	this->m_textureType = texture.m_textureType;
 	this->m_local_buffer = nullptr;
+}
+
+Texture& Texture::operator=(Texture const& rhs)
+{
+	m_bpp = rhs.m_bpp;
+	m_height = rhs.m_height;
+	m_renderer_id = rhs.m_renderer_id;
+	m_width = rhs.m_width;
+	m_textureType = rhs.m_textureType;
+	m_local_buffer = nullptr;
+	return *this;
 }
 
 void Texture::bind(unsigned int slot)

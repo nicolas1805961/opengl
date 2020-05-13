@@ -52,11 +52,10 @@ public:
 	void setTranslation(Vector3 const& translation);
 	void setPosition(Vector4 const& position);
 	void setPosition(Vector3 const& position);
-	void drawDay(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, std::pair<Matrix4f, Matrix4f> const& shadowMatrices,
+	void drawLighting(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, std::pair<Matrix4f, Matrix4f> const& shadowMatrices,
 		unsigned int indexCount, Shader const& shader);
 	void drawLamp(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, unsigned int indexCount, Shader const& shader);
 	void drawShadow(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, unsigned int indexCount, Shader const& shader);
-	void drawNight(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, unsigned int indexCount, Shader const& shader);
 	virtual void keepTrack();
 	void reset();
 	Vector3 getFirstPosition();

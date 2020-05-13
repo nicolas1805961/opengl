@@ -44,6 +44,8 @@ std::pair<VertexArray, unsigned int> Plane::initializeLayout()
 	{
 		for (size_t j = 0; j < m_width; j++)
 		{
+			float u = j / m_width;
+			float v = i / m_height;
 			float x = (j - halfWidth) / halfWidth;
 			float y = 0;
 			float z = (i - halfHeight) / halfHeight;
@@ -53,6 +55,8 @@ std::pair<VertexArray, unsigned int> Plane::initializeLayout()
 			vertices.push_back(0.0f);
 			vertices.push_back(1.0f);
 			vertices.push_back(0.0f);
+			vertices.push_back(u);
+			vertices.push_back(v);
 		}
 	}
 	for (size_t i = 0; i < m_height; i++)
@@ -71,7 +75,7 @@ std::pair<VertexArray, unsigned int> Plane::initializeLayout()
 	VertexArray vertexArray;
 	VertexBuffer vb(&vertices[0], sizeof(float) * vertices.size());
 	IndexBuffer ib(&indices[0], indices.size());
-	VertexBufferLayout vbl(3, 3);
+	VertexBufferLayout vbl(3, 3, 2);
 	vertexArray.linkVerticesAndElements(vb, vbl, ib);
 	return std::make_pair(vertexArray, ib.getCount());
 }

@@ -14,6 +14,7 @@
 #include <set>
 #include <unordered_map>
 #include "Shape.h"
+#include "FrameBuffer.h"
 
 struct MyHashMap
 {
@@ -79,6 +80,24 @@ struct MyComparatorSet
 	}
 };
 
+struct MyComparatorMapFrameBuffer
+{
+	bool operator()(FrameBuffer const& left, FrameBuffer const& right) const
+	{
+		return left.getId() == right.getId();
+	}
+};
+
+struct MyHashMapFrameBuffer
+{
+	std::size_t operator()(FrameBuffer const& s) const noexcept
+	{
+		std::size_t h1 = std::hash<float>{}(s.getId());
+		std::size_t h2 = std::hash<float>{}(s.getTexture().getId());
+		return h1 ^ (h2 << 1);
+	}
+};
+
 class Manager
 {
 public:
@@ -86,24 +105,27 @@ public:
 	using ObjectType = std::unordered_map<Shape, std::unordered_set<std::shared_ptr<Object>, MyHashSet, MyComparatorSet>, MyHashMap, MyComparatorMap>;
 	using intersectionType = std::unordered_map<Plane, std::unordered_set<std::shared_ptr<Object>, MyHashSet, MyComparatorSet>, MyHashMapIntersection, MyComparatorMapIntersection>;
 
-	Manager();
+	Manager(bool nightVisionOn);
 	void addShader(Shader const& shader);
 	void addObject(std::shared_ptr<Object> const& object, Shape const& shape);
 	void addObjectIntersection(std::shared_ptr<Object> const& object, Plane const& plane);
 	void testIntersection(float dt);
 	std::set<Shader> getShaders();
 	ObjectType getObjects();
-	void draw(FrameBuffer const& frameBuffer, std::pair<Matrix4f, Matrix4f> const& viewProjMatrices,
-		std::pair<Matrix4f, Matrix4f> const& shadowMatrices, bool night);
+	void draw(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, std::pair<Matrix4f, Matrix4f> const& shadowMatrices, bool night,
+		Shape const& screenData, Shader const& screenShader);
 	void drawLamp(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, Shader const& shader);
-	void drawShadow(std::pair<Matrix4f, Matrix4f> const& shadowMatrices, FrameBuffer const& frameBuffer, Shader const& shader);
+	void drawShadow(std::pair<Matrix4f, Matrix4f> const& shadowMatrices, Shader const& shader);
 	void drawLighting(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, std::pair<Matrix4f, Matrix4f> const& shadowMatrices,
-		Shader const& shader, FrameBuffer const& frameBuffer);
+		Shader const& shader);
+	void addFrameBuffer(std::string const& name, FrameBuffer const& frameBuffer);
 	bool trace(Ray& ray);
 	void getSizeShaders();
 	void getSizeObjects();
 	void keepTrack();
 	intersectionType getIntersections();
+	void toggleNightVision();
+	void setElapsedTime(float time);
 	//void resetFirstPosition();
 
 private:
@@ -111,4 +133,7 @@ private:
 	std::set<Shader> m_shaders;
 	ObjectType m_objects;
 	intersectionType m_intersections;
+	std::unordered_map<std::string, FrameBuffer> m_frameBuffers;
+	bool m_nightVisionOn;
+	float m_time;
 };

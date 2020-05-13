@@ -9,6 +9,7 @@
 class FrameBuffer
 {
 public:
+	FrameBuffer();
 	FrameBuffer(Texture const& texture);
 	void bind();
 	void bind() const;
@@ -21,6 +22,7 @@ public:
 	void unbindTexture();
 	void unbindTexture() const;
 	unsigned int getId();
+	Texture getTexture() const;
 	unsigned int getId() const;
 
 private:

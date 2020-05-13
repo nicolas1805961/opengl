@@ -18,7 +18,7 @@ void VertexArray::linkVerticesAndElements(const VertexBuffer& vertexBuffer, cons
 		auto element = elements[i];
 		glEnableVertexAttribArray(i);
 		glVertexAttribPointer(i, element.get_count(), element.get_type(), element.get_normalized(), layout.get_stride(), (const void*)offset);
-		offset += element.get_count() * element.get_size_of_type(element.get_type());
+		offset += element.get_count() * 4;
 	}
 }
 

@@ -6,7 +6,7 @@ class VertexBufferElement
 {
 public:
 	VertexBufferElement(unsigned int type, unsigned int count, unsigned char normalized);
-	GLuint get_size_of_type(unsigned int type);
+	//GLuint get_size_of_type(unsigned int type);
 	unsigned int get_count() const;
 	unsigned int get_type() const;
 	unsigned char get_normalized() const;

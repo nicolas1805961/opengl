@@ -4,11 +4,12 @@
 #include "Vector3.h"
 #include "Ray.h"
 #include "Manager.h"
+#include "Camera.h"
 
 class Event
 {
 public:
-	Event(Manager const& manager, Camera const& camera);
+	Event();
 	void idle();
 	void clickFunction(int button, int state, int x, int y);
 	void motionFunction(int x, int y);
@@ -17,13 +18,14 @@ public:
 	void keyDown(unsigned char key, int xmouse, int ymouse);
 	void addShader(Shader const& shader);
 	void addObject(std::shared_ptr<Object> const& object, Shape const& shape);
-	void draw(FrameBuffer const& frameBuffer, std::pair<Matrix4f, Matrix4f> const& viewProjMatrices,
-		std::pair<Matrix4f, Matrix4f> const& shadowMatrices);
+	void draw(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, std::pair<Matrix4f, Matrix4f> const& shadowMatrices,
+		Shape const& screenData, Shader const& screenShader);
 	bool isNight();
 	Manager getManager();
 	Camera getCamera();
 	bool isTorchOn();
 	void addIntersection(std::shared_ptr<Object> const& object, Plane const& plane);
+	void addFrameBuffer(std::string const& name, FrameBuffer const& frameBuffer);
 	void keepTrack();
 
 private:

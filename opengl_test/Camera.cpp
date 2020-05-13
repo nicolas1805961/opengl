@@ -29,13 +29,13 @@ void Camera::updateDirection(float x, float y)
 void Camera::updatePosition(Mouvement const& mouvement)
 {
 	if (mouvement == Mouvement::FORWARD)
-		m_position += m_direction * 0.5;
+		m_position += m_direction * 0.25;
 	if (mouvement == Mouvement::BACKWARD)
-		m_position -= m_direction * 0.5;
+		m_position -= m_direction * 0.25;
 	if (mouvement == Mouvement::LEFT)
-		m_position += m_left * 0.5;
+		m_position += m_left * 0.25;
 	if (mouvement == Mouvement::RIGHT)
-		m_position -= m_left * 0.5;
+		m_position -= m_left * 0.25;
 	m_target = m_direction + m_position;
 }
 

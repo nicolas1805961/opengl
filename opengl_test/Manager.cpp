@@ -1,12 +1,11 @@
 #include "Manager.h"
 
-int Manager::m_placesLeft = 7;
-
-Manager::Manager()
+Manager::Manager(bool nightVisionOn): m_nightVisionOn(nightVisionOn), m_time(0.0)
 {
 	m_shaders = std::set<Shader>();
 	m_objects = ObjectType();
 	m_intersections = intersectionType();
+	m_frameBuffers = std::unordered_map<std::string, FrameBuffer>();
 }
 
 void Manager::addShader(Shader const& shader)
@@ -155,47 +154,68 @@ void Manager::draw(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, std::p
 		std::cout << "ERROR\n";
 }*/
 
-void Manager::draw(FrameBuffer const& frameBuffer, std::pair<Matrix4f, Matrix4f> const& viewProjMatrices,
-	std::pair<Matrix4f, Matrix4f> const& shadowMatrices, bool night)
+void Manager::draw(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, std::pair<Matrix4f, Matrix4f> const& shadowMatrices, bool night,
+	Shape const& screenData, Shader const& screenShader)
 {
+	m_frameBuffers["sceneFrameBuffer"].bind();
+	glEnable(GL_DEPTH_TEST);
 	if (night)
 	{
+		glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		for (auto& it : m_shaders)
 		{
 			it.bind();
 			if (it.getShaderType() == Shader::ShaderType::LIGHTING)
-				drawLighting(viewProjMatrices, shadowMatrices, it, frameBuffer);
+				drawLighting(viewProjMatrices, shadowMatrices, it);
 			else if (it.getShaderType() == Shader::ShaderType::LAMP)
 				drawLamp(viewProjMatrices, it);
 		}
 	}
 	else
 	{
+		glClearColor(0.37f, 0.65f, 0.92f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		for (auto& it : m_shaders)
 		{
 			it.bind();
 			if (it.getShaderType() == Shader::ShaderType::DEPTH)
-				drawShadow(shadowMatrices, frameBuffer, it);
+				drawShadow(shadowMatrices, it);
 			else if (it.getShaderType() == Shader::ShaderType::LIGHTING)
-				drawLighting(viewProjMatrices, shadowMatrices, it, frameBuffer);
+				drawLighting(viewProjMatrices, shadowMatrices, it);
 		}
 	}
+	m_frameBuffers["sceneFrameBuffer"].unbind();
+	glClear(GL_COLOR_BUFFER_BIT);
+	screenShader.bind();
+	screenShader.set_uniform_1i("nightVisionOn", m_nightVisionOn);
+	screenShader.set_uniform_1f("time", m_time);
+	screenData.getVertexArray().bind();
+	m_frameBuffers["sceneFrameBuffer"].bindTexture();
+	glDisable(GL_DEPTH_TEST);
+	glDrawElements(GL_TRIANGLES, screenData.getIndexCount(), GL_UNSIGNED_INT, nullptr);
+	m_frameBuffers["sceneFrameBuffer"].unbindTexture();
 }
 
 void Manager::drawLighting(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, std::pair<Matrix4f, Matrix4f> const& shadowMatrices,
-	Shader const& shader, FrameBuffer const& frameBuffer)
+	Shader const& shader)
 {
-	frameBuffer.bindTexture();
+	m_frameBuffers["shadowFrameBuffer"].bindTexture();
 	for (auto& it1 : m_objects)
 	{
 		it1.first.getVertexArray().bind();
 		for (auto const& it2 : it1.second)
 		{
 			if (!it2->isLamp())
-				it2->drawDay(viewProjMatrices, shadowMatrices, it1.first.getIndexCount(), shader);
+				it2->drawLighting(viewProjMatrices, shadowMatrices, it1.first.getIndexCount(), shader);
 		}
 	}
-	frameBuffer.unbindTexture();
+	m_frameBuffers["shadowFrameBuffer"].unbindTexture();
+}
+
+void Manager::addFrameBuffer(std::string const& name, FrameBuffer const& frameBuffer)
+{
+	m_frameBuffers[name] = frameBuffer;
 }
 
 void Manager::drawLamp(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, Shader const& shader)
@@ -211,9 +231,9 @@ void Manager::drawLamp(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, Sh
 	}
 }
 
-void Manager::drawShadow(std::pair<Matrix4f, Matrix4f> const& shadowMatrices, FrameBuffer const& frameBuffer, Shader const& shader)
+void Manager::drawShadow(std::pair<Matrix4f, Matrix4f> const& shadowMatrices, Shader const& shader)
 {
-	frameBuffer.bind();
+	m_frameBuffers["shadowFrameBuffer"].bind();
 	glClear(GL_DEPTH_BUFFER_BIT);
 	for (auto& it1 : m_objects)
 	{
@@ -224,7 +244,8 @@ void Manager::drawShadow(std::pair<Matrix4f, Matrix4f> const& shadowMatrices, Fr
 				it2->drawShadow(shadowMatrices, it1.first.getIndexCount(), shader);
 		}
 	}
-	frameBuffer.unbind();
+	//m_frameBuffers["shadowFrameBuffer"].unbind();
+	m_frameBuffers["sceneFrameBuffer"].bind();
 }
 
 bool Manager::trace(Ray& ray)
@@ -280,6 +301,16 @@ void Manager::keepTrack()
 Manager::intersectionType Manager::getIntersections()
 {
 	return m_intersections;
+}
+
+void Manager::toggleNightVision()
+{
+	m_nightVisionOn = !m_nightVisionOn;
+}
+
+void Manager::setElapsedTime(float time)
+{
+	m_time = time;
 }
 
 /*void Manager::resetFirstPosition()
