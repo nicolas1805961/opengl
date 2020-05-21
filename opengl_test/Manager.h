@@ -7,7 +7,6 @@
 #include "Cube.h"
 #include "Sphere.h"
 #include <utility>
-#include "comparePair.h"
 #include <algorithm>
 #include "FrameBuffer.h"
 #include <unordered_set>
@@ -18,7 +17,7 @@
 
 struct MyHashMap
 {
-	std::size_t operator()(Shape const& s) const noexcept
+	std::size_t operator()(Shape const& s) const
 	{
 		std::size_t h1 = std::hash<unsigned int>{}(s.getIndexCount());
 		std::size_t h2 = std::hash<unsigned int>{}(s.getVertexArray().getId());
@@ -28,7 +27,7 @@ struct MyHashMap
 
 struct MyHashMapIntersection
 {
-	std::size_t operator()(Plane const& s) const noexcept
+	std::size_t operator()(Plane const& s) const
 	{
 		std::size_t h1 = std::hash<unsigned int>{}(s.getNormal().get_x());
 		std::size_t h2 = std::hash<unsigned int>{}(s.getNormal().get_y());
@@ -38,7 +37,7 @@ struct MyHashMapIntersection
 
 struct MyHashSet
 {
-	std::size_t operator()(std::shared_ptr<Object> const& s) const noexcept
+	std::size_t operator()(std::shared_ptr<Object> const& s) const
 	{
 		std::size_t h1 = std::hash<float>{}(s->getTranslation().get_x());
 		std::size_t h2 = std::hash<float>{}(s->getTranslation().get_y());
@@ -90,7 +89,7 @@ struct MyComparatorMapFrameBuffer
 
 struct MyHashMapFrameBuffer
 {
-	std::size_t operator()(FrameBuffer const& s) const noexcept
+	std::size_t operator()(FrameBuffer const& s) const
 	{
 		std::size_t h1 = std::hash<float>{}(s.getId());
 		std::size_t h2 = std::hash<float>{}(s.getTexture().getId());
@@ -105,16 +104,15 @@ public:
 	using ObjectType = std::unordered_map<Shape, std::unordered_set<std::shared_ptr<Object>, MyHashSet, MyComparatorSet>, MyHashMap, MyComparatorMap>;
 	using intersectionType = std::unordered_map<Plane, std::unordered_set<std::shared_ptr<Object>, MyHashSet, MyComparatorSet>, MyHashMapIntersection, MyComparatorMapIntersection>;
 
-	Manager(bool nightVisionOn);
+	Manager(bool nightVisionOn, bool night);
 	void addShader(Shader const& shader);
 	void addObject(std::shared_ptr<Object> const& object, Shape const& shape);
 	void addObjectIntersection(std::shared_ptr<Object> const& object, Plane const& plane);
 	void testIntersection(float dt);
 	std::set<Shader> getShaders();
 	ObjectType getObjects();
-	void draw(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, std::pair<Matrix4f, Matrix4f> const& shadowMatrices, bool night,
+	void draw(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, std::pair<Matrix4f, Matrix4f> const& shadowMatrices,
 		Shape const& screenData, Shader const& screenShader);
-	void drawLamp(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, Shader const& shader);
 	void drawShadow(std::pair<Matrix4f, Matrix4f> const& shadowMatrices, Shader const& shader);
 	void drawLighting(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, std::pair<Matrix4f, Matrix4f> const& shadowMatrices,
 		Shader const& shader);
@@ -125,6 +123,8 @@ public:
 	void keepTrack();
 	intersectionType getIntersections();
 	void toggleNightVision();
+	void toggleNight();
+	bool isNight();
 	void setElapsedTime(float time);
 	//void resetFirstPosition();
 
@@ -136,4 +136,5 @@ private:
 	std::unordered_map<std::string, FrameBuffer> m_frameBuffers;
 	bool m_nightVisionOn;
 	float m_time;
+	bool m_night;
 };

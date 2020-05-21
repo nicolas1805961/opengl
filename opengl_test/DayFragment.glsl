@@ -39,7 +39,7 @@ uniform bool night;
 uniform bool torchOn;
 uniform sampler2D shadowMap;
 uniform DirLight dirLight;
-uniform PointLight pointLights[5];
+uniform PointLight pointLights[1];
 uniform Torch torch;
 //uniform vec4 fogColor;
 
@@ -109,16 +109,16 @@ vec3 addTorch(Torch light, vec3 normal, vec3 vertexPos, vec3 viewDir)
 
 void main()
 {
-    vec3 norm = normalize(Normal);
-    vec3 viewDir = normalize(viewPos - vertexPosition);
-    vec3 result = addDirLight(dirLight, norm, viewDir);
+    //vec3 norm = normalize(Normal);
+    //vec3 viewDirection = normalize(viewPos - vertexPosition);
+    vec3 amountOfLight = addDirLight(dirLight, normalize(Normal), normalize(viewPos - vertexPosition));
     if (night)
     {
-        for (int i = 0; i < 5; i++)
-            result += addPointLight(pointLights[i], norm, vertexPosition, viewDir);
+        for (int i = 0; i < 1; i++)
+            amountOfLight += addPointLight(pointLights[i], normalize(Normal), vertexPosition, normalize(viewPos - vertexPosition));
         if (torchOn)
-            result += addTorch(torch, norm, vertexPosition, viewDir);
+            amountOfLight += addTorch(torch, normalize(Normal), vertexPosition, normalize(viewPos - vertexPosition));
     }
-    color = vec4(result, 1.0);
+    color = vec4(amountOfLight, 1.0);
     //color = mix(fogColor, vec4( result, 1.0 ), visibility);
 }

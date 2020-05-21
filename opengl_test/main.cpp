@@ -16,7 +16,6 @@
 #include "DirectionalLight.h"
 #include "PointLight.h"
 #include "Torch.h"
-#include "Material.h"
 #include "Error.h"
 #include "Sphere.h"
 #include "Cube.h"
@@ -114,145 +113,6 @@ void keyDown(unsigned char key, int xmouse, int ymouse)
 {
 	input.keyDown(key, xmouse, ymouse);
 }
-/*std::unique_ptr<bool[]> keys = std::make_unique<bool[]>(256);
-std::unique_ptr<bool[]> keysSpecial = std::make_unique<bool[]>(256);
-GLfloat dt = 0.0f;
-GLfloat lastTime = 0.0f;
-bool doesIntersect = false;
-bool isFirstHit = false;
-bool night = false;
-
-// Function prototypes
-void KeyPressed(unsigned char key, int xmouse, int ymouse)
-{
-	keys[key] = true;
-}
-
-void KeyUp(unsigned char key, int xmouse, int ymouse)
-{
-	keys[key] = false;
-}
-
-void KeySpecial(int key, int xmouse, int ymouse)
-{
-	keysSpecial[key] = true;
-}
-
-void KeySpecialUp(int key, int xmouse, int ymouse)
-{
-	keysSpecial[key] = false;
-}
-
-void keyOperation(void)
-{
-	if (keys['z'])
-		camera.updatePosition(Camera::Mouvement::FORWARD);
-	else if (keys['s'])
-		camera.updatePosition(Camera::Mouvement::BACKWARD);
-	else if (keys['q'])
-		camera.updatePosition(Camera::Mouvement::LEFT);
-	else if (keys['d'])
-		camera.updatePosition(Camera::Mouvement::RIGHT);
-	else if (keys[27])
-		exit(0);
-}
-
-void keyOperationSpecial(void)
-{
-	if (keysSpecial[GLUT_KEY_UP])
-		camera.updatePosition(Camera::Mouvement::FORWARD);
-	else if (keysSpecial[GLUT_KEY_DOWN])
-		camera.updatePosition(Camera::Mouvement::BACKWARD);
-	else if (keysSpecial[GLUT_KEY_LEFT])
-		camera.updatePosition(Camera::Mouvement::LEFT);
-	else if (keysSpecial[GLUT_KEY_RIGHT])
-		camera.updatePosition(Camera::Mouvement::RIGHT);
-}
-
-void look(int x, int y)
-{
-	static float lastX = x;
-	static float lastY = y;
-	GLfloat deltaX = x - lastX;
-	GLfloat deltaY = lastY - y;
-	lastX = x;
-	lastY = y;
-	camera.updateDirection(deltaX, deltaY);
-}
-
-void processIntersection(Vector3 const& currentMousePosition, Vector3 const& lastMousePosition, Ray& ray)
-{
-	doesIntersect = true;
-	Vector3 distanceMousePositions = (currentMousePosition - lastMousePosition).normalize();
-	if (isnan(distanceMousePositions.get_x()))
-	{
-		std::cout << "ok\n";
-	}
-	ray.get_hit()->setTranslation(ray.get_hit()->getTranslation() + distanceMousePositions);
-	glutPostRedisplay();
-}
-
-void motionFunction(int x, int y)
-{
-	static Ray lastRay;
-	Vector3 mousePosition = camera.get3dMousePosition(x, y);
-	static Vector3 lastMousePosition = mousePosition;
-	Ray ray(camera.GetPosition(), (mousePosition - camera.GetPosition()).normalize());
-	if (manager.trace(ray) && isFirstHit)
-	{
-		if (doesIntersect && lastRay.get_hit() != ray.get_hit())
-		{
-			look(x, y);
-			lastMousePosition = mousePosition;
-			return;
-		}
-		processIntersection(mousePosition, lastMousePosition, ray);
-		lastRay = ray;
-	}
-	else if (doesIntersect && isFirstHit)
-		processIntersection(mousePosition, lastMousePosition, lastRay);
-	else
-		doesIntersect = false;
-	look(x, y);
-	lastMousePosition = mousePosition;
-}
-
-void idle()
-{
-	// Set frame time
-	GLfloat currentTime = glutGet(GLUT_ELAPSED_TIME);
-	dt = currentTime - lastTime;
-	lastTime = currentTime;*/
-	/*for (auto const& it : Manager.getObjects())
-		it.second->updateVelocityAndPosition(dt / 10000.0f);*/
-	/*keyOperation();
-	keyOperationSpecial();
-	glutPostRedisplay();
-}
-
-void click(int button, int state, int x, int y)
-{
-	if (state == GLUT_UP && button == GLUT_LEFT_BUTTON)
-		doesIntersect = false;
-	else if (state == GLUT_DOWN && button == GLUT_LEFT_BUTTON)
-	{
-		Vector3 mousePosition = camera.get3dMousePosition(x, y);
-		Ray ray(camera.GetPosition(), (mousePosition - camera.GetPosition()).normalize());
-		if (manager.trace(ray))
-			isFirstHit = true;
-		else
-			isFirstHit = false;
-	}
-	else if (state == GLUT_DOWN && button == GLUT_RIGHT_BUTTON)
-		night = !night;
-}
-
-/*void mouseWheel(int wheel, int direction, int x, int y)
-{
-	camera.ProcessMouseScroll(direction);
-}*/
-
-
 
 void display() {
 	if (input.isNight())
@@ -267,25 +127,7 @@ void display() {
 	static Shape planeData(Plane::initializeLayout());
 	static Shape screenData(Screen::initializeLayout());
 	glEnable(GL_DEPTH_TEST);
-	/*Vector3 cubePositions[] =
-	{
-		Vector3(0.0f, 0.0f, 0.0f),
-		Vector3(2.0f, 5.0f, -15.0f),
-		Vector3(-1.5f, -2.2f, -2.5f),
-		Vector3(-3.8f, -2.0f, -12.3f),
-		Vector3(2.4f, -0.4f, -3.5f)
-	};*/
 
-	/*Vector3 spherePositions[] =
-	{
-		Vector3(-1.7f, 3.0f, -7.5f),
-		Vector3(1.3f, -2.0f, -2.5f),
-		Vector3(1.5f, 2.0f, -2.5f),
-		Vector3(1.5f, 0.2f, -1.5f),
-		Vector3(-1.3f, 1.0f, -1.5f)
-	};*/
-
-	// Positions of the point lights
 	Vector3 pointLightPositions[] = {
 		Vector3(0.7f,  0.2f,  2.0f),
 		Vector3(2.3f, -3.3f, -4.0f),
@@ -304,35 +146,27 @@ void display() {
 	input.addFrameBuffer("shadowFrameBuffer", shadowFrameBuffer);
 	input.addFrameBuffer("sceneFrameBuffer", sceneFrameBuffer);
 
-	static Shader lampShader("lampVertex.glsl", "lampFragment.glsl", Shader::ShaderType::LAMP);
-	static Shader lightingShader("dayVertex.glsl", "DayFragment.glsl", Shader::ShaderType::LIGHTING);
+	static Shader lightingShader("lightingVertex.glsl", "lightingFragment.glsl", Shader::ShaderType::LIGHTING);
 	static Shader depthShader("shadowVertex.glsl", "shadowFragment.glsl", Shader::ShaderType::DEPTH);
 	static Shader screenShader("renderVertex.glsl", "renderFragment.glsl", Shader::ShaderType::SCREEN);
 
 	input.addShader(lightingShader);
 	input.addShader(depthShader);
-	input.addShader(lampShader);
     
-	//directional light
 	//Fog fog(dayShader, 0.05f, 1.5f, Vector3(0.3f), Vector3(0.0f), night);
 	DirectionalLight directionalLight(lightingShader, Vector3(0.3f, 0.3f, 0.3f), Vector3(2.0f, 2.0f, 2.0f), Vector3(2.0f, 2.0f, 2.0f),
 		"dirLight", Vector3(0.0f, -1.0f, 0.0f));
 	//point light
 	PointLight pointLight1(lightingShader, Vector3(0.05f, 0.05f, 0.05f), Vector3(0.8f, 0.8f, 0.8f), Vector3(1.0f, 1.0f, 1.0f),
-		"pointLights[0]", 1.0f, 0.1f, 0.03f, std::make_shared<Sphere>("PointLight1", Vector3(0.7f, 4.2f, 2.0f), true, 0.05f));
-	PointLight pointLight2(lightingShader, Vector3(0.05f, 0.05f, 0.05f), Vector3(0.8f, 0.8f, 0.8f), Vector3(1.0f, 1.0f, 1.0f),
+		"pointLights[0]", 1.0f, 0.1f, 0.03f, std::make_shared<Sphere>("PointLight1", Vector3(1.0f, 4.0f, -7.0f), true, 0.05f));
+	/*PointLight pointLight2(lightingShader, Vector3(0.05f, 0.05f, 0.05f), Vector3(0.8f, 0.8f, 0.8f), Vector3(1.0f, 1.0f, 1.0f),
 		"pointLights[1]", 1.0f, 0.1f, 0.03f, std::make_shared<Sphere>("PointLight2", Vector3(2.3f, 3.3f, -4.0f), true, 0.05f));
 	PointLight pointLight3(lightingShader, Vector3(0.05f, 0.05f, 0.05f), Vector3(0.8f, 0.8f, 0.8f), Vector3(1.0f, 1.0f, 1.0f),
 		"pointLights[2]", 1.0f, 0.1f, 0.03f, std::make_shared<Sphere>("PointLight3", Vector3(-4.0f, 4.0f, -12.0f), true, 0.05f));
 	PointLight pointLight4(lightingShader, Vector3(0.05f, 0.05f, 0.05f), Vector3(0.8f, 0.8f, 0.8f), Vector3(1.0f, 1.0f, 1.0f),
 		"pointLights[3]", 1.0f, 0.1f, 0.03f, std::make_shared<Sphere>("PointLight4", Vector3(0.0f, 3.0f, -3.0f), true, 0.05f));
 	PointLight pointLight5(lightingShader, Vector3(0.05f, 0.05f, 0.05f), Vector3(0.8f, 0.8f, 0.8f), Vector3(1.0f, 1.0f, 1.0f),
-		"pointLights[4]", 1.0f, 0.1f, 0.03f, std::make_shared<Sphere>("PointLight5", Vector3(2.0f, 3.0f, -3.0f), true, 0.05f));
-	//Torch
-	/*Torch Torch(lightingShader, Vector3(0.0f, 0.0f, 0.0f), Vector3(1.0f, 1.0f, 1.0f), Vector3(1.0f, 1.0f, 1.0f), "Torch",
-		Vector3(camera.GetPosition().get_x(), camera.GetPosition().get_y(), camera.GetPosition().get_z()),
-		Vector3(camera.getFront().get_x(), camera.getFront().get_y(), camera.getFront().get_z()), cosf(camera.get_radians(12.5f)),
-		cosf(camera.get_radians(15.0f)), 1.0f, 0.09f, 0.032f);*/
+		"pointLights[4]", 1.0f, 0.1f, 0.03f, std::make_shared<Sphere>("PointLight5", Vector3(2.0f, 3.0f, -3.0f), true, 0.05f));*/
 
 	Torch torch(lightingShader, Vector3(0.0f, 0.0f, 0.0f), Vector3(1.0f, 1.0f, 1.0f), Vector3(1.0f, 1.0f, 1.0f), "torch",
 		Vector3(input.getCamera().GetPosition().get_x(), input.getCamera().GetPosition().get_y(), input.getCamera().GetPosition().get_z()),
@@ -354,7 +188,8 @@ void display() {
     lightingShader.bind();
 	lightingShader.set_uniform_1i("night", input.isNight());
 	lightingShader.set_uniform_1i("torchOn", input.isTorchOn());
-	lightingShader.set_uniform_3f("viewPos", input.getCamera().GetPosition().get_x(), input.getCamera().GetPosition().get_y(), input.getCamera().GetPosition().get_z());
+	lightingShader.set_uniform_1i("flashOn", input.isFlashing());
+	lightingShader.set_uniform_3f("viewPosition", input.getCamera().GetPosition().get_x(), input.getCamera().GetPosition().get_y(), input.getCamera().GetPosition().get_z());
 
 	input.addIntersection(cube1, *plane1);
 	input.addIntersection(sphere1, *plane1);
@@ -364,20 +199,10 @@ void display() {
 	//input.addObject(std::make_shared<Sphere>(sphere2), sphereData);
 	input.addObject(plane1, planeData);
 	input.addObject(pointLight1.getShape(), sphereData);
-	input.addObject(pointLight2.getShape(), sphereData);
+	/*input.addObject(pointLight2.getShape(), sphereData);
 	input.addObject(pointLight3.getShape(), sphereData);
 	input.addObject(pointLight4.getShape(), sphereData);
-	input.addObject(pointLight5.getShape(), sphereData);
-
-	/*for (auto const& it : input.getManager().getIntersections())
-	{
-		for (auto const& it2 : it.second)
-		{
-			std::cout << it2->getTranslation() << "\n";
-		}
-	}*/
-
-	//input.keepTrack(view, projection);
+	input.addObject(pointLight5.getShape(), sphereData);*/
 
 	//-10.0f, 10.0f, -10.0f, 10.0f, 1.0f, 7.5f
 	//-2.0f, 4.0f, -1.0f
@@ -442,6 +267,7 @@ int main(int argc, char* argv[]) {
 	glutInitWindowSize(1920, 1080);
 	glutInitWindowPosition(100, 100);
 	glutCreateWindow("Test");
+	glutFullScreen();
 	glutDisplayFunc(display);
 	glutIdleFunc(idle);
 	glutKeyboardFunc(keyDown);

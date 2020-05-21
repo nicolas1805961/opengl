@@ -5,7 +5,6 @@
 #include "Vector3.h"
 #include "Matrix4f.h"
 #include "Shader.h"
-#include "Material.h"
 #include <cmath>
 #include "Camera.h"
 
@@ -54,7 +53,6 @@ public:
 	void setPosition(Vector3 const& position);
 	void drawLighting(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, std::pair<Matrix4f, Matrix4f> const& shadowMatrices,
 		unsigned int indexCount, Shader const& shader);
-	void drawLamp(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, unsigned int indexCount, Shader const& shader);
 	void drawShadow(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, unsigned int indexCount, Shader const& shader);
 	virtual void keepTrack();
 	void reset();

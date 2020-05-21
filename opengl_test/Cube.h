@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Material.h"
 #include "Shader.h"
 #include <string>
 #include "IndexBuffer.h"

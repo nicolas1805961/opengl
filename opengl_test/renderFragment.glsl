@@ -21,8 +21,16 @@ void main()
     {
         vec2 coord = texCoord;
         coord.y *= random(vec2(coord.y, time * 0.00000001));
-        color *= 10;
+        float coeff = -1 * log(0.2126 * color.r + 0.7152 * color.g + 0.0722 * color.b);
+        if (coeff > 1)
+            color.rgb = coeff * color.rgb;
         float green = max(max(color.r, color.g), color.b);
-        finalColor = vec4(0.0, green + random(coord) * 0.1, 0.0, color.a);
+        if (green >= 1.0)
+        {
+            vec3 y = vec3(0.3, green, 0.3) + random(coord) * 0.1;
+            finalColor = vec4(y, 1.0);
+        }
+        else
+            finalColor = vec4(0.0, green + random(coord) * 0.1, 0.0, 1.0);
     }
 }

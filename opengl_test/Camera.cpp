@@ -13,7 +13,6 @@ void Camera::updateDirection(float x, float y)
 {
 	m_theta += (x * 0.5);
 	m_phi += (y * 0.5);
-	//std::cout << m_longitude << "\n";
 	if (m_phi >= 89.0f)
 		m_phi = 89.0f;
 	else if (m_phi <= -89.0f)

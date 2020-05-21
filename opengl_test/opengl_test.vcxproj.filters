@@ -60,9 +60,6 @@
     <ClCompile Include="PointLight.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Material.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="DirectionalLight.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -164,9 +161,6 @@
     <ClInclude Include="PointLight.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Material.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="DirectionalLight.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -197,9 +191,6 @@
     <ClInclude Include="Vector2.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="comparePair.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Fog.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -207,9 +198,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Shape.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="comparePointers.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Manager.h">
@@ -247,13 +235,16 @@
     <None Include="DayFragment.glsl">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="dayVertex.glsl">
-      <Filter>Resource Files</Filter>
-    </None>
     <None Include="renderFragment.glsl">
       <Filter>Resource Files</Filter>
     </None>
     <None Include="renderVertex.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="lightingFragment.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="lightingVertex.glsl">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>

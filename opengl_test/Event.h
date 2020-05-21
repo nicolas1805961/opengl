@@ -24,6 +24,7 @@ public:
 	Manager getManager();
 	Camera getCamera();
 	bool isTorchOn();
+	bool isFlashing();
 	void addIntersection(std::shared_ptr<Object> const& object, Plane const& plane);
 	void addFrameBuffer(std::string const& name, FrameBuffer const& frameBuffer);
 	void keepTrack();
@@ -38,7 +39,7 @@ private:
 	bool m_doesIntersect;
 	bool m_isRunning;
 	bool m_isFirstHit;
-	bool m_night;
 	bool torchOn;
+	bool m_isFlashing;
 	std::unique_ptr<bool[]> m_keys;
 };

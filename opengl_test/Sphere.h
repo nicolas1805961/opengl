@@ -10,7 +10,6 @@
 #include "VertexBufferLayout.h"
 #include "IndexBuffer.h"
 #include "VertexArray.h"
-#include "Material.h"
 #include "Object.h"
 #include "Plane.h"
 #include "Ray.h"

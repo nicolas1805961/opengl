@@ -142,52 +142,23 @@ void Object::setPosition(Vector3 const& position)
 void Object::drawLighting(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, std::pair<Matrix4f, Matrix4f> const& shadowMatrices,
 	unsigned int indexCount, Shader const& shader)
 {
-	/*Matrix4f model(1.0f);
-	model = Matrix4f::gl_translate(model, m_translation);
-	model = Matrix4f::gl_scale(model, Vector3(m_scale));
-	model = Matrix4f::gl_rotate(model, getRadians(m_degreeAngle), m_axis);*/
-	//keepTrack(model, view, projection);
 	shader.set_uniform_mat_4f("view", viewProjMatrices.first);
 	shader.set_uniform_mat_4f("projection", viewProjMatrices.second);
 	shader.set_uniform_mat_4f("model", m_model);
+	shader.set_uniform_1i("isLamp", m_isLamp);
 	shader.set_uniform_mat_4f("shadowView", shadowMatrices.first);
 	shader.set_uniform_mat_4f("shadowProjection", shadowMatrices.second);
-	shader.set_uniform_3f("objectDiffuse", m_diffuse.get_x(), m_diffuse.get_y(), m_diffuse.get_z());
-	shader.set_uniform_3f("objectSpecular", m_specular.get_x(), m_specular.get_y(), m_specular.get_z());
-	shader.set_uniform_1f("shininess", m_shininess);
-	/*if (m_isTexture)
-		m_material = Material(shader, m_shininess, "material");
-	else
-		m_material = Material(shader, m_shininess, "material", m_diffuse, m_specular);
-	glViewport(0, 0, 1920, 1080);*/
-	glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, nullptr);
-}
-
-void Object::drawLamp(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, unsigned int indexCount, Shader const& shader)
-{
-	/*Matrix4f model(1.0f);
-	model = Matrix4f::gl_translate(model, m_translation);
-	model = Matrix4f::gl_scale(model, Vector3(m_scale));
-	model = Matrix4f::gl_rotate(model, getRadians(m_degreeAngle), m_axis);*/
-	//keepTrack(model, view, projection);
-	shader.set_uniform_mat_4f("view", viewProjMatrices.first);
-	shader.set_uniform_mat_4f("projection", viewProjMatrices.second);
-	shader.set_uniform_mat_4f("model", m_model);
-	//glViewport(0, 0, 1920, 1080);
+	shader.set_uniform_3f("objectProperty.objectDiffuse", m_diffuse.get_x(), m_diffuse.get_y(), m_diffuse.get_z());
+	shader.set_uniform_3f("objectProperty.objectSpecular", m_specular.get_x(), m_specular.get_y(), m_specular.get_z());
+	shader.set_uniform_1f("objectProperty.shininess", m_shininess);
 	glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, nullptr);
 }
 
 void Object::drawShadow(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, unsigned int indexCount, Shader const& shader)
 {
-	/*Matrix4f model(1.0f);
-	model = Matrix4f::gl_translate(model, m_translation);
-	model = Matrix4f::gl_scale(model, Vector3(m_scale));
-	model = Matrix4f::gl_rotate(model, getRadians(m_degreeAngle), m_axis);*/
-	//keepTrack(model, view, projection);
 	shader.set_uniform_mat_4f("view", viewProjMatrices.first);
 	shader.set_uniform_mat_4f("projection", viewProjMatrices.second);
 	shader.set_uniform_mat_4f("model", m_model);
-	//glViewport(0, 0, 1920, 1080);
 	glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, nullptr);
 }
 

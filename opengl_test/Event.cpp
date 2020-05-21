@@ -1,8 +1,8 @@
 #include "Event.h"
 
 Event::Event()
-	: m_camera(Vector3(0.0f, 1.0f, -10.0f)), m_manager(false), m_lastTime(0.0f), m_night(false), m_isFirstHit(false), m_dt(0.0f),
-	m_doesIntersect(false), m_isRunning(false), torchOn(false)
+	: m_camera(Vector3(0.0f, 1.0f, -10.0f)), m_manager(false, false), m_lastTime(0.0f), m_isFirstHit(false), m_dt(0.0f),
+	m_doesIntersect(false), m_isRunning(false), torchOn(false), m_isFlashing(false)
 {
 	m_keys = std::make_unique<bool[]>(256);
 }
@@ -36,7 +36,7 @@ void Event::clickFunction(int button, int state, int x, int y)
 			m_isFirstHit = false;
 	}
 	else if (state == GLUT_DOWN && button == GLUT_RIGHT_BUTTON)
-		m_night = !m_night;
+		m_manager.toggleNight();
 	else if (state == GLUT_DOWN && button == GLUT_MIDDLE_BUTTON && m_isRunning == false)
 	{
 		m_isRunning = true;
@@ -114,14 +114,6 @@ void Event::keyOperation(void)
 		m_camera.updatePosition(Camera::Mouvement::LEFT);
 	else if (m_keys['d'])
 		m_camera.updatePosition(Camera::Mouvement::RIGHT);
-	/*else if (m_keys[27])
-		exit(0);
-	else if (m_keys['p'])
-		torchOn = !torchOn;
-	else if (m_keys['o'])
-		m_manager.toggleNightVision();*/
-	/*else if (m_keys['u'])
-		m_manager.resetFirstPosition();*/
 }
 
 void Event::keyUp(unsigned char key, int xmouse, int ymouse)
@@ -137,6 +129,8 @@ void Event::keyDown(unsigned char key, int xmouse, int ymouse)
 		m_manager.toggleNightVision();
 	else if (key == 27)
 		exit(0);
+	else if (key == 'm')
+		m_isFlashing = !m_isFlashing;
 	else
 		m_keys[key] = true;
 }
@@ -154,12 +148,12 @@ void Event::addObject(std::shared_ptr<Object> const& object, Shape const& shape)
 void Event::draw(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, std::pair<Matrix4f, Matrix4f> const& shadowMatrices,
 	Shape const& screenData, Shader const& screenShader)
 {
-	m_manager.draw(viewProjMatrices, shadowMatrices, m_night, screenData, screenShader);
+	m_manager.draw(viewProjMatrices, shadowMatrices, screenData, screenShader);
 }
 
 bool Event::isNight()
 {
-	return m_night;
+	return m_manager.isNight();
 }
 
 Manager Event::getManager()
@@ -175,6 +169,11 @@ Camera Event::getCamera()
 bool Event::isTorchOn()
 {
 	return torchOn;
+}
+
+bool Event::isFlashing()
+{
+	return m_isFlashing;
 }
 
 void Event::addIntersection(std::shared_ptr<Object> const& object, Plane const& plane)

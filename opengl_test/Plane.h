@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Material.h"
 #include "Shader.h"
 #include <string>
 #include "IndexBuffer.h"
@@ -24,8 +23,6 @@ public:
 	bool intersectRay(Ray& ray);
 	void keepTrack();
 	bool intersectPlane(Plane const& plane);
-	//bool intersect(Manager const& Manager);
-	//bool intersectRay(int x, int y, Camera const& camera);
 
 private:
 	Vector4 m_normal;

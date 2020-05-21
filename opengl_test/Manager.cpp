@@ -1,6 +1,6 @@
 #include "Manager.h"
 
-Manager::Manager(bool nightVisionOn): m_nightVisionOn(nightVisionOn), m_time(0.0)
+Manager::Manager(bool nightVisionOn, bool night): m_nightVisionOn(nightVisionOn), m_night(night), m_time(0.0)
 {
 	m_shaders = std::set<Shader>();
 	m_objects = ObjectType();
@@ -48,118 +48,12 @@ Manager::ObjectType Manager::getObjects()
 	return m_objects;
 }
 
-/*void Manager::drawDay(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, std::pair<Matrix4f, Matrix4f> const& shadowViewProjMatrices,
-	Shader const& dayShader, Shader const& shadowShader, FrameBuffer const& frameBuffer)
-{
-	frameBuffer.bind();
-	draw(shadowViewProjMatrices, shadowShader, frameBuffer.getId());
-	frameBuffer.unbind();
-	frameBuffer.bindTexture();
-	draw(viewProjMatrices, shadowViewProjMatrices, dayShader, 0);
-	frameBuffer.unbindTexture();
-}
-
-void Manager::drawNight(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, std::pair<Matrix4f, Matrix4f> const& shadowViewProjMatrices,
-	Shader const& dayShader, Shader const& lampShader, Shader const& shadowShader, FrameBuffer const& frameBuffer)
-{
-	frameBuffer.bind();
-	draw(shadowViewProjMatrices, shadowShader, frameBuffer.getId());
-	frameBuffer.unbind();
-	frameBuffer.bindTexture();
-	draw(viewProjMatrices, shadowViewProjMatrices, dayShader, 0);
-	frameBuffer.unbindTexture();
-	draw(viewProjMatrices, lampShader, 0);
-}
-
-
-
-void Manager::draw(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, Shader const& shader, unsigned int frameBufferId)
-{
-	if (frameBufferId == 0)
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	else
-		glClear(GL_DEPTH_BUFFER_BIT);
-	myMaps::iterator it;
-	if (shader.getShaderType() == Shader::ShaderType::DEPTH)
-		it = std::find_if(m_objects.begin(), m_objects.end(), [](auto x) {return x.first.getShaderType() == Shader::ShaderType::LIGHTING; });
-	else
-		it = std::find_if(m_objects.begin(), m_objects.end(), [](auto x) {return x.first.getShaderType() == Shader::ShaderType::LAMP; });
-	if (it != m_objects.end())
-	{
-		shader.bind();
-		for (auto const& it1 : it->second)
-		{
-			it1.first.second.bind();
-			it1.first.first.bind();
-			for (auto const& it2 : it1.second)
-			{
-				it2.second->draw(viewProjMatrices, it1.first.first.getCount(), shader);
-			}
-		}
-	}
-	else
-		std::cout << "ERROR\n";
-}
-
-void Manager::draw(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, Shader const& shader, unsigned int frameBufferId) const
-{
-	if (frameBufferId == 0)
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	else
-		glClear(GL_DEPTH_BUFFER_BIT);
-	myMaps::const_iterator it;
-	if (shader.getShaderType() == Shader::ShaderType::DEPTH)
-		it = std::find_if(m_objects.begin(), m_objects.end(), [](auto x) {return x.first.getShaderType() == Shader::ShaderType::LIGHTING; });
-	else
-		it = std::find_if(m_objects.begin(), m_objects.end(), [](auto x) {return x.first.getShaderType() == Shader::ShaderType::LAMP; });
-	if (it != m_objects.end())
-	{
-		shader.bind();
-		for (auto const& it1 : it->second)
-		{
-			it1.first.second.bind();
-			it1.first.first.bind();
-			for (auto const& it2 : it1.second)
-			{
-				it2.second->draw(viewProjMatrices, it1.first.first.getCount(), shader);
-			}
-		}
-	}
-	else
-		std::cout << "ERROR\n";
-}
-
 void Manager::draw(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, std::pair<Matrix4f, Matrix4f> const& shadowMatrices,
-	Shader const& shader, unsigned int frameBufferId)
-{
-	if (frameBufferId == 0)
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	else
-		glClear(GL_DEPTH_BUFFER_BIT);
-	auto it = std::find_if(m_objects.begin(), m_objects.end(), [](auto x) {return x.first.getShaderType() == Shader::ShaderType::LIGHTING; });
-	if (it != m_objects.end())
-	{
-		shader.bind();
-		for (auto const& it1 : it->second)
-		{
-			it1.first.second.bind();
-			it1.first.first.bind();
-			for (auto const& it2 : it1.second)
-			{
-				it2.second->draw(viewProjMatrices, shadowMatrices, it1.first.first.getCount(), shader);
-			}
-		}
-	}
-	else
-		std::cout << "ERROR\n";
-}*/
-
-void Manager::draw(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, std::pair<Matrix4f, Matrix4f> const& shadowMatrices, bool night,
 	Shape const& screenData, Shader const& screenShader)
 {
 	m_frameBuffers["sceneFrameBuffer"].bind();
 	glEnable(GL_DEPTH_TEST);
-	if (night)
+	if (m_night)
 	{
 		glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -168,8 +62,6 @@ void Manager::draw(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, std::p
 			it.bind();
 			if (it.getShaderType() == Shader::ShaderType::LIGHTING)
 				drawLighting(viewProjMatrices, shadowMatrices, it);
-			else if (it.getShaderType() == Shader::ShaderType::LAMP)
-				drawLamp(viewProjMatrices, it);
 		}
 	}
 	else
@@ -206,8 +98,10 @@ void Manager::drawLighting(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices
 		it1.first.getVertexArray().bind();
 		for (auto const& it2 : it1.second)
 		{
-			if (!it2->isLamp())
-				it2->drawLighting(viewProjMatrices, shadowMatrices, it1.first.getIndexCount(), shader);
+			if (!m_night && it2->isLamp())
+				continue;
+			shader.set_uniform_1f("time", m_time);
+			it2->drawLighting(viewProjMatrices, shadowMatrices, it1.first.getIndexCount(), shader);
 		}
 	}
 	m_frameBuffers["shadowFrameBuffer"].unbindTexture();
@@ -216,19 +110,6 @@ void Manager::drawLighting(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices
 void Manager::addFrameBuffer(std::string const& name, FrameBuffer const& frameBuffer)
 {
 	m_frameBuffers[name] = frameBuffer;
-}
-
-void Manager::drawLamp(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, Shader const& shader)
-{
-	for (auto& it1 : m_objects)
-	{
-		it1.first.getVertexArray().bind();
-		for (auto const& it2 : it1.second)
-		{
-			if (it2->isLamp())
-				it2->drawLamp(viewProjMatrices, it1.first.getIndexCount(), shader);
-		}
-	}
 }
 
 void Manager::drawShadow(std::pair<Matrix4f, Matrix4f> const& shadowMatrices, Shader const& shader)
@@ -306,6 +187,16 @@ Manager::intersectionType Manager::getIntersections()
 void Manager::toggleNightVision()
 {
 	m_nightVisionOn = !m_nightVisionOn;
+}
+
+void Manager::toggleNight()
+{
+	m_night = !m_night;
+}
+
+bool Manager::isNight()
+{
+	return m_night;
 }
 
 void Manager::setElapsedTime(float time)
