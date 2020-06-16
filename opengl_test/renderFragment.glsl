@@ -8,8 +8,8 @@ uniform float time;
 
 float random( vec2 p )
 {
-    vec2 K1 = vec2(23.14069263277926, 2.665144142690225);
-    return fract(cos(dot(p, K1)) * 12345.6789);
+    vec2 K1 = vec2(10, 10000);
+    return fract(cos(dot(p, K1)) * 100000.0);
 }
 
 void main()
@@ -19,18 +19,17 @@ void main()
         finalColor = color;
     else
     {
-        vec2 coord = texCoord;
-        coord.y *= random(vec2(coord.y, time * 0.00000001));
-        float coeff = -1 * log(0.2126 * color.r + 0.7152 * color.g + 0.0722 * color.b);
+        float coeff = -3 * log(max(max(color.r, color.g), color.b)/*0.2126 * color.r + 0.7152 * color.g + 0.0722 * color.b*/);
         if (coeff > 1)
             color.rgb = coeff * color.rgb;
         float green = max(max(color.r, color.g), color.b);
+        float noise = random(texCoord + random(vec2(time, time))) * 0.2;
         if (green >= 1.0)
         {
-            vec3 y = vec3(0.3, green, 0.3) + random(coord) * 0.1;
+            vec3 y = vec3(0.1, green, 0.1) + noise;
             finalColor = vec4(y, 1.0);
         }
         else
-            finalColor = vec4(0.0, green + random(coord) * 0.1, 0.0, 1.0);
+            finalColor = vec4(0.0, green + noise, 0.0, 1.0);
     }
 }

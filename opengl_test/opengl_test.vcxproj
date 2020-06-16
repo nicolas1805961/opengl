@@ -156,7 +156,7 @@
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="Manager.cpp" />
     <ClCompile Include="Plane.cpp" />
-    <ClCompile Include="PointLight.cpp" />
+    <ClCompile Include="Lamp.cpp" />
     <ClCompile Include="IndexBuffer.cpp" />
     <ClCompile Include="Light.cpp" />
     <ClCompile Include="main.cpp" />
@@ -202,7 +202,7 @@
     <ClInclude Include="Object.h" />
     <ClInclude Include="Manager.h" />
     <ClInclude Include="Plane.h" />
-    <ClInclude Include="PointLight.h" />
+    <ClInclude Include="Lamp.h" />
     <ClInclude Include="Light.h" />
     <ClInclude Include="Matrix4f.h" />
     <ClInclude Include="Ray.h" />

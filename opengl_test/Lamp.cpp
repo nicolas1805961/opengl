@@ -1,6 +1,6 @@
-#include "PointLight.h"
+#include "Lamp.h"
 
-PointLight::PointLight(Shader const& shader, const Vector3& ambient, const Vector3& diffuse, const Vector3& specular, std::string const& name, float constant,
+Lamp::Lamp(Shader const& shader, const Vector3& ambient, const Vector3& diffuse, const Vector3& specular, std::string const& name, float constant,
 	float linear, float quadratic, std::shared_ptr<Object> const& shape)
 	: Light(shader, ambient, diffuse, specular, name), m_shape(shape), m_constant(constant), m_linear(linear), m_quadratic(quadratic)
 {
@@ -14,7 +14,7 @@ PointLight::PointLight(Shader const& shader, const Vector3& ambient, const Vecto
 	m_shader.set_uniform_3f(name + ".lightProperty.specular", m_specular[0], m_specular[1], m_specular[2]);
 }
 
-std::shared_ptr<Object> PointLight::getShape()
+std::shared_ptr<Object> Lamp::getShape()
 {
 	return m_shape;
 }

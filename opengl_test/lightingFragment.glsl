@@ -27,7 +27,7 @@ struct DirLight
     LightProperty lightProperty;
 };
 
-struct PointLight
+struct Lamp
 {
     vec3 position;
     Fading fading;
@@ -43,12 +43,19 @@ struct Torch
     Fading fading;
     LightProperty lightProperty;
 };
+
+struct Utils
+{
+    vec3 normal;
+    vec3 viewDirection;
+};
+
 uniform ObjectProperty objectProperty;
 uniform bool night;
 uniform bool torchOn;
 uniform sampler2D shadowMap;
 uniform DirLight dirLight;
-uniform PointLight pointLights[1];
+uniform Lamp lamps[1];
 uniform Torch torch;
 uniform float time;
 uniform bool flashOn;
@@ -74,12 +81,12 @@ float isInShadow(vec4 positionToLight, float angle)
     return (normalizedLightPosition.z - bias > nearest ? 0.0: 1.0);
 }
 
-vec3 addDirLight(DirLight light, vec3 normal, vec3 viewDir)
+vec3 addDirLight(DirLight light, Utils tools)
 {
     vec3 lightDirection = normalize(light.direction);
-    float diffuseCoefficient = max(dot(normal, -lightDirection), 0.0);
-    vec3 reflectionDirection = reflect(lightDirection, normal);
-    float specularCoefficient = pow(max(dot(viewDir, reflectionDirection), 0.0), objectProperty.shininess);
+    float diffuseCoefficient = max(dot(tools.normal, -lightDirection), 0.0);
+    vec3 reflectionDirection = reflect(lightDirection, tools.normal);
+    float specularCoefficient = pow(max(dot(tools.viewDirection, reflectionDirection), 0.0), objectProperty.shininess);
     vec3 ambientLighting = light.lightProperty.ambient * objectProperty.objectDiffuse;
     vec3 diffuseLighting = light.lightProperty.diffuse * diffuseCoefficient * objectProperty.objectDiffuse;
     vec3 specularLighting = light.lightProperty.specular * specularCoefficient * objectProperty.objectSpecular;
@@ -88,13 +95,13 @@ vec3 addDirLight(DirLight light, vec3 normal, vec3 viewDir)
     return (ambientLighting + (isInShadow(positionToLight, diffuseCoefficient) * (diffuseLighting + specularLighting)));
 }
 
-vec3 addPointLight(PointLight light, vec3 normal, vec3 vertexPos, vec3 viewDir)
+vec3 addLamp(Lamp light, Utils tools)
 {
-    vec3 lightDirection = normalize(vertexPos - light.position);
-    float diffuseCoefficient = max(dot(normal, -lightDirection), 0.0);
-    vec3 reflectionDirection = reflect(lightDirection, normal);
-    float specularCoefficient = pow(max(dot(viewDir, reflectionDirection), 0.0), objectProperty.shininess);
-    float distance = length(light.position - vertexPos);
+    vec3 lightDirection = normalize(vertexPosition - light.position);
+    float diffuseCoefficient = max(dot(tools.normal, -lightDirection), 0.0);
+    vec3 reflectionDirection = reflect(lightDirection, tools.normal);
+    float specularCoefficient = pow(max(dot(tools.viewDirection, reflectionDirection), 0.0), objectProperty.shininess);
+    float distance = length(light.position - vertexPosition);
     float distanceFading = 1.0f / (light.fading.constant + light.fading.linear * distance + light.fading.quadratic * pow(distance, 2));
     vec3 ambient = light.lightProperty.ambient * objectProperty.objectDiffuse;
     vec3 diffuse = light.lightProperty.diffuse * diffuseCoefficient * objectProperty.objectDiffuse;
@@ -102,13 +109,13 @@ vec3 addPointLight(PointLight light, vec3 normal, vec3 vertexPos, vec3 viewDir)
     return ((ambient + diffuse + specular) * distanceFading);
 }
 
-vec3 addTorch(Torch light, vec3 normal, vec3 vertexPos, vec3 viewDir)
+vec3 addTorch(Torch light, Utils tools)
 {
-    vec3 lightDirection = normalize(vertexPos - light.position);
-    float diffuseCoefficient = max(dot(normal, -lightDirection), 0.0);
-    vec3 reflectionDirection = reflect(lightDirection, normal);
-    float specularCoefficient = pow(max(dot(viewDir, reflectionDirection), 0.0), objectProperty.shininess);
-    float distance = length(light.position - vertexPos);
+    vec3 lightDirection = normalize(vertexPosition - light.position);
+    float diffuseCoefficient = max(dot(tools.normal, -lightDirection), 0.0);
+    vec3 reflectionDirection = reflect(lightDirection, tools.normal);
+    float specularCoefficient = pow(max(dot(tools.viewDirection, reflectionDirection), 0.0), objectProperty.shininess);
+    float distance = length(light.position - vertexPosition);
     float distanceFading = 1.0f / (light.fading.constant + light.fading.linear * distance + light.fading.quadratic * pow(distance, 2));
     float theta = dot(-lightDirection, normalize(-light.direction));
     float epsilon = light.nearBorder - light.farBorder;
@@ -119,21 +126,20 @@ vec3 addTorch(Torch light, vec3 normal, vec3 vertexPos, vec3 viewDir)
     return ((ambient + diffuse + specular) * distanceFading * intensity);
 }
 
-void main()
+vec4 addLighting()
 {
     bool on = (sin(time) < 0.99);
     if (isLamp)
     {
         if (flashOn && !on)
-            color = vec4(0.0, 0.0, 0.0, 1.0);
+            return vec4(0.0, 0.0, 0.0, 1.0);
         else
-            color = vec4(1.0, 1.0, 1.0, 1.0);
+            return vec4(1.0, 1.0, 1.0, 1.0);
     }
     else
     {
-        vec3 normal = normalize(Normal);
-        vec3 viewDirection = normalize(viewPosition - vertexPosition);
-        vec3 amountOfLight = addDirLight(dirLight, normal, viewDirection);
+        Utils tools = {normalize(Normal), normalize(viewPosition - vertexPosition)};
+        vec3 amountOfLight = addDirLight(dirLight, tools);
         if (night)
         {
             for (int i = 0; i < 1; i++)
@@ -143,12 +149,17 @@ void main()
                     amountOfLight += vec3(0.0);
                     continue;
                 }
-                amountOfLight += addPointLight(pointLights[i], normal, vertexPosition, viewDirection);
+                amountOfLight += addLamp(lamps[i], tools);
             }
             if (torchOn)
-                amountOfLight += addTorch(torch, normal, vertexPosition, viewDirection);
+                amountOfLight += addTorch(torch, tools);
         }
-        color = vec4(amountOfLight, 1.0);
+        return vec4(amountOfLight, 1.0);
         //color = mix(fogColor, vec4( result, 1.0 ), visibility);
     }
+}
+
+void main()
+{
+    color = addLighting();
 }

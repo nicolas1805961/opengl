@@ -14,7 +14,7 @@
 #include "Texture.h"
 #include "Matrix4f.h"
 #include "DirectionalLight.h"
-#include "PointLight.h"
+#include "Lamp.h"
 #include "Torch.h"
 #include "Error.h"
 #include "Sphere.h"
@@ -157,8 +157,8 @@ void display() {
 	DirectionalLight directionalLight(lightingShader, Vector3(0.3f, 0.3f, 0.3f), Vector3(2.0f, 2.0f, 2.0f), Vector3(2.0f, 2.0f, 2.0f),
 		"dirLight", Vector3(0.0f, -1.0f, 0.0f));
 	//point light
-	PointLight pointLight1(lightingShader, Vector3(0.05f, 0.05f, 0.05f), Vector3(0.8f, 0.8f, 0.8f), Vector3(1.0f, 1.0f, 1.0f),
-		"pointLights[0]", 1.0f, 0.1f, 0.03f, std::make_shared<Sphere>("PointLight1", Vector3(1.0f, 4.0f, -7.0f), true, 0.05f));
+	Lamp lamp1(lightingShader, Vector3(0.05f, 0.05f, 0.05f), Vector3(0.8f, 0.8f, 0.8f), Vector3(1.0f, 1.0f, 1.0f),
+		"lamps[0]", 1.0f, 0.1f, 0.03f, std::make_shared<Sphere>("Lamp1", Vector3(1.0f, 4.0f, -7.0f), true, 0.05f));
 	/*PointLight pointLight2(lightingShader, Vector3(0.05f, 0.05f, 0.05f), Vector3(0.8f, 0.8f, 0.8f), Vector3(1.0f, 1.0f, 1.0f),
 		"pointLights[1]", 1.0f, 0.1f, 0.03f, std::make_shared<Sphere>("PointLight2", Vector3(2.3f, 3.3f, -4.0f), true, 0.05f));
 	PointLight pointLight3(lightingShader, Vector3(0.05f, 0.05f, 0.05f), Vector3(0.8f, 0.8f, 0.8f), Vector3(1.0f, 1.0f, 1.0f),
@@ -198,14 +198,12 @@ void display() {
 	input.addObject(sphere1, sphereData);
 	//input.addObject(std::make_shared<Sphere>(sphere2), sphereData);
 	input.addObject(plane1, planeData);
-	input.addObject(pointLight1.getShape(), sphereData);
+	input.addObject(lamp1.getShape(), sphereData);
 	/*input.addObject(pointLight2.getShape(), sphereData);
 	input.addObject(pointLight3.getShape(), sphereData);
 	input.addObject(pointLight4.getShape(), sphereData);
 	input.addObject(pointLight5.getShape(), sphereData);*/
 
-	//-10.0f, 10.0f, -10.0f, 10.0f, 1.0f, 7.5f
-	//-2.0f, 4.0f, -1.0f
 	static Matrix4f shadowProjection = Matrix4f::gl_ortho(-20.0f, 20.0f, -20.0f, 20.0f, 1.0f, 10.0f);
 	static Matrix4f shadowView = Matrix4f::gl_look_at(Vector3(1.0f, 5.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f));
 	static auto shadowMatrices = std::make_pair(shadowView, shadowProjection);
@@ -264,10 +262,13 @@ int main(int argc, char* argv[]) {
 	glutInitContextVersion(4, 4);
 	glutInitContextProfile(GLUT_CORE_PROFILE | GLUT_DEBUG);
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
-	glutInitWindowSize(1920, 1080);
+	/*glutInitWindowSize(1920, 1080);
 	glutInitWindowPosition(100, 100);
-	glutCreateWindow("Test");
-	glutFullScreen();
+	glutCreateWindow("Test");*/
+	glutGameModeString("1920x1080");
+	glutEnterGameMode();
+	glutReshapeWindow(1920, 1080);
+	//glutFullScreen();
 	glutDisplayFunc(display);
 	glutIdleFunc(idle);
 	glutKeyboardFunc(keyDown);
