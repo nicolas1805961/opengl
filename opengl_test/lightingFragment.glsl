@@ -14,13 +14,6 @@ struct ObjectProperty
     float shininess;
 };
 
-struct Fading
-{
-    float constant;
-    float linear;
-    float quadratic;
-};
-
 struct DirLight
 {
     vec3 direction;
@@ -30,7 +23,6 @@ struct DirLight
 struct Lamp
 {
     vec3 position;
-    Fading fading;
     LightProperty lightProperty;
 };
 
@@ -40,7 +32,6 @@ struct Torch
     vec3 direction;
     float nearBorder;
     float farBorder;
-    Fading fading;
     LightProperty lightProperty;
 };
 
@@ -57,6 +48,7 @@ uniform sampler2D shadowMap;
 uniform DirLight dirLight;
 uniform Lamp lamps[1];
 uniform Torch torch;
+//uniform Torch torches[1];
 uniform float time;
 uniform bool flashOn;
 uniform bool isLamp;
@@ -102,7 +94,7 @@ vec3 addLamp(Lamp light, Utils tools)
     vec3 reflectionDirection = reflect(lightDirection, tools.normal);
     float specularCoefficient = pow(max(dot(tools.viewDirection, reflectionDirection), 0.0), objectProperty.shininess);
     float distance = length(light.position - vertexPosition);
-    float distanceFading = 1.0f / (light.fading.constant + light.fading.linear * distance + light.fading.quadratic * pow(distance, 2));
+    float distanceFading = 1.0f / pow(distance, 2);
     vec3 ambient = light.lightProperty.ambient * objectProperty.objectDiffuse;
     vec3 diffuse = light.lightProperty.diffuse * diffuseCoefficient * objectProperty.objectDiffuse;
     vec3 specular = light.lightProperty.specular * specularCoefficient * objectProperty.objectSpecular;
@@ -116,10 +108,19 @@ vec3 addTorch(Torch light, Utils tools)
     vec3 reflectionDirection = reflect(lightDirection, tools.normal);
     float specularCoefficient = pow(max(dot(tools.viewDirection, reflectionDirection), 0.0), objectProperty.shininess);
     float distance = length(light.position - vertexPosition);
-    float distanceFading = 1.0f / (light.fading.constant + light.fading.linear * distance + light.fading.quadratic * pow(distance, 2));
-    float theta = dot(-lightDirection, normalize(-light.direction));
-    float epsilon = light.nearBorder - light.farBorder;
-    float intensity = clamp((theta - light.farBorder) / epsilon, 0.0, 1.0);
+    float distanceFading = 1.0f / pow(distance, 2);
+    float angleFragmentDirection = dot(-lightDirection, normalize(-light.direction));
+    float intensity = 0;
+    if (angleFragmentDirection >= light.nearBorder)
+        intensity = 1.0;
+    else if (angleFragmentDirection <= light.farBorder)
+        intensity = 0;
+    else
+    {
+        float beta = light.nearBorder - light.farBorder;
+        float alpha = light.nearBorder - angleFragmentDirection;
+        intensity = 1.0 - (alpha / beta);
+    }
     vec3 ambient = light.lightProperty.ambient * objectProperty.objectDiffuse;
     vec3 diffuse = light.lightProperty.diffuse * diffuseCoefficient * objectProperty.objectDiffuse;
     vec3 specular = light.lightProperty.specular * specularCoefficient * objectProperty.objectSpecular;

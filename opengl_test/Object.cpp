@@ -1,8 +1,8 @@
 #include "Object.h"
 
-Object::Object(std::string const& name, Vector3 const& translation, float scale, Vector3 const& diffuse, Vector3 const& specular, bool isLamp, float degreeAngle,
-	Vector3 const& axis, float shininess, float mass, Vector3 const& velocity, bool isTexture, Vector3 const& acceleration,
-	Vector3 const& sumForces)
+Object::Object(std::string const& name, Vector3 const& translation, float scale, Vector3 const& diffuse, Vector3 const& specular,
+	bool isLamp, float degreeAngle, Vector3 const& axis, float shininess, float mass, Vector3 const& velocity, bool isTexture,
+	Vector3 const& acceleration, Vector3 const& sumForces)
 	: m_translation(translation), m_scale(scale), m_diffuse(diffuse), m_specular(specular), m_shininess(shininess), m_isTexture(isTexture),
 	m_mass(mass), m_velocity(velocity), m_acceleration(acceleration), m_sumForces(sumForces),
 	m_degreeAngle(degreeAngle), m_axis(axis), m_isLamp(isLamp), m_name(name), m_firstPosition(translation)
@@ -10,10 +10,10 @@ Object::Object(std::string const& name, Vector3 const& translation, float scale,
 	keepTrack();
 }
 
-Object::Object(std::string const& name, Vector3 const& translation, float scale, bool isLamp, float degreeAngle, Vector3 const& axis, float shininess, float mass,
-	Vector3 const& velocity, bool isTexture, Vector3 const& acceleration, Vector3 const& sumForces)
-	: m_translation(translation), m_scale(scale), m_shininess(shininess), m_isTexture(isTexture), m_mass(mass), m_velocity(velocity),
-	m_acceleration(acceleration), m_sumForces(sumForces), m_degreeAngle(degreeAngle), m_axis(axis), m_isLamp(isLamp),
+Object::Object(std::string const& name, Vector3 const& translation, float scale, bool isLamp, float degreeAngle,
+	Vector3 const& axis, float shininess, float mass, Vector3 const& velocity, bool isTexture, Vector3 const& acceleration,
+	Vector3 const& sumForces) : m_translation(translation), m_scale(scale), m_shininess(shininess), m_isTexture(isTexture), m_mass(mass),
+	m_velocity(velocity), m_acceleration(acceleration), m_sumForces(sumForces), m_degreeAngle(degreeAngle), m_axis(axis), m_isLamp(isLamp),
 	m_name(name), m_firstPosition(translation)
 {
 	keepTrack();

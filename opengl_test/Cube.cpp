@@ -1,7 +1,8 @@
 #include "Cube.h"
 
-Cube::Cube(std::string const& name, Vector3 const& diffuse, Vector3 const& specular, Vector3 const& translation, bool isLamp /*=false*/, float degreeAngle, Vector3 const& axis,
-	 float scale /*= 1.0f*/, float shininess /*= 32.0f*/, float mass /*= 1.0f*/, Vector3 const& velocity /*= 0.0f*/)
+Cube::Cube(std::string const& name, Vector3 const& diffuse, Vector3 const& specular, Vector3 const& translation, bool isLamp /*=false*/,
+	float degreeAngle, Vector3 const& axis, float scale /*= 1.0f*/, float shininess /*= 32.0f*/,
+	float mass /*= 1.0f*/, Vector3 const& velocity /*= 0.0f*/)
 	: Object(name, translation, scale, diffuse, specular, isLamp, degreeAngle, axis)
 {
 	m_minExtent = m_model * Vector4(-1.0, -1.0, 1.0, 1.0);

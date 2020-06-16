@@ -6,7 +6,7 @@ in vec2 texCoord;
 uniform bool nightVisionOn;
 uniform float time;
 
-float random( vec2 p )
+float random(vec2 p)
 {
     vec2 K1 = vec2(10, 10000);
     return fract(cos(dot(p, K1)) * 100000.0);
@@ -19,10 +19,8 @@ void main()
         finalColor = color;
     else
     {
-        float coeff = -3 * log(max(max(color.r, color.g), color.b)/*0.2126 * color.r + 0.7152 * color.g + 0.0722 * color.b*/);
-        if (coeff > 1)
-            color.rgb = coeff * color.rgb;
-        float green = max(max(color.r, color.g), color.b);
+        float coeff = 10;
+        float green = max(max(color.r, color.g), color.b) * coeff;
         float noise = random(texCoord + random(vec2(time, time))) * 0.2;
         if (green >= 1.0)
         {

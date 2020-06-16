@@ -157,8 +157,11 @@ void display() {
 	DirectionalLight directionalLight(lightingShader, Vector3(0.3f, 0.3f, 0.3f), Vector3(2.0f, 2.0f, 2.0f), Vector3(2.0f, 2.0f, 2.0f),
 		"dirLight", Vector3(0.0f, -1.0f, 0.0f));
 	//point light
-	Lamp lamp1(lightingShader, Vector3(0.05f, 0.05f, 0.05f), Vector3(0.8f, 0.8f, 0.8f), Vector3(1.0f, 1.0f, 1.0f),
-		"lamps[0]", 1.0f, 0.1f, 0.03f, std::make_shared<Sphere>("Lamp1", Vector3(1.0f, 4.0f, -7.0f), true, 0.05f));
+	Lamp lamp1(lightingShader, Vector3(5.0, 5.0, 5.0), Vector3(5.0, 5.0, 5.0), Vector3(5.0, 5.0, 5.0),
+		"lamps[0]", std::make_shared<Sphere>("Lamp1", Vector3(1.0f, 4.0f, -7.0f), true, 0.05f));
+	/*Torch lamp2(lightingShader, Vector3(20.0, 20.0, 20.0), Vector3(20.0, 20.0, 20.0), Vector3(20.0, 20.0, 20.0), "torches[0]", Vector3(0.0f, -1.0f, 0.0f)
+		, cosf(input.getCamera().toRadian(35.0f)), cosf(input.getCamera().toRadian(40.0f)), std::make_shared<Sphere>("Lamp2",
+			Vector3(1.0f, 7.0f, -7.0f), true, 0.05));*/
 	/*PointLight pointLight2(lightingShader, Vector3(0.05f, 0.05f, 0.05f), Vector3(0.8f, 0.8f, 0.8f), Vector3(1.0f, 1.0f, 1.0f),
 		"pointLights[1]", 1.0f, 0.1f, 0.03f, std::make_shared<Sphere>("PointLight2", Vector3(2.3f, 3.3f, -4.0f), true, 0.05f));
 	PointLight pointLight3(lightingShader, Vector3(0.05f, 0.05f, 0.05f), Vector3(0.8f, 0.8f, 0.8f), Vector3(1.0f, 1.0f, 1.0f),
@@ -168,16 +171,22 @@ void display() {
 	PointLight pointLight5(lightingShader, Vector3(0.05f, 0.05f, 0.05f), Vector3(0.8f, 0.8f, 0.8f), Vector3(1.0f, 1.0f, 1.0f),
 		"pointLights[4]", 1.0f, 0.1f, 0.03f, std::make_shared<Sphere>("PointLight5", Vector3(2.0f, 3.0f, -3.0f), true, 0.05f));*/
 
-	Torch torch(lightingShader, Vector3(0.0f, 0.0f, 0.0f), Vector3(1.0f, 1.0f, 1.0f), Vector3(1.0f, 1.0f, 1.0f), "torch",
+	/*Torch torch(lightingShader, Vector3(80.0, 80.0, 80.0), Vector3(80.0, 80.0, 80.0), Vector3(80.0, 80.0, 80.0), "torch",
 		Vector3(input.getCamera().GetPosition().get_x(), input.getCamera().GetPosition().get_y(), input.getCamera().GetPosition().get_z()),
 		Vector3(input.getCamera().getDirection().get_x(), input.getCamera().getDirection().get_y(), input.getCamera().getDirection().get_z()),
-		cosf(input.getCamera().toRadian(10.0f)), cosf(input.getCamera().toRadian(20.0f)), 1.0f, 0.01f, 0.003f);
+		cosf(input.getCamera().toRadian(10.0f)), cosf(input.getCamera().toRadian(20.0f)));*/
+
+	Torch torch(lightingShader, Vector3(40.0, 40.0, 40.0), Vector3(40.0, 40.0, 40.0), Vector3(40.0, 40.0, 40.0), "torch",
+		Vector3(input.getCamera().getDirection().get_x(), input.getCamera().getDirection().get_y(),
+			input.getCamera().getDirection().get_z()), cosf(input.getCamera().toRadian(10.0f)), cosf(input.getCamera().toRadian(20.0f)),
+		std::make_shared<Sphere>("Torch", Vector3(input.getCamera().GetPosition().get_x(), input.getCamera().GetPosition().get_y(),
+			input.getCamera().GetPosition().get_z()), true, 0.05));
 
 	//Cube cube1("cube1", Vector3(0.0f, 1.0f, 1.0f), Vector3(1.0f, 1.0f, 1.0f), Vector3(5.0, 1.0, -10.0));
 	//Plane plane1("plane1", Vector3(1.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f), 20.0f);
 	auto sphere1 = std::make_shared<Sphere>("sphere1", Vector3(0.0f, 1.0f, 0.0f), Vector3(1.0f, 1.0f, 1.0f), Vector3(-2.0f, 20.0f, -10.0f));
 	auto plane1 = std::make_shared<Plane>("plane1", Vector3(1.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f), 20.0f);
-	auto cube1 = std::make_shared<Cube>("cube1", Vector3(0.0f, 1.0f, 1.0f), Vector3(1.0f, 1.0f, 1.0f), Vector3(5.0, 20.0, -10.0));
+	auto cube1 = std::make_shared<Cube>("cube1", Vector3(0.0f, 1.0f, 1.0f), Vector3(3.0, 3.0, 3.0), Vector3(5.0, 20.0, -10.0));
 	//Sphere sphere1("sphere1", Vector3(0.0f, 1.0f, 0.0f), Vector3(1.0f, 1.0f, 1.0f), Vector3(-2.0f, 10.0f, -10.0f));
 	//Sphere sphere2("sphere2", Vector3(0.0f, 0.0f, 1.0f), Vector3(0.3f, 0.3f, 0.3f), Vector3(2.0f, 1.0f, -10.0f));
 

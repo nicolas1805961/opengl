@@ -26,12 +26,13 @@ public:
 
 	Object() = default;
 	Object(std::string const& name, Vector3 const& translation, float scale, Vector3 const& diffuse, Vector3 const& specular,
-		bool isLamp = false, float degreeAngle = 0.0f, Vector3 const& axis = Vector3(1.0f), float shininess = 32.0f, float mass = 1.0f,
+		bool isLamp = false, float degreeAngle = 0.0f, Vector3 const& axis = Vector3(1.0f), float shininess = 32.0f,
+		float mass = 1.0f, Vector3 const& velocity = Vector3(0.0f), bool isTexture = false, Vector3 const& acceleration = Vector3(0.0f),
+		Vector3 const& sumForces = Vector3(0.0f));
+	Object(std::string const& name, Vector3 const& translation, float scale, bool isLamp = false,
+		float degreeAngle = 0.0f, Vector3 const& axis = Vector3(1.0f), float shininess = 32.0f, float mass = 1.0f,
 		Vector3 const& velocity = Vector3(0.0f), bool isTexture = false, Vector3 const& acceleration = Vector3(0.0f),
 		Vector3 const& sumForces = Vector3(0.0f));
-	Object(std::string const& name, Vector3 const& translation, float scale, bool isLamp = false, float degreeAngle = 0.0f,
-		Vector3 const& axis = Vector3(1.0f), float shininess = 32.0f, float mass = 1.0f, Vector3 const& velocity = Vector3(0.0f),
-		bool isTexture = false, Vector3 const& acceleration = Vector3(0.0f), Vector3 const& sumForces = Vector3(0.0f));
 	float getRadians(float degreeAngle);
 	Vector3 getTranslation();
 	Vector3 getTranslation() const;
