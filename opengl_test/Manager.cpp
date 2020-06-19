@@ -78,13 +78,11 @@ void Manager::draw(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, std::p
 		}
 	}
 	m_frameBuffers["sceneFrameBuffer"].unbind();
-	glClear(GL_COLOR_BUFFER_BIT);
 	screenShader.bind();
 	screenShader.set_uniform_1i("nightVisionOn", m_nightVisionOn);
 	screenShader.set_uniform_1f("time", m_time);
 	screenData.getVertexArray().bind();
 	m_frameBuffers["sceneFrameBuffer"].bindTexture();
-	glDisable(GL_DEPTH_TEST);
 	glDrawElements(GL_TRIANGLES, screenData.getIndexCount(), GL_UNSIGNED_INT, nullptr);
 	m_frameBuffers["sceneFrameBuffer"].unbindTexture();
 }

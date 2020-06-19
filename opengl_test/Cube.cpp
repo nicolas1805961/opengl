@@ -130,8 +130,3 @@ bool Cube::intersectPlane(Plane const& plane)
 
 	return distanceCenterToEdgeProj >= distanceCenterToPlaneProj;
 }
-
-/*bool Cube::intersectRay(int x, int y, Camera const& camera)
-{
-
-}*/

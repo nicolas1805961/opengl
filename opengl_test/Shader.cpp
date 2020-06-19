@@ -11,11 +11,6 @@ void Shader::bind() const
 	glUseProgram(m_renderer_id);
 }
 
-/*void Shader::unbind() const
-{
-	glUseProgram(0);
-}*/
-
 int Shader::get_uniform_location(const std::string& name)
 {
 	int location = glGetUniformLocation(m_renderer_id, name.c_str());

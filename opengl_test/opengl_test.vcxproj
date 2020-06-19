@@ -146,7 +146,6 @@
   <ItemGroup>
     <ClCompile Include="Cube.cpp" />
     <ClCompile Include="DirectionalLight.cpp" />
-    <ClCompile Include="Error.cpp" />
     <ClCompile Include="Event.cpp" />
     <ClCompile Include="Fog.cpp" />
     <ClCompile Include="FrameBuffer.cpp" />
@@ -192,7 +191,6 @@
   <ItemGroup>
     <ClInclude Include="Cube.h" />
     <ClInclude Include="DirectionalLight.h" />
-    <ClInclude Include="Error.h" />
     <ClInclude Include="Event.h" />
     <ClInclude Include="Fog.h" />
     <ClInclude Include="FrameBuffer.h" />

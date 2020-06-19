@@ -16,7 +16,6 @@
 #include "DirectionalLight.h"
 #include "Lamp.h"
 #include "Torch.h"
-#include "Error.h"
 #include "Sphere.h"
 #include "Cube.h"
 #include "Manager.h"
@@ -156,25 +155,8 @@ void display() {
 	//Fog fog(dayShader, 0.05f, 1.5f, Vector3(0.3f), Vector3(0.0f), night);
 	DirectionalLight directionalLight(lightingShader, Vector3(0.3f, 0.3f, 0.3f), Vector3(2.0f, 2.0f, 2.0f), Vector3(2.0f, 2.0f, 2.0f),
 		"dirLight", Vector3(0.0f, -1.0f, 0.0f));
-	//point light
 	Lamp lamp1(lightingShader, Vector3(5.0, 5.0, 5.0), Vector3(5.0, 5.0, 5.0), Vector3(5.0, 5.0, 5.0),
 		"lamps[0]", std::make_shared<Sphere>("Lamp1", Vector3(1.0f, 4.0f, -7.0f), true, 0.05f));
-	/*Torch lamp2(lightingShader, Vector3(20.0, 20.0, 20.0), Vector3(20.0, 20.0, 20.0), Vector3(20.0, 20.0, 20.0), "torches[0]", Vector3(0.0f, -1.0f, 0.0f)
-		, cosf(input.getCamera().toRadian(35.0f)), cosf(input.getCamera().toRadian(40.0f)), std::make_shared<Sphere>("Lamp2",
-			Vector3(1.0f, 7.0f, -7.0f), true, 0.05));*/
-	/*PointLight pointLight2(lightingShader, Vector3(0.05f, 0.05f, 0.05f), Vector3(0.8f, 0.8f, 0.8f), Vector3(1.0f, 1.0f, 1.0f),
-		"pointLights[1]", 1.0f, 0.1f, 0.03f, std::make_shared<Sphere>("PointLight2", Vector3(2.3f, 3.3f, -4.0f), true, 0.05f));
-	PointLight pointLight3(lightingShader, Vector3(0.05f, 0.05f, 0.05f), Vector3(0.8f, 0.8f, 0.8f), Vector3(1.0f, 1.0f, 1.0f),
-		"pointLights[2]", 1.0f, 0.1f, 0.03f, std::make_shared<Sphere>("PointLight3", Vector3(-4.0f, 4.0f, -12.0f), true, 0.05f));
-	PointLight pointLight4(lightingShader, Vector3(0.05f, 0.05f, 0.05f), Vector3(0.8f, 0.8f, 0.8f), Vector3(1.0f, 1.0f, 1.0f),
-		"pointLights[3]", 1.0f, 0.1f, 0.03f, std::make_shared<Sphere>("PointLight4", Vector3(0.0f, 3.0f, -3.0f), true, 0.05f));
-	PointLight pointLight5(lightingShader, Vector3(0.05f, 0.05f, 0.05f), Vector3(0.8f, 0.8f, 0.8f), Vector3(1.0f, 1.0f, 1.0f),
-		"pointLights[4]", 1.0f, 0.1f, 0.03f, std::make_shared<Sphere>("PointLight5", Vector3(2.0f, 3.0f, -3.0f), true, 0.05f));*/
-
-	/*Torch torch(lightingShader, Vector3(80.0, 80.0, 80.0), Vector3(80.0, 80.0, 80.0), Vector3(80.0, 80.0, 80.0), "torch",
-		Vector3(input.getCamera().GetPosition().get_x(), input.getCamera().GetPosition().get_y(), input.getCamera().GetPosition().get_z()),
-		Vector3(input.getCamera().getDirection().get_x(), input.getCamera().getDirection().get_y(), input.getCamera().getDirection().get_z()),
-		cosf(input.getCamera().toRadian(10.0f)), cosf(input.getCamera().toRadian(20.0f)));*/
 
 	Torch torch(lightingShader, Vector3(40.0, 40.0, 40.0), Vector3(40.0, 40.0, 40.0), Vector3(40.0, 40.0, 40.0), "torch",
 		Vector3(input.getCamera().getDirection().get_x(), input.getCamera().getDirection().get_y(),
@@ -182,13 +164,9 @@ void display() {
 		std::make_shared<Sphere>("Torch", Vector3(input.getCamera().GetPosition().get_x(), input.getCamera().GetPosition().get_y(),
 			input.getCamera().GetPosition().get_z()), true, 0.05));
 
-	//Cube cube1("cube1", Vector3(0.0f, 1.0f, 1.0f), Vector3(1.0f, 1.0f, 1.0f), Vector3(5.0, 1.0, -10.0));
-	//Plane plane1("plane1", Vector3(1.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f), 20.0f);
 	auto sphere1 = std::make_shared<Sphere>("sphere1", Vector3(0.0f, 1.0f, 0.0f), Vector3(1.0f, 1.0f, 1.0f), Vector3(-2.0f, 20.0f, -10.0f));
 	auto plane1 = std::make_shared<Plane>("plane1", Vector3(1.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f), 20.0f);
 	auto cube1 = std::make_shared<Cube>("cube1", Vector3(0.0f, 1.0f, 1.0f), Vector3(3.0, 3.0, 3.0), Vector3(5.0, 20.0, -10.0));
-	//Sphere sphere1("sphere1", Vector3(0.0f, 1.0f, 0.0f), Vector3(1.0f, 1.0f, 1.0f), Vector3(-2.0f, 10.0f, -10.0f));
-	//Sphere sphere2("sphere2", Vector3(0.0f, 0.0f, 1.0f), Vector3(0.3f, 0.3f, 0.3f), Vector3(2.0f, 1.0f, -10.0f));
 
 	auto view = input.getCamera().getViewMatrix();
 	auto projection = input.getCamera().getProjectionMatrix();
@@ -202,60 +180,16 @@ void display() {
 
 	input.addIntersection(cube1, *plane1);
 	input.addIntersection(sphere1, *plane1);
-	//input.addObject(std::make_shared<Cube>(cube1), cubeData);
 	input.addObject(cube1, cubeData);
 	input.addObject(sphere1, sphereData);
-	//input.addObject(std::make_shared<Sphere>(sphere2), sphereData);
 	input.addObject(plane1, planeData);
 	input.addObject(lamp1.getShape(), sphereData);
-	/*input.addObject(pointLight2.getShape(), sphereData);
-	input.addObject(pointLight3.getShape(), sphereData);
-	input.addObject(pointLight4.getShape(), sphereData);
-	input.addObject(pointLight5.getShape(), sphereData);*/
 
 	static Matrix4f shadowProjection = Matrix4f::gl_ortho(-20.0f, 20.0f, -20.0f, 20.0f, 1.0f, 10.0f);
 	static Matrix4f shadowView = Matrix4f::gl_look_at(Vector3(1.0f, 5.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f));
 	static auto shadowMatrices = std::make_pair(shadowView, shadowProjection);
 
 	input.draw(viewProjPair, shadowMatrices, screenData, screenShader);
-
-
-	//dayShader.unbind();
-	/*Matrix4f projection = camera.getProjectionMatrix();
-	Matrix4f view = camera.get_view_matrix();
-    dayShader.set_uniform_mat_4f("view", view);
-    dayShader.set_uniform_mat_4f("projection", projection);*/
-
-	/*Cube cube2(Vector3(0.0f, 1.0f, 0.0f), Vector3(0.2f, 0.2f, 0.2f), 32.0f, Vector3(2.0f, 5.0f, -15.0f), 0.5f, 40.0f,
-		Vector3(1.0f, 0.3f, 0.5f));
-	Cube cube3(Vector3(1.0f, 0.0f, 0.0f), Vector3(0.2f, 0.2f, 0.2f), 32.0f, Vector3(-1.5f, -2.2f, -2.5f), 0.75f, 60.0f,
-		Vector3(1.0f, 0.3f, 0.5f));
-	Cube cube4(Vector3(0.3f, 0.2f, 0.75f), Vector3(0.2f, 0.2f, 0.2f), 32.0f, Vector3(-3.8f, -2.0f, -12.3f), 1.2f, 80.0f,
-		Vector3(1.0f, 0.3f, 0.5f));
-	Cube cube5(Vector3(0.4f, 0.75f, 0.85f), Vector3(0.2f, 0.2f, 0.2f), 32.0f, Vector3(2.4f, -0.4f, -3.5f), 0.25f, 100.0f,
-		Vector3(1.0f, 0.3f, 0.5f));*/
-
-	//Vector3(-1.7f, 3.0f, -7.5f)
-
-	/*Sphere sphere3(Vector3(1.0f, 0.0f, 0.0f), Vector3(0.2f, 0.2f, 0.2f), 32.0f, Vector3(1.5f, 2.0f, -2.5f), 0.5f);
-	Sphere sphere4(Vector3(0.3f, 0.2f, 0.75f), Vector3(0.2f, 0.2f, 0.2f), 32.0f, Vector3(1.5f, 0.2f, -1.5f), 1.2f);
-	Sphere sphere5(Vector3(0.4f, 0.75f, 0.85f), Vector3(0.2f, 0.2f, 0.2f), 32.0f, Vector3(-1.3f, 1.0f, -1.5f), 0.25f);*/
-
-	/*Manager.addObject("cube1", std::make_shared<Cube>(cube1));
-	Manager.addObject("cube2", std::make_shared<Cube>(cube2));
-	Manager.addObject("cube3", std::make_shared<Cube>(cube3));
-	Manager.addObject("cube4", std::make_shared<Cube>(cube4));
-	Manager.addObject("cube5", std::make_shared<Cube>(cube5));*/
-	/*Manager.addObject(sphereData, std::make_shared<Sphere>(sphere1));
-	Manager.addObject(sphereData, std::make_shared<Sphere>(sphere2));
-	Manager.addObject(planeData, std::make_shared<Plane>(plane1));
-	Manager.addObject(sphereData, pointLight1.getShape());
-	Manager.addObject(sphereData, pointLight2.getShape());
-	Manager.addObject(sphereData, pointLight3.getShape());
-	Manager.addObject(sphereData, pointLight4.getShape());*/
-	/*Manager.addObject("sphere3", std::make_shared<Sphere>(sphere3));
-	Manager.addObject("sphere4", std::make_shared<Sphere>(sphere4));
-	Manager.addObject("sphere5", std::make_shared<Sphere>(sphere5));*/
 
 	glEnable(GL_DEBUG_OUTPUT);
 	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
@@ -271,23 +205,16 @@ int main(int argc, char* argv[]) {
 	glutInitContextVersion(4, 4);
 	glutInitContextProfile(GLUT_CORE_PROFILE | GLUT_DEBUG);
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
-	/*glutInitWindowSize(1920, 1080);
-	glutInitWindowPosition(100, 100);
-	glutCreateWindow("Test");*/
 	glutGameModeString("1920x1080");
 	glutEnterGameMode();
 	glutReshapeWindow(1920, 1080);
-	//glutFullScreen();
 	glutDisplayFunc(display);
 	glutIdleFunc(idle);
 	glutKeyboardFunc(keyDown);
 	glutKeyboardUpFunc(keyUp);
-	//glutSpecialFunc(KeySpecial);
-	//glutSpecialUpFunc(KeySpecialUp);
 	glutMouseFunc(clickFunction);
 	glutPassiveMotionFunc(passiveMotionFunction);
 	glutMotionFunc(motionFunction);
-	//glutMouseWheelFunc(mouseWheel);
 	glewInit();
     glutMainLoop();
     return 0;

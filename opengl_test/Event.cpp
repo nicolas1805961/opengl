@@ -9,7 +9,6 @@ Event::Event()
 
 void Event::idle()
 {
-	// Set frame time
 	GLfloat currentTime = glutGet(GLUT_ELAPSED_TIME);
 	m_manager.setElapsedTime(currentTime);
 	m_dt = currentTime - m_lastTime;

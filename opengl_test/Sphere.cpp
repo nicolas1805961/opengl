@@ -52,18 +52,6 @@ std::pair<VertexArray, unsigned int> Sphere::initializeLayout()
 		k2 = k1 + m_width + 1;
 		for (size_t j = 0; j < m_width; j++)
 		{
-			/*if (i != 0)
-			{
-				m_indices.push_back(k1);
-				m_indices.push_back(k2);
-				m_indices.push_back(k1 + 1);
-			}
-			if (i != m_height - 1)
-			{
-				m_indices.push_back(k1 + 1);
-				m_indices.push_back(k2);
-				m_indices.push_back(k2 + 1);
-			}*/
 			m_indices.push_back(k1);
 			m_indices.push_back(k2);
 			m_indices.push_back(k1 + 1);
@@ -121,13 +109,3 @@ void Sphere::keepTrack()
 {
 	Object::keepTrack();
 }
-
-/*Intersect Sphere::intersectBoundingSphere(Sphere const& other)
-{
-	float radiusDistance = m_scale + other.m_scale;
-	float centerDistance = (other.m_translation - m_translation).norm();
-	if (centerDistance < radiusDistance)
-		return Intersect(true, centerDistance - radiusDistance);
-	else
-		return Intersect(false, centerDistance - radiusDistance);
-}*/

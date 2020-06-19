@@ -3,7 +3,6 @@
 #include "Shader.h"
 #include "Vector3.h"
 #include <string>
-#include "Error.h"
 
 class Light
 {
