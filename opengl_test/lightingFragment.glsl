@@ -63,7 +63,7 @@ in vec3 vertexPosition;
 
 uniform vec3 viewPosition;
 
-float isInShadow(vec4 positionToLight, float angle)
+/*float isInShadow(vec4 positionToLight, float angle)
 {
     vec3 normalizedLightPosition = (vec3(positionToLight.xyz / positionToLight.w) * 0.5) + 0.5;
     if (normalizedLightPosition.z > 1.0)
@@ -71,7 +71,7 @@ float isInShadow(vec4 positionToLight, float angle)
     float nearest = texture(shadowMap, normalizedLightPosition.xy).r;
     float bias = max(0.2 * (1.0 - angle), 0.005);
     return (normalizedLightPosition.z - bias > nearest ? 0.0: 1.0);
-}
+}*/
 
 vec3 addDirLight(DirLight light, Utils tools)
 {
@@ -84,7 +84,8 @@ vec3 addDirLight(DirLight light, Utils tools)
     vec3 specularLighting = light.lightProperty.specular * specularCoefficient * objectProperty.objectSpecular;
     if (night)
         return ((ambientLighting + diffuseLighting + specularLighting) * (1 / 150000));
-    return (ambientLighting + (isInShadow(positionToLight, diffuseCoefficient) * (diffuseLighting + specularLighting)));
+    return (ambientLighting + diffuseLighting + specularLighting);
+    //return (ambientLighting + (isInShadow(positionToLight, diffuseCoefficient) * (diffuseLighting + specularLighting)));
 }
 
 vec3 addLamp(Lamp light, Utils tools)
@@ -129,7 +130,7 @@ vec3 addTorch(Torch light, Utils tools)
 
 vec4 addLighting()
 {
-    bool on = (sin(time) < 0.99);
+    bool on = (fract(sin(time * 0.001)*100000.0) < 0.9);
     if (isLamp)
     {
         if (flashOn && !on)

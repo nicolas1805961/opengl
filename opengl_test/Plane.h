@@ -20,8 +20,8 @@ public:
 	static std::pair<VertexArray, unsigned int> initializeLayout();
 	Vector4 getNormal() const;
 	Vector4 getNormal();
-	bool intersectRay(Ray& ray);
 	void keepTrack();
+	bool intersectRay(Ray& ray);
 	bool intersectPlane(Plane const& plane);
 
 private:

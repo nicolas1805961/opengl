@@ -149,6 +149,7 @@
     <ClCompile Include="Event.cpp" />
     <ClCompile Include="Fog.cpp" />
     <ClCompile Include="FrameBuffer.cpp" />
+    <ClCompile Include="Grass.cpp" />
     <ClCompile Include="Matrix2f.cpp" />
     <ClCompile Include="Matrix3f.cpp" />
     <ClCompile Include="Camera.cpp" />
@@ -178,15 +179,15 @@
     <ClCompile Include="VertexBufferLayout.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="DayFragment.glsl" />
+    <None Include="grass_fragment.glsl" />
+    <None Include="geometry.glsl" />
     <None Include="lightingVertex.glsl" />
-    <None Include="lampFragment.glsl" />
-    <None Include="lampVertex.glsl" />
     <None Include="lightingFragment.glsl" />
     <None Include="renderFragment.glsl" />
     <None Include="renderVertex.glsl" />
     <None Include="shadowFragment.glsl" />
     <None Include="shadowVertex.glsl" />
+    <None Include="grass_vertex.glsl" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Cube.h" />
@@ -194,6 +195,7 @@
     <ClInclude Include="Event.h" />
     <ClInclude Include="Fog.h" />
     <ClInclude Include="FrameBuffer.h" />
+    <ClInclude Include="Grass.h" />
     <ClInclude Include="Matrix2f.h" />
     <ClInclude Include="Matrix3f.h" />
     <ClInclude Include="Camera.h" />

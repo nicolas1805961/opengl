@@ -12,10 +12,11 @@ class Shader
 {
 public:
 
-	enum class ShaderType { SCREEN = 2, LIGHTING = 1 , DEPTH = 0};
+	enum class ShaderType { SCREEN = 3, LIGHTING = 2, GRASS = 1, DEPTH = 0};
 
 	Shader() = default;
 	Shader(const std::string& vertex_shader, const std::string& fragment_shader, ShaderType const& shaderType);
+	Shader(const std::string& vertex_shader, const std::string& geometry_shader, const std::string& fragment_shader, ShaderType const& shaderType);
 	void bind() const;
 	//void unbind() const;
 	void set_uniform_4f(const std::string& name, float v0, float v1, float v2, float v3);
@@ -38,6 +39,7 @@ public:
 private:
 	ShaderType m_shaderType;
 	unsigned int create_shader(const std::string& vertex_shader, const std::string& fragment_shader);
+	unsigned int create_shader(const std::string& vertex_shader, const std::string& geometry_shader, const std::string& fragment_shader);
 	std::tuple<std::string, std::string> get_shaders(std::string const& filename);
 	std::string get_shader(std::string const& filename);
 	int get_uniform_location(const std::string& name);

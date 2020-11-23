@@ -117,6 +117,9 @@
     <ClCompile Include="Lamp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Grass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stb_image.h">
@@ -212,21 +215,15 @@
     <ClInclude Include="Lamp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Grass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="lampFragment.glsl">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="lampVertex.glsl">
-      <Filter>Resource Files</Filter>
-    </None>
     <None Include="shadowVertex.glsl">
       <Filter>Resource Files</Filter>
     </None>
     <None Include="shadowFragment.glsl">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="DayFragment.glsl">
       <Filter>Resource Files</Filter>
     </None>
     <None Include="renderFragment.glsl">
@@ -239,6 +236,15 @@
       <Filter>Resource Files</Filter>
     </None>
     <None Include="lightingVertex.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="geometry.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="grass_fragment.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="grass_vertex.glsl">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>

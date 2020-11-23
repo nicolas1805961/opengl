@@ -22,6 +22,20 @@ void VertexArray::linkVerticesAndElements(const VertexBuffer& vertexBuffer, cons
 	}
 }
 
+void VertexArray::linkVerticesAndElements(const VertexBuffer& vertexBuffer, const VertexBufferLayout& layout)
+{
+	vertexBuffer.bind();
+	unsigned int offset = 0;
+	auto elements = layout.get_elements();
+	for (std::size_t i = 0; i < elements.size(); i++)
+	{
+		auto element = elements[i];
+		glEnableVertexAttribArray(i);
+		glVertexAttribPointer(i, element.get_count(), element.get_type(), element.get_normalized(), layout.get_stride(), (const void*)offset);
+		offset += element.get_count() * 4;
+	}
+}
+
 void VertexArray::bind() const
 {
 	glBindVertexArray(m_renderer_id);

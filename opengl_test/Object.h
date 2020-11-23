@@ -54,6 +54,7 @@ public:
 	void setPosition(Vector3 const& position);
 	void drawLighting(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, std::pair<Matrix4f, Matrix4f> const& shadowMatrices,
 		unsigned int indexCount, Shader const& shader);
+	void drawGrass(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, unsigned int indexCount, Shader const& shader);
 	void drawShadow(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, unsigned int indexCount, Shader const& shader);
 	virtual void keepTrack();
 	void reset();

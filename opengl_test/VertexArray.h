@@ -9,7 +9,8 @@ class VertexArray
 {
 public:
 	VertexArray();
-	void linkVerticesAndElements(const VertexBuffer& vb, const VertexBufferLayout& layout, IndexBuffer const& indexBuffer);
+	void linkVerticesAndElements(const VertexBuffer& vertexBuffer, const VertexBufferLayout& layout, IndexBuffer const& indexBuffer);
+	void linkVerticesAndElements(const VertexBuffer& vertexBuffer, const VertexBufferLayout& layout);
 	void bind() const;
 	void unbind() const;
 	unsigned int getId();

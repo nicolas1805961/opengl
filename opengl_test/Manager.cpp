@@ -75,6 +75,8 @@ void Manager::draw(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, std::p
 				drawShadow(shadowMatrices, it);
 			else if (it.getShaderType() == Shader::ShaderType::LIGHTING)
 				drawLighting(viewProjMatrices, shadowMatrices, it);
+			else if (it.getShaderType() == Shader::ShaderType::GRASS)
+				drawGrass(viewProjMatrices, it);
 		}
 	}
 	m_frameBuffers["sceneFrameBuffer"].unbind();
@@ -100,6 +102,23 @@ void Manager::drawLighting(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices
 				continue;
 			shader.set_uniform_1f("time", m_time);
 			it2->drawLighting(viewProjMatrices, shadowMatrices, it1.first.getIndexCount(), shader);
+		}
+	}
+	m_frameBuffers["shadowFrameBuffer"].unbindTexture();
+}
+
+void Manager::drawGrass(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, Shader const& shader)
+{
+	m_frameBuffers["shadowFrameBuffer"].bindTexture();
+	for (auto& it1 : m_objects)
+	{
+		it1.first.getVertexArray().bind();
+		for (auto const& it2 : it1.second)
+		{
+			if (!m_night && it2->isLamp())
+				continue;
+			//shader.set_uniform_1f("time", m_time);
+			it2->drawGrass(viewProjMatrices, it1.first.getIndexCount(), shader);
 		}
 	}
 	m_frameBuffers["shadowFrameBuffer"].unbindTexture();

@@ -36,10 +36,13 @@ bool Plane::intersectPlane(Plane const& plane)
 
 std::pair<VertexArray, unsigned int> Plane::initializeLayout()
 {
-	std::vector<float> vertices;
-	std::vector<unsigned int> indices;
-	float halfHeight = m_height / 2;
-	float halfWidth = m_width / 2;
+	std::vector<float> vertices{ -1.0f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f,
+								-1.0f,  0.0f, 1.0f, 0.0f, 1.0f, 0.0f,
+								1.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,
+								1.0f,  0.0f, -1.0f, 0.0f, 1.0f, 0.0f };
+	std::vector<unsigned int> indices{0, 1, 3, 3, 1, 2};
+	/*float halfHeight = m_height / 2.0f;
+	float halfWidth = m_width / 2.0f;
 	for (size_t i = 0; i < m_height; i++)
 	{
 		for (size_t j = 0; j < m_width; j++)
@@ -71,11 +74,11 @@ std::pair<VertexArray, unsigned int> Plane::initializeLayout()
 			indices.push_back(j + i * m_width + m_width);
 			indices.push_back(j + i * m_width + m_width + 1);
 		}
-	}
+	}*/
 	VertexArray vertexArray;
 	VertexBuffer vb(&vertices[0], sizeof(float) * vertices.size());
 	IndexBuffer ib(&indices[0], indices.size());
-	VertexBufferLayout vbl(3, 3, 2);
+	VertexBufferLayout vbl(3, 3);
 	vertexArray.linkVerticesAndElements(vb, vbl, ib);
 	return std::make_pair(vertexArray, ib.getCount());
 }
@@ -90,6 +93,6 @@ Vector4 Plane::getNormal() const
 	return m_normal;
 }
 
-unsigned int Plane::m_height = 50.0f;
+unsigned int Plane::m_height = 3;
 
-unsigned int Plane::m_width = 50.0f;
+unsigned int Plane::m_width = 3;

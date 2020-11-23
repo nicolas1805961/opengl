@@ -27,64 +27,12 @@
 #include "Camera.h"
 #include "Event.h"
 #include "Screen.h"
+#include "Grass.h"
 
 void APIENTRY glDebugCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const GLvoid* userParam)
 {
-	std::string msgSource;
-	switch (source) {
-	case GL_DEBUG_SOURCE_API:
-		msgSource = "WINDOW_SYSTEM";
-		break;
-	case GL_DEBUG_SOURCE_SHADER_COMPILER:
-		msgSource = "SHADER_COMPILER";
-		break;
-	case GL_DEBUG_SOURCE_THIRD_PARTY:
-		msgSource = "THIRD_PARTY";
-		break;
-	case GL_DEBUG_SOURCE_APPLICATION:
-		msgSource = "APPLICATION";
-		break;
-	case GL_DEBUG_SOURCE_OTHER:
-		msgSource = "OTHER";
-		break;
-	}
-
-	std::string msgType;
-	switch (type) {
-	case GL_DEBUG_TYPE_ERROR:
-		msgType = "ERROR";
-		break;
-	case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR:
-		msgType = "DEPRECATED_BEHAVIOR";
-		break;
-	case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR:
-		msgType = "UNDEFINED_BEHAVIOR";
-		break;
-	case GL_DEBUG_TYPE_PORTABILITY:
-		msgType = "PORTABILITY";
-		break;
-	case GL_DEBUG_TYPE_PERFORMANCE:
-		msgType = "PERFORMANCE";
-		break;
-	case GL_DEBUG_TYPE_OTHER:
-		msgType = "OTHER";
-		break;
-	}
-
-	std::string msgSeverity;
-	switch (severity) {
-	case GL_DEBUG_SEVERITY_LOW:
-		msgSeverity = "LOW";
-		break;
-	case GL_DEBUG_SEVERITY_MEDIUM:
-		msgSeverity = "MEDIUM";
-		break;
-	case GL_DEBUG_SEVERITY_HIGH:
-		msgSeverity = "HIGH";
-		break;
-	}
-
-	printf("glDebugMessage:\n%s \n type = %s source = %s severity = %s\n", message, msgType.c_str(), msgSource.c_str(), msgSeverity.c_str());
+	std::cout << "source = " << source << ", type = " << type << ", id = " << id << ", severity = " << severity << ", length = " <<
+		length << ", message = " << message << ", userParam = " << userParam << "\n";
 }
 
 Event input;
@@ -125,14 +73,8 @@ void display() {
 	static Shape cubeData(Cube::initializeLayout());
 	static Shape planeData(Plane::initializeLayout());
 	static Shape screenData(Screen::initializeLayout());
+	static Shape grassData(Grass::initializeLayout());
 	glEnable(GL_DEPTH_TEST);
-
-	Vector3 pointLightPositions[] = {
-		Vector3(0.7f,  0.2f,  2.0f),
-		Vector3(2.3f, -3.3f, -4.0f),
-		Vector3(-4.0f,  2.0f, -12.0f),
-		Vector3(0.0f,  0.0f, -3.0f)
-	};
     
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -148,8 +90,10 @@ void display() {
 	static Shader lightingShader("lightingVertex.glsl", "lightingFragment.glsl", Shader::ShaderType::LIGHTING);
 	static Shader depthShader("shadowVertex.glsl", "shadowFragment.glsl", Shader::ShaderType::DEPTH);
 	static Shader screenShader("renderVertex.glsl", "renderFragment.glsl", Shader::ShaderType::SCREEN);
+	static Shader grassShader("grass_vertex.glsl", "geometry.glsl", "grass_Fragment.glsl", Shader::ShaderType::GRASS);
 
 	input.addShader(lightingShader);
+	input.addShader(grassShader);
 	input.addShader(depthShader);
     
 	//Fog fog(dayShader, 0.05f, 1.5f, Vector3(0.3f), Vector3(0.0f), night);
@@ -164,9 +108,10 @@ void display() {
 		std::make_shared<Sphere>("Torch", Vector3(input.getCamera().GetPosition().get_x(), input.getCamera().GetPosition().get_y(),
 			input.getCamera().GetPosition().get_z()), true, 0.05));
 
-	auto sphere1 = std::make_shared<Sphere>("sphere1", Vector3(0.0f, 1.0f, 0.0f), Vector3(1.0f, 1.0f, 1.0f), Vector3(-2.0f, 20.0f, -10.0f));
-	auto plane1 = std::make_shared<Plane>("plane1", Vector3(1.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f), 20.0f);
-	auto cube1 = std::make_shared<Cube>("cube1", Vector3(0.0f, 1.0f, 1.0f), Vector3(3.0, 3.0, 3.0), Vector3(5.0, 20.0, -10.0));
+	//auto sphere1 = std::make_shared<Sphere>("sphere1", Vector3(0.0f, 1.0f, 0.0f), Vector3(1.0f, 1.0f, 1.0f), Vector3(-2.0f, 20.0f, -10.0f));
+	auto plane1 = std::make_shared<Plane>("plane1", Vector3(0.26f, 0.19f, 0.0f), Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f), 1.0f);
+	auto grass1 = std::make_shared<Grass>("grass1", Vector3(1.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f), 1.0f);
+	//auto cube1 = std::make_shared<Cube>("cube1", Vector3(0.0f, 1.0f, 1.0f), Vector3(3.0, 3.0, 3.0), Vector3(5.0, 20.0, -10.0));
 
 	auto view = input.getCamera().getViewMatrix();
 	auto projection = input.getCamera().getProjectionMatrix();
@@ -178,11 +123,12 @@ void display() {
 	lightingShader.set_uniform_1i("flashOn", input.isFlashing());
 	lightingShader.set_uniform_3f("viewPosition", input.getCamera().GetPosition().get_x(), input.getCamera().GetPosition().get_y(), input.getCamera().GetPosition().get_z());
 
-	input.addIntersection(cube1, *plane1);
-	input.addIntersection(sphere1, *plane1);
-	input.addObject(cube1, cubeData);
-	input.addObject(sphere1, sphereData);
+	//input.addIntersection(cube1, *plane1);
+	//input.addIntersection(sphere1, *plane1);
+	//input.addObject(cube1, cubeData);
+	//input.addObject(sphere1, sphereData);
 	input.addObject(plane1, planeData);
+	input.addObject(grass1, grassData);
 	input.addObject(lamp1.getShape(), sphereData);
 
 	static Matrix4f shadowProjection = Matrix4f::gl_ortho(-20.0f, 20.0f, -20.0f, 20.0f, 1.0f, 10.0f);

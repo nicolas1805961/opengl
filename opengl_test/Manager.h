@@ -116,6 +116,7 @@ public:
 	void drawShadow(std::pair<Matrix4f, Matrix4f> const& shadowMatrices, Shader const& shader);
 	void drawLighting(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, std::pair<Matrix4f, Matrix4f> const& shadowMatrices,
 		Shader const& shader);
+	void drawGrass(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, Shader const& shader);
 	void addFrameBuffer(std::string const& name, FrameBuffer const& frameBuffer);
 	bool trace(Ray& ray);
 	void getSizeShaders();
