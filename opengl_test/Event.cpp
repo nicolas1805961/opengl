@@ -1,8 +1,8 @@
 #include "Event.h"
 
 Event::Event()
-	: m_camera(Vector3(0.0f, 1.0f, -10.0f)), m_manager(false, false), m_lastTime(0.0f), m_isFirstHit(false), m_dt(0.0f),
-	m_doesIntersect(false), m_isRunning(false), torchOn(false), m_isFlashing(false)
+	: m_camera(Vector3(0.0f, 1.0f, -10.0f)), m_manager(false, false, 0.0f), m_lastTime(0.0f), m_isFirstHit(false), m_dt(0.0f),
+	m_doesIntersect(false), m_isRunning(false), torchOn(false), m_isFlashing(false), m_grass_height(0.0f)
 {
 	m_keys = std::make_unique<bool[]>(256);
 }
@@ -124,6 +124,10 @@ void Event::keyDown(unsigned char key, int xmouse, int ymouse)
 {
 	if (key == 'p')
 		torchOn = !torchOn;
+	else if (key == 'n')
+		m_manager.increase_grass_height(0.01);
+	else if (key == 'h')
+		m_manager.decrease_grass_height(0.01);
 	else if (key == 'o')
 		m_manager.toggleNightVision();
 	else if (key == 27)

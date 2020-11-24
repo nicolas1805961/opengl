@@ -1,6 +1,6 @@
 #include "Manager.h"
 
-Manager::Manager(bool nightVisionOn, bool night): m_nightVisionOn(nightVisionOn), m_night(night), m_time(0.0)
+Manager::Manager(bool nightVisionOn, bool night, float grass_height): m_nightVisionOn(nightVisionOn), m_night(night), m_time(0.0), m_grass_height(grass_height)
 {
 	m_shaders = std::set<Shader>();
 	m_objects = ObjectType();
@@ -117,6 +117,7 @@ void Manager::drawGrass(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, S
 		{
 			if (!m_night && it2->isLamp())
 				continue;
+			shader.set_uniform_1f("g_height", m_grass_height);
 			//shader.set_uniform_1f("time", m_time);
 			it2->drawGrass(viewProjMatrices, it1.first.getIndexCount(), shader);
 		}
@@ -209,6 +210,16 @@ void Manager::toggleNightVision()
 void Manager::toggleNight()
 {
 	m_night = !m_night;
+}
+
+void Manager::increase_grass_height(float x)
+{
+	m_grass_height += x;
+}
+
+void Manager::decrease_grass_height(float x)
+{
+	m_grass_height -= x;
 }
 
 bool Manager::isNight()

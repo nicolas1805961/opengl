@@ -104,7 +104,7 @@ public:
 	using ObjectType = std::unordered_map<Shape, std::unordered_set<std::shared_ptr<Object>, MyHashSet, MyComparatorSet>, MyHashMap, MyComparatorMap>;
 	using intersectionType = std::unordered_map<Plane, std::unordered_set<std::shared_ptr<Object>, MyHashSet, MyComparatorSet>, MyHashMapIntersection, MyComparatorMapIntersection>;
 
-	Manager(bool nightVisionOn, bool night);
+	Manager(bool nightVisionOn, bool night, float grass_height);
 	void addShader(Shader const& shader);
 	void addObject(std::shared_ptr<Object> const& object, Shape const& shape);
 	void addObjectIntersection(std::shared_ptr<Object> const& object, Plane const& plane);
@@ -125,6 +125,8 @@ public:
 	intersectionType getIntersections();
 	void toggleNightVision();
 	void toggleNight();
+	void increase_grass_height(float x);
+	void decrease_grass_height(float x);
 	bool isNight();
 	void setElapsedTime(float time);
 	//void resetFirstPosition();
@@ -138,4 +140,5 @@ private:
 	bool m_nightVisionOn;
 	float m_time;
 	bool m_night;
+	float m_grass_height;
 };

@@ -41,9 +41,9 @@ std::pair<VertexArray, unsigned int> Grass::initializeLayout(Random & rand_gener
 		vertices.push_back(0);
 		vertices.push_back(z);
 
-		auto x_up = rand_generator.rand_normal(0, 0.3, false, false);
+		auto x_up = rand_generator.rand_normal(0, 0.2, false, false);
 		auto y_up = rand_generator.rand_normal(0.8, 0.01, true, false);
-		auto z_up = rand_generator.rand_normal(0, 0.3, false, false);
+		auto z_up = rand_generator.rand_normal(0, 0.2, false, false);
 
 		vertices.push_back(x_up);
 		vertices.push_back(y_up);

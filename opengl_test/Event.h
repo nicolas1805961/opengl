@@ -40,6 +40,7 @@ private:
 	bool m_isRunning;
 	bool m_isFirstHit;
 	bool torchOn;
+	float m_grass_height;
 	bool m_isFlashing;
 	std::unique_ptr<bool[]> m_keys;
 };
