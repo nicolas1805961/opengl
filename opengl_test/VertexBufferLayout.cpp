@@ -1,5 +1,21 @@
 #include "VertexBufferLayout.h"
 
+VertexBufferLayout::VertexBufferLayout(unsigned int x, unsigned int y, unsigned int z, unsigned int t, unsigned int u) : m_stride(0)
+{
+	push(x);
+	push(y);
+	push(z);
+	push(t);
+	push(u);
+}
+
+VertexBufferLayout::VertexBufferLayout(unsigned int x, unsigned int y, unsigned int z, unsigned int t) : m_stride(0)
+{
+	push(x);
+	push(y);
+	push(z);
+	push(t);
+}
 VertexBufferLayout::VertexBufferLayout(unsigned int x, unsigned int y, unsigned int z) : m_stride(0)
 {
 	push(x);

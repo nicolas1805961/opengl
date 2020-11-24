@@ -1,12 +1,5 @@
 #include "Grass.h"
 
-float rand_uniform(float min, float max)
-{
-	static std::random_device generator;
-	std::uniform_real_distribution<> distribution(min, max);
-	return distribution(generator);
-}
-
 Grass::Grass()
 {}
 
@@ -35,33 +28,41 @@ bool Grass::intersectPlane(Plane const& plane)
 	return true;
 }
 
-std::pair<VertexArray, unsigned int> Grass::initializeLayout()
+std::pair<VertexArray, unsigned int> Grass::initializeLayout(Random & rand_generator)
 {	
 	std::vector<float> vertices{};
 	auto a = Vector3(2, 0, 0).normalize();
 	auto b = Vector3(0, 0, 2).normalize();
-	for (size_t i = 0; i < 100000; i++)
+	for (size_t i = 0; i < m_grass_density; i++)
 	{
-		auto x = rand_uniform(-1.0, 1.0);
-		auto z = rand_uniform(-1.0, 1.0);
+		auto x = rand_generator.rand_uniform(-1.0, 1.0);
+		auto z = rand_generator.rand_uniform(-1.0, 1.0);
 		vertices.push_back(x);
 		vertices.push_back(0);
 		vertices.push_back(z);
-		vertices.push_back(0.0f);
-		vertices.push_back(1.0f);
-		vertices.push_back(0.0f);
 
-		auto x_axis = rand_uniform(-1.0, 1.0);
-		//auto y_axis = rand_uniform(0.0, 1.0);
-		auto z_axis = rand_uniform(-1.0, 1.0);
+		auto x_up = rand_generator.rand_normal(0, 0.3, false, false);
+		auto y_up = rand_generator.rand_normal(0.8, 0.01, true, false);
+		auto z_up = rand_generator.rand_normal(0, 0.3, false, false);
+
+		vertices.push_back(x_up);
+		vertices.push_back(y_up);
+		vertices.push_back(z_up);
+
+		auto x_axis = rand_generator.rand_normal(0.0005, 0.001, true, true);
+		auto z_axis = rand_generator.rand_normal(0.0005, 0.001, true, true);
 
 		vertices.push_back(x_axis);
 		vertices.push_back(0);
 		vertices.push_back(z_axis);
+
+		vertices.push_back(rand_generator.rand_normal(0.02, 0.01, true, false));
 	}
 	VertexArray vertexArray;
 	VertexBuffer vb(&vertices[0], sizeof(float) * vertices.size());
-	VertexBufferLayout vbl(3, 3, 3);
+	VertexBufferLayout vbl(3, 3, 3, 1);
 	vertexArray.linkVerticesAndElements(vb, vbl);
-	return std::make_pair(vertexArray, vertices.size() / 2);
+	return std::make_pair(vertexArray, m_grass_density);
 }
+
+unsigned int Grass::m_grass_density = 10000;

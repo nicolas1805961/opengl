@@ -161,6 +161,7 @@
     <ClCompile Include="Light.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Matrix4f.cpp" />
+    <ClCompile Include="Random.cpp" />
     <ClCompile Include="Ray.cpp" />
     <ClCompile Include="RenderBuffer.cpp" />
     <ClCompile Include="Screen.cpp" />
@@ -205,6 +206,7 @@
     <ClInclude Include="Lamp.h" />
     <ClInclude Include="Light.h" />
     <ClInclude Include="Matrix4f.h" />
+    <ClInclude Include="Random.h" />
     <ClInclude Include="Ray.h" />
     <ClInclude Include="RenderBuffer.h" />
     <ClInclude Include="Screen.h" />

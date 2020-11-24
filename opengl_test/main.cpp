@@ -28,6 +28,7 @@
 #include "Event.h"
 #include "Screen.h"
 #include "Grass.h"
+#include "Random.h"
 
 void APIENTRY glDebugCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const GLvoid* userParam)
 {
@@ -69,11 +70,12 @@ void display() {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	static unsigned int callNumber = 0;
 	callNumber++;
+	static Random rand_generator;
 	static Shape sphereData(Sphere::initializeLayout());
 	static Shape cubeData(Cube::initializeLayout());
 	static Shape planeData(Plane::initializeLayout());
 	static Shape screenData(Screen::initializeLayout());
-	static Shape grassData(Grass::initializeLayout());
+	static Shape grassData(Grass::initializeLayout(rand_generator));
 	glEnable(GL_DEPTH_TEST);
     
     glEnable(GL_BLEND);
@@ -109,7 +111,7 @@ void display() {
 			input.getCamera().GetPosition().get_z()), true, 0.05));
 
 	//auto sphere1 = std::make_shared<Sphere>("sphere1", Vector3(0.0f, 1.0f, 0.0f), Vector3(1.0f, 1.0f, 1.0f), Vector3(-2.0f, 20.0f, -10.0f));
-	auto plane1 = std::make_shared<Plane>("plane1", Vector3(0.26f, 0.19f, 0.0f), Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f), 1.0f);
+	auto plane1 = std::make_shared<Plane>("plane1", Vector3(0.110f, 0.078f, 0.0f), Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f), 1.0f);
 	auto grass1 = std::make_shared<Grass>("grass1", Vector3(1.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f), 1.0f);
 	//auto cube1 = std::make_shared<Cube>("cube1", Vector3(0.0f, 1.0f, 1.0f), Vector3(3.0, 3.0, 3.0), Vector3(5.0, 20.0, -10.0));
 
