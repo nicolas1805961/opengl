@@ -144,6 +144,10 @@ unsigned int Shader::create_shader(const std::string& vertex_shader, const std::
 	glAttachShader(program, vs);
 	glAttachShader(program, fs);
 	glLinkProgram(program);
+	GLchar ErrorLog[512] = { 0 };
+	GLint size = 0;
+	glGetProgramInfoLog(program, 512, &size, ErrorLog);
+	std::cout << ErrorLog << "\n";
 	glValidateProgram(program);
 	glDeleteShader(vs);
 	glDeleteShader(fs);

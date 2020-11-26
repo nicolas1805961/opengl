@@ -180,8 +180,9 @@
     <ClCompile Include="VertexBufferLayout.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="grass_fragment.glsl" />
-    <None Include="geometry.glsl" />
+    <None Include="geometry_normal.glsl" />
+    <None Include="normal_fragment.glsl" />
+    <None Include="geometry_grass.glsl" />
     <None Include="lightingVertex.glsl" />
     <None Include="lightingFragment.glsl" />
     <None Include="renderFragment.glsl" />

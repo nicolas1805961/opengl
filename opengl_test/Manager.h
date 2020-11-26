@@ -116,7 +116,9 @@ public:
 	void drawShadow(std::pair<Matrix4f, Matrix4f> const& shadowMatrices, Shader const& shader);
 	void drawLighting(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, std::pair<Matrix4f, Matrix4f> const& shadowMatrices,
 		Shader const& shader);
-	void drawGrass(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, Shader const& shader);
+	void drawGrass(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, std::pair<Matrix4f, Matrix4f> const& shadowMatrices,
+		Shader const& shader);
+	void drawNormal(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, Shader const& shader);
 	void addFrameBuffer(std::string const& name, FrameBuffer const& frameBuffer);
 	bool trace(Ray& ray);
 	void getSizeShaders();
@@ -129,6 +131,7 @@ public:
 	void decrease_grass_height(float x);
 	bool isNight();
 	void setElapsedTime(float time);
+	void set_normals();
 	//void resetFirstPosition();
 
 private:
@@ -141,4 +144,5 @@ private:
 	float m_time;
 	bool m_night;
 	float m_grass_height;
+	bool m_show_normals;
 };

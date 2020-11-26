@@ -42,5 +42,6 @@ private:
 	bool torchOn;
 	float m_grass_height;
 	bool m_isFlashing;
+	bool m_show_normals;
 	std::unique_ptr<bool[]> m_keys;
 };

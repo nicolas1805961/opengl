@@ -244,13 +244,16 @@
     <None Include="lightingVertex.glsl">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="geometry.glsl">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="grass_fragment.glsl">
-      <Filter>Resource Files</Filter>
-    </None>
     <None Include="grass_vertex.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="geometry_normal.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="normal_fragment.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="geometry_grass.glsl">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>

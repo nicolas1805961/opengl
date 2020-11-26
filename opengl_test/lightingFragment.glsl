@@ -54,8 +54,7 @@ uniform bool flashOn;
 uniform bool isLamp;
 //uniform vec4 fogColor;
 
-out vec4 color;
-
+out vec4 colorF;
 in vec4 positionToLight;
 in vec3 Normal;
 in vec3 vertexPosition;
@@ -142,20 +141,17 @@ vec4 addLighting()
     {
         Utils tools = {normalize(Normal), normalize(viewPosition - vertexPosition)};
         vec3 amountOfLight = addDirLight(dirLight, tools);
-        if (night)
+        for (int i = 0; i < 1; i++)
         {
-            for (int i = 0; i < 1; i++)
+            if (flashOn && !on)
             {
-                if (flashOn && !on)
-                {
-                    amountOfLight += vec3(0.0);
-                    continue;
-                }
-                amountOfLight += addLamp(lamps[i], tools);
+                amountOfLight += vec3(0.0);
+                continue;
             }
-            if (torchOn)
-                amountOfLight += addTorch(torch, tools);
+            amountOfLight += addLamp(lamps[i], tools);
         }
+        if (torchOn)
+            amountOfLight += addTorch(torch, tools);
         return vec4(amountOfLight, 1.0);
         //color = mix(fogColor, vec4( result, 1.0 ), visibility);
     }
@@ -163,5 +159,5 @@ vec4 addLighting()
 
 void main()
 {
-    color = addLighting();
+    colorF = addLighting();
 }

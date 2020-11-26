@@ -2,7 +2,7 @@
 
 Event::Event()
 	: m_camera(Vector3(0.0f, 1.0f, -10.0f)), m_manager(false, false, 0.0f), m_lastTime(0.0f), m_isFirstHit(false), m_dt(0.0f),
-	m_doesIntersect(false), m_isRunning(false), torchOn(false), m_isFlashing(false), m_grass_height(0.0f)
+	m_doesIntersect(false), m_isRunning(false), torchOn(false), m_isFlashing(false), m_grass_height(0.0f), m_show_normals(false)
 {
 	m_keys = std::make_unique<bool[]>(256);
 }
@@ -134,6 +134,8 @@ void Event::keyDown(unsigned char key, int xmouse, int ymouse)
 		exit(0);
 	else if (key == 'm')
 		m_isFlashing = !m_isFlashing;
+	else if (key == '1')
+		m_manager.set_normals();
 	else
 		m_keys[key] = true;
 }

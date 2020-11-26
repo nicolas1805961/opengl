@@ -5,6 +5,7 @@ layout(location = 1) in vec3 normal;
 out vec3 Normal;
 out vec3 vertexPosition;
 out vec4 positionToLight;
+out vec3 color;
 //out float visibility;
 
 //uniform float density;
@@ -18,6 +19,7 @@ uniform mat4 projection;
 
 void main()
 {
+	color = vec3(1,0,0);
 	//vec4 positionToCamera = view * model * vec4(position, 1.0f);
 	//float distanceToCamera = -positionToCamera.z;
 	vertexPosition = vec3(model * vec4(position, 1.0f));

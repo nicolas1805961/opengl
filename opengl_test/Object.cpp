@@ -146,12 +146,15 @@ void Object::drawLighting(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices,
 	shader.set_uniform_mat_4f("projection", viewProjMatrices.second);
 	shader.set_uniform_mat_4f("model", m_model);
 	shader.set_uniform_1i("isLamp", m_isLamp);
-	shader.set_uniform_mat_4f("shadowView", shadowMatrices.first);
-	shader.set_uniform_mat_4f("shadowProjection", shadowMatrices.second);
+	//shader.set_uniform_mat_4f("shadowView", shadowMatrices.first);
+	//shader.set_uniform_mat_4f("shadowProjection", shadowMatrices.second);
 	shader.set_uniform_3f("objectProperty.objectDiffuse", m_diffuse.get_x(), m_diffuse.get_y(), m_diffuse.get_z());
 	shader.set_uniform_3f("objectProperty.objectSpecular", m_specular.get_x(), m_specular.get_y(), m_specular.get_z());
 	shader.set_uniform_1f("objectProperty.shininess", m_shininess);
-	glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, nullptr);
+	if (shader.getShaderType() == Shader::ShaderType::LIGHTING)
+		glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, nullptr);
+	else
+		glDrawArrays(GL_POINTS, 0, indexCount);
 }
 
 void Object::drawGrass(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, unsigned int indexCount, Shader const& shader)
@@ -159,9 +162,17 @@ void Object::drawGrass(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, un
 	shader.set_uniform_mat_4f("view", viewProjMatrices.first);
 	shader.set_uniform_mat_4f("projection", viewProjMatrices.second);
 	shader.set_uniform_mat_4f("model", m_model);
-	//shader.set_uniform_3f("objectProperty.objectDiffuse", m_diffuse.get_x(), m_diffuse.get_y(), m_diffuse.get_z());
-	//shader.set_uniform_3f("objectProperty.objectSpecular", m_specular.get_x(), m_specular.get_y(), m_specular.get_z());
-	//shader.set_uniform_1f("objectProperty.shininess", m_shininess);
+	shader.set_uniform_3f("objectProperty.objectDiffuse", m_diffuse.get_x(), m_diffuse.get_y(), m_diffuse.get_z());
+	shader.set_uniform_3f("objectProperty.objectSpecular", m_specular.get_x(), m_specular.get_y(), m_specular.get_z());
+	shader.set_uniform_1f("objectProperty.shininess", m_shininess);
+	glDrawArrays(GL_POINTS, 0, indexCount);
+}
+
+void Object::drawNormal(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, unsigned int indexCount, Shader const& shader)
+{
+	shader.set_uniform_mat_4f("view", viewProjMatrices.first);
+	shader.set_uniform_mat_4f("projection", viewProjMatrices.second);
+	shader.set_uniform_mat_4f("model", m_model);
 	glDrawArrays(GL_POINTS, 0, indexCount);
 }
 

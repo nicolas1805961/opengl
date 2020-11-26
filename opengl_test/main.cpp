@@ -89,20 +89,23 @@ void display() {
 	input.addFrameBuffer("shadowFrameBuffer", shadowFrameBuffer);
 	input.addFrameBuffer("sceneFrameBuffer", sceneFrameBuffer);
 
+
 	static Shader lightingShader("lightingVertex.glsl", "lightingFragment.glsl", Shader::ShaderType::LIGHTING);
 	static Shader depthShader("shadowVertex.glsl", "shadowFragment.glsl", Shader::ShaderType::DEPTH);
 	static Shader screenShader("renderVertex.glsl", "renderFragment.glsl", Shader::ShaderType::SCREEN);
-	static Shader grassShader("grass_vertex.glsl", "geometry.glsl", "grass_Fragment.glsl", Shader::ShaderType::GRASS);
+	static Shader grassShader("grass_vertex.glsl", "geometry_grass.glsl", "lightingFragment.glsl", Shader::ShaderType::GRASS);
+	static Shader normalShader("grass_vertex.glsl", "geometry_normal.glsl", "normal_Fragment.glsl", Shader::ShaderType::NORMAL);
 
 	input.addShader(lightingShader);
 	input.addShader(grassShader);
+	input.addShader(normalShader);
 	input.addShader(depthShader);
     
 	//Fog fog(dayShader, 0.05f, 1.5f, Vector3(0.3f), Vector3(0.0f), night);
-	DirectionalLight directionalLight(lightingShader, Vector3(0.3f, 0.3f, 0.3f), Vector3(2.0f, 2.0f, 2.0f), Vector3(2.0f, 2.0f, 2.0f),
-		"dirLight", Vector3(0.0f, -1.0f, 0.0f));
-	Lamp lamp1(lightingShader, Vector3(5.0, 5.0, 5.0), Vector3(5.0, 5.0, 5.0), Vector3(5.0, 5.0, 5.0),
-		"lamps[0]", std::make_shared<Sphere>("Lamp1", Vector3(1.0f, 4.0f, -7.0f), true, 0.05f));
+	/*DirectionalLight directionalLight(lightingShader, grassShader, Vector3(0.3f, 0.3f, 0.3f), Vector3(2.0f, 2.0f, 2.0f), Vector3(2.0f, 2.0f, 2.0f),
+		"dirLight", Vector3(0.0f, -1.0f, 0.0f));*/
+	Lamp lamp1(lightingShader, grassShader, Vector3(100, 100, 100), Vector3(100, 100, 100), Vector3(100, 100, 100),
+		"lamps[0]", std::make_shared<Sphere>("Lamp1", Vector3(-10.0f, 0.3f, -1.0f), true, 0.05f));
 
 	Torch torch(lightingShader, Vector3(40.0, 40.0, 40.0), Vector3(40.0, 40.0, 40.0), Vector3(40.0, 40.0, 40.0), "torch",
 		Vector3(input.getCamera().getDirection().get_x(), input.getCamera().getDirection().get_y(),
@@ -112,7 +115,7 @@ void display() {
 
 	//auto sphere1 = std::make_shared<Sphere>("sphere1", Vector3(0.0f, 1.0f, 0.0f), Vector3(1.0f, 1.0f, 1.0f), Vector3(-2.0f, 20.0f, -10.0f));
 	auto plane1 = std::make_shared<Plane>("plane1", Vector3(0.110f, 0.078f, 0.0f), Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f), 1.0f);
-	auto grass1 = std::make_shared<Grass>("grass1", Vector3(1.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f), 1.0f);
+	auto grass1 = std::make_shared<Grass>("grass1", Vector3(0.0f, 0.4f, 0.0f), Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f), 1.0f);
 	//auto cube1 = std::make_shared<Cube>("cube1", Vector3(0.0f, 1.0f, 1.0f), Vector3(3.0, 3.0, 3.0), Vector3(5.0, 20.0, -10.0));
 
 	auto view = input.getCamera().getViewMatrix();
@@ -124,6 +127,12 @@ void display() {
 	lightingShader.set_uniform_1i("torchOn", input.isTorchOn());
 	lightingShader.set_uniform_1i("flashOn", input.isFlashing());
 	lightingShader.set_uniform_3f("viewPosition", input.getCamera().GetPosition().get_x(), input.getCamera().GetPosition().get_y(), input.getCamera().GetPosition().get_z());
+
+	grassShader.bind();
+	grassShader.set_uniform_1i("night", input.isNight());
+	grassShader.set_uniform_1i("torchOn", input.isTorchOn());
+	grassShader.set_uniform_1i("flashOn", input.isFlashing());
+	grassShader.set_uniform_3f("viewPosition", input.getCamera().GetPosition().get_x(), input.getCamera().GetPosition().get_y(), input.getCamera().GetPosition().get_z());
 
 	//input.addIntersection(cube1, *plane1);
 	//input.addIntersection(sphere1, *plane1);

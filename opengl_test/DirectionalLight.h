@@ -6,7 +6,7 @@
 class DirectionalLight: public Light
 {
 public:
-	DirectionalLight(Shader const& shader, const Vector3& ambient, const Vector3& diffuse, const Vector3& specular, std::string const& name,
+	DirectionalLight(Shader const& shader1, Shader const& shader2, const Vector3& ambient, const Vector3& diffuse, const Vector3& specular, std::string const& name,
 		const Vector3& direction);
 	
 private:
