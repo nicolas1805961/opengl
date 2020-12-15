@@ -18,7 +18,7 @@ uniform vec3 light_position;
 void main()
 {
     float grass_height = height[0] + g_height;
-    vec3 time_coeff = vec3((sin(time / 1000) / 10) * sin(time / 500), 0, (sin(time / 1000) / 10) * cos(time / 500));
+    vec3 time_coeff = vec3(((sin(time / 1000) * (1 + grass_height)) / 10) * sin(time / 500), 0, ((sin(time / 1000) * (1 + grass_height)) / 10) * cos(time / 500));
     int number_of_loops = 10;
     vec3 weight = vec3(0.0, -0.1, 0.0);
     vec3 cross_line = vec3(0, 0, 0);
