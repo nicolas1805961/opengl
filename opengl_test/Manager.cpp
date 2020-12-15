@@ -67,8 +67,7 @@ void Manager::draw(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, std::p
 	else
 	{
 		//0.37, 0.65, 0.92
-		glClearColor(0.72f, 0.26f, 0.0627f, 1.0f);
-		//glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
+		glClearColor(0.6f, 0.65f, 0.92f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		for (auto& it : m_shaders)
 		{
@@ -78,9 +77,18 @@ void Manager::draw(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, std::p
 			else if (it.getShaderType() == Shader::ShaderType::LIGHTING)
 				drawLighting(viewProjMatrices, shadowMatrices, it);
 			else if (it.getShaderType() == Shader::ShaderType::GRASS)
+			{
+				it.set_uniform_1i("isFront", true);
+				it.set_uniform_1f("time", m_time);
 				drawGrass(viewProjMatrices, shadowMatrices, it);
+				/*it.set_uniform_1i("isFront", false);
+				drawGrass(viewProjMatrices, shadowMatrices, it);*/
+			}
 			else if (it.getShaderType() == Shader::ShaderType::NORMAL && m_show_normals)
+			{
 				drawNormal(viewProjMatrices, it);
+				it.set_uniform_1f("time", m_time);
+			}
 		}
 	}
 	m_frameBuffers["sceneFrameBuffer"].unbind();
@@ -120,8 +128,8 @@ void Manager::drawGrass(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, s
 		it1.first.getVertexArray().bind();
 		for (auto const& it2 : it1.second)
 		{
-			/*if (!m_night && it2->isLamp())
-				continue;*/
+			if (!m_night && it2->isLamp())
+				continue;
 			shader.set_uniform_3f("light_position", -10.0, 0.3, -1.0);
 			shader.set_uniform_1f("g_height", m_grass_height);
 			it2->drawLighting(viewProjMatrices, shadowMatrices, it1.first.getIndexCount(), shader);

@@ -115,7 +115,7 @@ void display() {
 
 	//auto sphere1 = std::make_shared<Sphere>("sphere1", Vector3(0.0f, 1.0f, 0.0f), Vector3(1.0f, 1.0f, 1.0f), Vector3(-2.0f, 20.0f, -10.0f));
 	auto plane1 = std::make_shared<Plane>("plane1", Vector3(0.110f, 0.078f, 0.0f), Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f), 1.0f);
-	auto grass1 = std::make_shared<Grass>("grass1", Vector3(0.0f, 0.4f, 0.0f), Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f), 1.0f);
+	auto grass1 = std::make_shared<Grass>("grass1", Vector3(0.0f, 0.3f, 0.0f), Vector3(0.5f, 0.5f, 0.5f), Vector3(0.0f, 0.0f, 0.0f), 1.0f);
 	//auto cube1 = std::make_shared<Cube>("cube1", Vector3(0.0f, 1.0f, 1.0f), Vector3(3.0, 3.0, 3.0), Vector3(5.0, 20.0, -10.0));
 
 	auto view = input.getCamera().getViewMatrix();

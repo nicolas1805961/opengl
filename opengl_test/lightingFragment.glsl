@@ -52,6 +52,7 @@ uniform Torch torch;
 uniform float time;
 uniform bool flashOn;
 uniform bool isLamp;
+uniform bool isFront;
 //uniform vec4 fogColor;
 
 out vec4 colorF;
@@ -139,7 +140,12 @@ vec4 addLighting()
     }
     else
     {
-        Utils tools = {normalize(Normal), normalize(viewPosition - vertexPosition)};
+        Utils tools = {vec3(0,0,0), normalize(viewPosition - vertexPosition)};
+        if (isFront)
+            tools.normal = normalize(Normal);
+        else
+            tools.normal = normalize(-Normal);
+        //Utils tools = {normalize(Normal), normalize(viewPosition - vertexPosition)};
         vec3 amountOfLight = addDirLight(dirLight, tools);
         for (int i = 0; i < 1; i++)
         {
