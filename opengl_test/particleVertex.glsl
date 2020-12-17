@@ -21,6 +21,6 @@ void main()
 	Lifespan = lifespan;
 	Size = size;
 	Color = color;
-	gl_Position = /*projection * view **/ vec4(position, 1.0f);
+	gl_Position = /*projection * view **/ projection * view * vec4(position, 1.0f);
 	gl_PointSize = size;
 }

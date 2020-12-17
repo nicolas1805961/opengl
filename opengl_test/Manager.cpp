@@ -67,7 +67,7 @@ void Manager::draw(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, std::p
 	else
 	{
 		//0.37, 0.65, 0.92
-		glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
+		glClearColor(0.25f, 0.25f, 0.25f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		for (auto& it : m_shaders)
 		{
