@@ -14,6 +14,7 @@
 #include <unordered_map>
 #include "Shape.h"
 #include "FrameBuffer.h"
+#include "SSBO.h"
 
 struct MyHashMap
 {
@@ -112,13 +113,14 @@ public:
 	std::set<Shader> getShaders();
 	ObjectType getObjects();
 	void draw(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, std::pair<Matrix4f, Matrix4f> const& shadowMatrices,
-		Shape const& screenData, Shader const& screenShader);
+		Shape const& screenData, Shader const& screenShader, SSBO const& particleData);
 	void drawShadow(std::pair<Matrix4f, Matrix4f> const& shadowMatrices, Shader const& shader);
 	void drawLighting(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, std::pair<Matrix4f, Matrix4f> const& shadowMatrices,
 		Shader const& shader);
 	void drawGrass(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, std::pair<Matrix4f, Matrix4f> const& shadowMatrices,
 		Shader const& shader);
 	void drawNormal(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, Shader const& shader);
+	void drawParticles(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, SSBO const& particleData, Shader const& shader);
 	void addFrameBuffer(std::string const& name, FrameBuffer const& frameBuffer);
 	bool trace(Ray& ray);
 	void getSizeShaders();

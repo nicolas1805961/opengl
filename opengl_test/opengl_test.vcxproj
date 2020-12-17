@@ -155,6 +155,7 @@
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="Manager.cpp" />
+    <ClCompile Include="Particle.cpp" />
     <ClCompile Include="Plane.cpp" />
     <ClCompile Include="Lamp.cpp" />
     <ClCompile Include="IndexBuffer.cpp" />
@@ -168,6 +169,7 @@
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="Shape.cpp" />
     <ClCompile Include="Sphere.cpp" />
+    <ClCompile Include="SSBO.cpp" />
     <ClCompile Include="Torch.cpp" />
     <ClCompile Include="stb_image.cpp" />
     <ClCompile Include="Texture.cpp" />
@@ -180,16 +182,23 @@
     <ClCompile Include="VertexBufferLayout.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="compute.glsl" />
     <None Include="geometry_normal.glsl" />
     <None Include="normal_fragment.glsl" />
     <None Include="geometry_grass.glsl" />
     <None Include="lightingVertex.glsl" />
     <None Include="lightingFragment.glsl" />
+    <None Include="particleFragment.glsl" />
+    <None Include="particleVertex.glsl" />
     <None Include="renderFragment.glsl" />
     <None Include="renderVertex.glsl" />
     <None Include="shadowFragment.glsl" />
     <None Include="shadowVertex.glsl" />
     <None Include="grass_vertex.glsl" />
+    <None Include="tessellation_control.glsl" />
+    <None Include="tessellation_evaluation.glsl" />
+    <None Include="tessellation_fragment.glsl" />
+    <None Include="tessellation_vertex.glsl" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Cube.h" />
@@ -203,6 +212,7 @@
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Object.h" />
     <ClInclude Include="Manager.h" />
+    <ClInclude Include="Particle.h" />
     <ClInclude Include="Plane.h" />
     <ClInclude Include="Lamp.h" />
     <ClInclude Include="Light.h" />
@@ -213,6 +223,7 @@
     <ClInclude Include="Screen.h" />
     <ClInclude Include="Shape.h" />
     <ClInclude Include="Sphere.h" />
+    <ClInclude Include="SSBO.h" />
     <ClInclude Include="Torch.h" />
     <ClInclude Include="stb_image.h" />
     <ClInclude Include="IndexBuffer.h" />

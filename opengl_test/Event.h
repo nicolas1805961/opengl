@@ -5,6 +5,7 @@
 #include "Ray.h"
 #include "Manager.h"
 #include "Camera.h"
+#include "SSBO.h"
 
 class Event
 {
@@ -19,7 +20,7 @@ public:
 	void addShader(Shader const& shader);
 	void addObject(std::shared_ptr<Object> const& object, Shape const& shape);
 	void draw(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, std::pair<Matrix4f, Matrix4f> const& shadowMatrices,
-		Shape const& screenData, Shader const& screenShader);
+		Shape const& screenData, Shader const& screenShader, SSBO const& particleData);
 	bool isNight();
 	Manager getManager();
 	Camera getCamera();

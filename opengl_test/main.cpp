@@ -29,6 +29,8 @@
 #include "Screen.h"
 #include "Grass.h"
 #include "Random.h"
+#include "Particle.h"
+#include "SSBO.h"
 
 void APIENTRY glDebugCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const GLvoid* userParam)
 {
@@ -76,6 +78,7 @@ void display() {
 	static Shape planeData(Plane::initializeLayout());
 	static Shape screenData(Screen::initializeLayout());
 	static Shape grassData(Grass::initializeLayout(rand_generator));
+	static SSBO particleData = initializeLayout();
 	glEnable(GL_DEPTH_TEST);
     
     glEnable(GL_BLEND);
@@ -91,12 +94,16 @@ void display() {
 
 
 	static Shader lightingShader("lightingVertex.glsl", "lightingFragment.glsl", Shader::ShaderType::LIGHTING);
+	static Shader particlesShader("particleVertex.glsl", "particleFragment.glsl", Shader::ShaderType::PARTICLE);
+	static Shader computeShader("compute.glsl", Shader::ShaderType::COMPUTE);
 	static Shader depthShader("shadowVertex.glsl", "shadowFragment.glsl", Shader::ShaderType::DEPTH);
 	static Shader screenShader("renderVertex.glsl", "renderFragment.glsl", Shader::ShaderType::SCREEN);
 	static Shader grassShader("grass_vertex.glsl", "geometry_grass.glsl", "lightingFragment.glsl", Shader::ShaderType::GRASS);
 	static Shader normalShader("grass_vertex.glsl", "geometry_normal.glsl", "normal_Fragment.glsl", Shader::ShaderType::NORMAL);
 
 	input.addShader(lightingShader);
+	input.addShader(computeShader);
+	input.addShader(particlesShader);
 	input.addShader(grassShader);
 	input.addShader(normalShader);
 	input.addShader(depthShader);
@@ -122,7 +129,7 @@ void display() {
 	auto projection = input.getCamera().getProjectionMatrix();
 	auto viewProjPair = std::make_pair(view, projection);
 
-    lightingShader.bind();
+	lightingShader.bind();
 	lightingShader.set_uniform_1i("night", input.isNight());
 	lightingShader.set_uniform_1i("torchOn", input.isTorchOn());
 	lightingShader.set_uniform_1i("flashOn", input.isFlashing());
@@ -133,20 +140,20 @@ void display() {
 	grassShader.set_uniform_1i("torchOn", input.isTorchOn());
 	grassShader.set_uniform_1i("flashOn", input.isFlashing());
 	grassShader.set_uniform_3f("viewPosition", input.getCamera().GetPosition().get_x(), input.getCamera().GetPosition().get_y(), input.getCamera().GetPosition().get_z());
-
+	
 	//input.addIntersection(cube1, *plane1);
 	//input.addIntersection(sphere1, *plane1);
 	//input.addObject(cube1, cubeData);
 	//input.addObject(sphere1, sphereData);
 	input.addObject(plane1, planeData);
 	input.addObject(grass1, grassData);
-	input.addObject(lamp1.getShape(), sphereData);
+	//input.addObject(lamp1.getShape(), sphereData);
 
 	static Matrix4f shadowProjection = Matrix4f::gl_ortho(-20.0f, 20.0f, -20.0f, 20.0f, 1.0f, 10.0f);
 	static Matrix4f shadowView = Matrix4f::gl_look_at(Vector3(1.0f, 5.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f));
 	static auto shadowMatrices = std::make_pair(shadowView, shadowProjection);
 
-	input.draw(viewProjPair, shadowMatrices, screenData, screenShader);
+	input.draw(viewProjPair, shadowMatrices, screenData, screenShader, particleData);
 
 	glEnable(GL_DEBUG_OUTPUT);
 	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
@@ -162,9 +169,12 @@ int main(int argc, char* argv[]) {
 	glutInitContextVersion(4, 4);
 	glutInitContextProfile(GLUT_CORE_PROFILE | GLUT_DEBUG);
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
-	glutGameModeString("1920x1080");
+	glutInitWindowSize(1024, 1024);
+	glutInitWindowPosition(100, 100);
+	glutCreateWindow("Shader Programming");
+	/*glutGameModeString("1920x1080");
 	glutEnterGameMode();
-	glutReshapeWindow(1920, 1080);
+	glutReshapeWindow(1920, 1080);*/
 	glutDisplayFunc(display);
 	glutIdleFunc(idle);
 	glutKeyboardFunc(keyDown);

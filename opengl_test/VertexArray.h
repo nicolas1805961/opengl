@@ -4,6 +4,7 @@
 #include "VertexBuffer.h"
 #include "VertexBufferLayout.h"
 #include "IndexBuffer.h"
+#include "SSBO.h"
 
 class VertexArray
 {

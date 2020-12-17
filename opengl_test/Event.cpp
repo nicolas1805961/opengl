@@ -151,9 +151,9 @@ void Event::addObject(std::shared_ptr<Object> const& object, Shape const& shape)
 }
 
 void Event::draw(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, std::pair<Matrix4f, Matrix4f> const& shadowMatrices,
-	Shape const& screenData, Shader const& screenShader)
+	Shape const& screenData, Shader const& screenShader, SSBO const& particleData)
 {
-	m_manager.draw(viewProjMatrices, shadowMatrices, screenData, screenShader);
+	m_manager.draw(viewProjMatrices, shadowMatrices, screenData, screenShader, particleData);
 }
 
 bool Event::isNight()

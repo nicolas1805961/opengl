@@ -49,7 +49,7 @@ Manager::ObjectType Manager::getObjects()
 }
 
 void Manager::draw(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, std::pair<Matrix4f, Matrix4f> const& shadowMatrices,
-	Shape const& screenData, Shader const& screenShader)
+	Shape const& screenData, Shader const& screenShader, SSBO const& particleData)
 {
 	m_frameBuffers["sceneFrameBuffer"].bind();
 	glEnable(GL_DEPTH_TEST);
@@ -67,7 +67,7 @@ void Manager::draw(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, std::p
 	else
 	{
 		//0.37, 0.65, 0.92
-		glClearColor(0.6f, 0.65f, 0.92f, 1.0f);
+		glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		for (auto& it : m_shaders)
 		{
@@ -88,6 +88,17 @@ void Manager::draw(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, std::p
 			{
 				drawNormal(viewProjMatrices, it);
 				it.set_uniform_1f("time", m_time);
+			}
+			else if (it.getShaderType() == Shader::ShaderType::COMPUTE)
+			{
+				particleData.bind();
+				it.set_uniform_1f("time", m_time);
+				glDispatchCompute(1, 1, 1);
+				glMemoryBarrier(GL_ALL_BARRIER_BITS);
+			}
+			else if (it.getShaderType() == Shader::ShaderType::PARTICLE)
+			{
+				drawParticles(viewProjMatrices, particleData, it);
 			}
 		}
 	}
@@ -115,6 +126,7 @@ void Manager::drawLighting(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices
 			shader.set_uniform_1f("time", m_time);
 			it2->drawLighting(viewProjMatrices, shadowMatrices, it1.first.getIndexCount(), shader);
 		}
+		it1.first.getVertexArray().unbind();
 	}
 	m_frameBuffers["shadowFrameBuffer"].unbindTexture();
 }
@@ -134,6 +146,7 @@ void Manager::drawGrass(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, s
 			shader.set_uniform_1f("g_height", m_grass_height);
 			it2->drawLighting(viewProjMatrices, shadowMatrices, it1.first.getIndexCount(), shader);
 		}
+		it1.first.getVertexArray().unbind();
 	}
 	m_frameBuffers["shadowFrameBuffer"].unbindTexture();
 }
@@ -154,6 +167,18 @@ void Manager::drawNormal(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, 
 		}
 	}
 	m_frameBuffers["shadowFrameBuffer"].unbindTexture();
+}
+
+void Manager::drawParticles(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, SSBO const& particleData, Shader const& shader)
+{
+	glEnable(GL_PROGRAM_POINT_SIZE);
+	auto nb_particles = particleData.activate_vbo();
+	glBindBuffer(GL_ARRAY_BUFFER, particleData.getId());
+	shader.set_uniform_mat_4f("view", viewProjMatrices.first);
+	shader.set_uniform_mat_4f("projection", viewProjMatrices.second);
+	glDrawArrays(GL_POINTS, 0, nb_particles);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glDisable(GL_VERTEX_PROGRAM_POINT_SIZE);
 }
 
 void Manager::addFrameBuffer(std::string const& name, FrameBuffer const& frameBuffer)

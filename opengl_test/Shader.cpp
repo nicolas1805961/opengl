@@ -1,5 +1,10 @@
 #include "Shader.h"
 
+Shader::Shader(const std::string& compute_shader, ShaderType const& shaderType) : m_renderer_id(0), m_shaderType(shaderType)
+{
+	m_renderer_id = create_shader(get_shader(compute_shader));
+}
+
 Shader::Shader(const std::string& vertex_shader, const std::string& fragment_shader, ShaderType const& shaderType)
 	: m_renderer_id(0), m_shaderType(shaderType)
 {
@@ -9,6 +14,16 @@ Shader::Shader(const std::string& vertex_shader, const std::string& fragment_sha
 Shader::Shader(const std::string& vertex_shader, const std::string& geometry_shader, const std::string& fragment_shader, ShaderType const& shaderType) : m_renderer_id(0), m_shaderType(shaderType)
 {
 	m_renderer_id = create_shader(get_shader(vertex_shader), get_shader(geometry_shader), get_shader(fragment_shader));
+}
+
+Shader::Shader(const std::string& vertex_shader, const std::string& tessellation_control_shader, const std::string& tessellation_evaluation_shader, const std::string& fragment_shader, ShaderType const& shaderType) : m_renderer_id(0), m_shaderType(shaderType)
+{
+	m_renderer_id = create_shader(get_shader(vertex_shader), get_shader(tessellation_control_shader), get_shader(tessellation_evaluation_shader), get_shader(fragment_shader));
+}
+
+Shader::Shader(const std::string& vertex_shader, const std::string& tessellation_control_shader, const std::string& tessellation_evaluation_shader, const std::string& geometry_shader, const std::string& fragment_shader, ShaderType const& shaderType) : m_renderer_id(0), m_shaderType(shaderType)
+{
+	m_renderer_id = create_shader(get_shader(vertex_shader), get_shader(tessellation_control_shader), get_shader(tessellation_evaluation_shader), get_shader(geometry_shader), get_shader(fragment_shader));
 }
 
 void Shader::bind() const
@@ -136,6 +151,21 @@ unsigned int Shader::compile_shader(unsigned int type, const std::string& source
 	return id;
 }
 
+unsigned int Shader::create_shader(const std::string& compute_shader)
+{
+	unsigned int program = glCreateProgram();
+	unsigned int cs = compile_shader(GL_COMPUTE_SHADER, compute_shader);
+	glAttachShader(program, cs);
+	glLinkProgram(program);
+	GLchar ErrorLog[512] = { 0 };
+	GLint size = 0;
+	glGetProgramInfoLog(program, 512, &size, ErrorLog);
+	std::cout << ErrorLog << "\n";
+	glValidateProgram(program);
+	glDeleteShader(cs);
+	return program;
+}
+
 unsigned int Shader::create_shader(const std::string& vertex_shader, const std::string& fragment_shader)
 {
 	unsigned int program = glCreateProgram();
@@ -171,6 +201,57 @@ unsigned int Shader::create_shader(const std::string& vertex_shader, const std::
 	glValidateProgram(program);
 	glDeleteShader(vs);
 	glDeleteShader(fs);
+	glDeleteShader(gs);
+	return program;
+}
+
+unsigned int Shader::create_shader(const std::string& vertex_shader, const std::string& tessellation_control_shader, const std::string& tessellation_evaluation_shader, const std::string& fragment_shader)
+{
+	unsigned int program = glCreateProgram();
+	unsigned int vs = compile_shader(GL_VERTEX_SHADER, vertex_shader);
+	unsigned int fs = compile_shader(GL_FRAGMENT_SHADER, fragment_shader);
+	unsigned int tcs = compile_shader(GL_TESS_CONTROL_SHADER, tessellation_control_shader);
+	unsigned int tes = compile_shader(GL_TESS_EVALUATION_SHADER, tessellation_evaluation_shader);
+	glAttachShader(program, vs);
+	glAttachShader(program, fs);
+	glAttachShader(program, tcs);
+	glAttachShader(program, tes);
+	glLinkProgram(program);
+	GLchar ErrorLog[512] = { 0 };
+	GLint size = 0;
+	glGetProgramInfoLog(program, 512, &size, ErrorLog);
+	std::cout << ErrorLog << "\n";
+	glValidateProgram(program);
+	glDeleteShader(vs);
+	glDeleteShader(fs);
+	glDeleteShader(tcs);
+	glDeleteShader(tes);
+	return program;
+}
+
+unsigned int Shader::create_shader(const std::string& vertex_shader, const std::string& tessellation_control_shader, const std::string& tessellation_evaluation_shader, const std::string& geometry_shader, const std::string& fragment_shader)
+{
+	unsigned int program = glCreateProgram();
+	unsigned int vs = compile_shader(GL_VERTEX_SHADER, vertex_shader);
+	unsigned int fs = compile_shader(GL_FRAGMENT_SHADER, fragment_shader);
+	unsigned int tcs = compile_shader(GL_TESS_CONTROL_SHADER, tessellation_control_shader);
+	unsigned int tes = compile_shader(GL_TESS_EVALUATION_SHADER, tessellation_evaluation_shader);
+	unsigned int gs = compile_shader(GL_GEOMETRY_SHADER, geometry_shader);
+	glAttachShader(program, vs);
+	glAttachShader(program, fs);
+	glAttachShader(program, tcs);
+	glAttachShader(program, tes);
+	glAttachShader(program, gs);
+	glLinkProgram(program);
+	GLchar ErrorLog[512] = { 0 };
+	GLint size = 0;
+	glGetProgramInfoLog(program, 512, &size, ErrorLog);
+	std::cout << ErrorLog << "\n";
+	glValidateProgram(program);
+	glDeleteShader(vs);
+	glDeleteShader(fs);
+	glDeleteShader(tcs);
+	glDeleteShader(tes);
 	glDeleteShader(gs);
 	return program;
 }
