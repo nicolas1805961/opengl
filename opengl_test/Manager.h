@@ -129,6 +129,7 @@ public:
 	intersectionType getIntersections();
 	void toggleNightVision();
 	void toggleNight();
+	void toggleRain();
 	void increase_grass_height(float x);
 	void decrease_grass_height(float x);
 	bool isNight();
@@ -149,4 +150,5 @@ private:
 	bool m_night;
 	float m_grass_height;
 	bool m_show_normals;
+	bool m_rain;
 };

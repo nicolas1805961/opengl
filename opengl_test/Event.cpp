@@ -137,6 +137,8 @@ void Event::keyDown(unsigned char key, int xmouse, int ymouse)
 		m_isFlashing = !m_isFlashing;
 	else if (key == '1')
 		m_manager.set_normals();
+	else if (key == '2')
+		m_manager.toggleRain();
 	else
 		m_keys[key] = true;
 }
