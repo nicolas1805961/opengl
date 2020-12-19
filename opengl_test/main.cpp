@@ -129,6 +129,9 @@ void display() {
 	auto projection = input.getCamera().getProjectionMatrix();
 	auto viewProjPair = std::make_pair(view, projection);
 
+	computeShader.bind();
+	computeShader.set_uniform_3f("viewPosition", input.getCamera().GetPosition().get_x(), input.getCamera().GetPosition().get_y(), input.getCamera().GetPosition().get_z());
+
 	lightingShader.bind();
 	lightingShader.set_uniform_1i("night", input.isNight());
 	lightingShader.set_uniform_1i("torchOn", input.isTorchOn());

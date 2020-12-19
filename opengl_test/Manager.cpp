@@ -1,6 +1,6 @@
 #include "Manager.h"
 
-Manager::Manager(bool nightVisionOn, bool night, float grass_height): m_nightVisionOn(nightVisionOn), m_night(night), m_time(0.0), m_grass_height(grass_height), m_show_normals(false)
+Manager::Manager(bool nightVisionOn, bool night, float grass_height): m_nightVisionOn(nightVisionOn), m_night(night), m_time(0.0), m_grass_height(grass_height), m_show_normals(false), m_dt(0.0)
 {
 	m_shaders = std::set<Shader>();
 	m_objects = ObjectType();
@@ -93,7 +93,8 @@ void Manager::draw(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, std::p
 			{
 				particleData.bind();
 				it.set_uniform_1f("time", m_time);
-				glDispatchCompute(1, 1, 1);
+				it.set_uniform_1f("dt", m_dt / 1000);
+				glDispatchCompute(5, 1, 1);
 				glMemoryBarrier(GL_ALL_BARRIER_BITS);
 			}
 			else if (it.getShaderType() == Shader::ShaderType::PARTICLE)
@@ -291,6 +292,11 @@ void Manager::setElapsedTime(float time)
 void Manager::set_normals()
 {
 	m_show_normals = !m_show_normals;
+}
+
+void Manager::set_dt(float dt)
+{
+	m_dt = dt;
 }
 
 /*void Manager::resetFirstPosition()

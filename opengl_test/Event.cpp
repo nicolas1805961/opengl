@@ -12,6 +12,7 @@ void Event::idle()
 	GLfloat currentTime = glutGet(GLUT_ELAPSED_TIME);
 	m_manager.setElapsedTime(currentTime);
 	m_dt = currentTime - m_lastTime;
+	m_manager.set_dt(m_dt);
 	m_lastTime = currentTime;
 	if (m_isRunning)
 		m_manager.testIntersection(m_dt / 1000.0);

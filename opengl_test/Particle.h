@@ -7,6 +7,7 @@
 struct Particle
 {
 	float x, y, z;
+	float vx, vy, vz;
 	float r, g, b;
 	float lifespan;
 	float size;

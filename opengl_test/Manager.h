@@ -134,6 +134,7 @@ public:
 	bool isNight();
 	void setElapsedTime(float time);
 	void set_normals();
+	void set_dt(float dt);
 	//void resetFirstPosition();
 
 private:
@@ -144,6 +145,7 @@ private:
 	std::unordered_map<std::string, FrameBuffer> m_frameBuffers;
 	bool m_nightVisionOn;
 	float m_time;
+	float m_dt;
 	bool m_night;
 	float m_grass_height;
 	bool m_show_normals;
