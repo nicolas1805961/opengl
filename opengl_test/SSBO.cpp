@@ -46,7 +46,7 @@ void SSBO::linkVerticesAndElements(const VertexBufferLayout& layout) const
 unsigned int SSBO::activate_vbo() const
 {
 	VertexArray vertexArray;
-	VertexBufferLayout vbl(3, 3, 3, 1, 1);
+	VertexBufferLayout vbl(3, 3, 3, 1);
 	linkVerticesAndElements(vbl);
 	return nb_elements;
 }

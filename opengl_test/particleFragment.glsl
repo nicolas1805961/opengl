@@ -3,8 +3,6 @@
 out vec4 FragColor;
 
 in vec3 Color;
-in float Lifespan;
-in float Size;
 
 void main() 
 {

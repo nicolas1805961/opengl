@@ -78,7 +78,7 @@ void display() {
 	static Shape planeData(Plane::initializeLayout());
 	static Shape screenData(Screen::initializeLayout());
 	static Shape grassData(Grass::initializeLayout(rand_generator));
-	static SSBO particleData = initializeLayout();
+	static SSBO particleData = initializeLayout(rand_generator);
 	glEnable(GL_DEPTH_TEST);
     
     glEnable(GL_BLEND);
@@ -122,7 +122,7 @@ void display() {
 
 	//auto sphere1 = std::make_shared<Sphere>("sphere1", Vector3(0.0f, 1.0f, 0.0f), Vector3(1.0f, 1.0f, 1.0f), Vector3(-2.0f, 20.0f, -10.0f));
 	auto plane1 = std::make_shared<Plane>("plane1", Vector3(0.110f, 0.078f, 0.0f), Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f), 1.0f);
-	auto grass1 = std::make_shared<Grass>("grass1", Vector3(0.0f, 0.2f, 0.0f), Vector3(0.5f, 0.5f, 0.5f), Vector3(0.0f, 0.0f, 0.0f), 1.0f);
+	auto grass1 = std::make_shared<Grass>("grass1", Vector3(0.0f, 0.2f, 0.0f), Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f), 1.0f);
 	//auto cube1 = std::make_shared<Cube>("cube1", Vector3(0.0f, 1.0f, 1.0f), Vector3(3.0, 3.0, 3.0), Vector3(5.0, 20.0, -10.0));
 
 	auto view = input.getCamera().getViewMatrix();
@@ -172,12 +172,12 @@ int main(int argc, char* argv[]) {
 	glutInitContextVersion(4, 4);
 	glutInitContextProfile(GLUT_CORE_PROFILE | GLUT_DEBUG);
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
-	glutInitWindowSize(1024, 1024);
+	/*glutInitWindowSize(1024, 1024);
 	glutInitWindowPosition(100, 100);
-	glutCreateWindow("Shader Programming");
-	/*glutGameModeString("1920x1080");
+	glutCreateWindow("Shader Programming");*/
+	glutGameModeString("1920x1080");
 	glutEnterGameMode();
-	glutReshapeWindow(1920, 1080);*/
+	glutReshapeWindow(1920, 1080);
 	glutDisplayFunc(display);
 	glutIdleFunc(idle);
 	glutKeyboardFunc(keyDown);

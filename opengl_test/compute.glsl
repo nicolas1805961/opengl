@@ -11,7 +11,6 @@ struct Particle
     float x, y, z;
     float vx, vy, vz;
     float r, g, b;
-    float lifespan;
     float size;
 };
 
@@ -33,11 +32,9 @@ void main()
     particles[int(gl_GlobalInvocationID.x)].y += dt * (particles[int(gl_GlobalInvocationID.x)].vy + dt * (-9.81) / 2);
     particles[int(gl_GlobalInvocationID.x)].vy += dt * (-9.81);
     particles[int(gl_GlobalInvocationID.x)].size = 1 / (0.05 * distanceToCamera);
-    //particles[int(gl_GlobalInvocationID.x)].y -= (pow(float(gl_GlobalInvocationID.x), 2) / 1000000) + 0.1;
-    //particles[int(gl_GlobalInvocationID.x)].y -= 0.01;
-    if (particles[int(gl_GlobalInvocationID.x)].y <= -10)
+    if (particles[int(gl_GlobalInvocationID.x)].y <= 0)
     {
-        particles[int(gl_GlobalInvocationID.x)].y = 5 + 500 * rand(float(gl_GlobalInvocationID));
+        particles[int(gl_GlobalInvocationID.x)].y = 100 + rand(float(gl_GlobalInvocationID));
         particles[int(gl_GlobalInvocationID.x)].vy = 0;
         float r = 10 * sqrt(rand(float(gl_GlobalInvocationID)));
         particles[int(gl_GlobalInvocationID.x)].x = r * sin(2 * PI * rand(float(gl_GlobalInvocationID) * time));
