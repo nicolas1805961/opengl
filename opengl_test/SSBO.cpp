@@ -1,12 +1,12 @@
 #include "SSBO.h"
 
-SSBO::SSBO(const void* data, GLuint element_size, GLuint nb_elements): nb_elements(nb_elements)
+SSBO::SSBO(const void* data, GLuint element_size, GLuint nb_elements, int bufferIndex): nb_elements(nb_elements)
 {
 	GLuint scale = element_size * nb_elements;
 	glGenBuffers(1, &m_renderer_id);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, m_renderer_id);
 	glBufferData(GL_SHADER_STORAGE_BUFFER, scale, data, GL_DYNAMIC_DRAW);
-	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, m_renderer_id);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, bufferIndex, m_renderer_id);
 }
 
 void SSBO::bind() const
@@ -44,6 +44,14 @@ void SSBO::linkVerticesAndElements(const VertexBufferLayout& layout) const
 }
 
 unsigned int SSBO::activate_vbo() const
+{
+	VertexArray vertexArray;
+	VertexBufferLayout vbl(3, 3, 3, 1);
+	linkVerticesAndElements(vbl);
+	return nb_elements;
+}
+
+unsigned int SSBO::activate_vbo2D() const
 {
 	VertexArray vertexArray;
 	VertexBufferLayout vbl(3, 3, 3, 1);

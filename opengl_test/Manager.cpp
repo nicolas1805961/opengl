@@ -49,7 +49,7 @@ Manager::ObjectType Manager::getObjects()
 }
 
 void Manager::draw(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, std::pair<Matrix4f, Matrix4f> const& shadowMatrices,
-	Shape const& screenData, Shader const& screenShader, SSBO const& particleData)
+	Shape const& screenData, Shader const& screenShader, SSBO const& particleData, SSBO const& particleData2D)
 {
 	m_frameBuffers["sceneFrameBuffer"].bind();
 	glEnable(GL_DEPTH_TEST);
@@ -97,9 +97,21 @@ void Manager::draw(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, std::p
 				glDispatchCompute(5, 1, 1);
 				glMemoryBarrier(GL_ALL_BARRIER_BITS);
 			}
+			else if (it.getShaderType() == Shader::ShaderType::COMPUTE2D)
+			{
+				particleData2D.bind();
+				it.set_uniform_1f("time", m_time);
+				it.set_uniform_1f("dt", m_dt / 1000);
+				glDispatchCompute(1, 1, 1);
+				glMemoryBarrier(GL_ALL_BARRIER_BITS);
+			}
 			else if (it.getShaderType() == Shader::ShaderType::PARTICLE && m_rain)
 			{
 				drawParticles(viewProjMatrices, particleData, it);
+			}
+			else if (it.getShaderType() == Shader::ShaderType::PARTICLE2D && m_rain)
+			{
+				drawParticles2D(viewProjMatrices, particleData2D, it);
 			}
 		}
 	}
@@ -177,6 +189,16 @@ void Manager::drawParticles(std::pair<Matrix4f, Matrix4f> const& viewProjMatrice
 	glBindBuffer(GL_ARRAY_BUFFER, particleData.getId());
 	shader.set_uniform_mat_4f("view", viewProjMatrices.first);
 	shader.set_uniform_mat_4f("projection", viewProjMatrices.second);
+	glDrawArrays(GL_POINTS, 0, nb_particles);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glDisable(GL_VERTEX_PROGRAM_POINT_SIZE);
+}
+
+void Manager::drawParticles2D(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, SSBO const& particleData, Shader const& shader)
+{
+	glEnable(GL_PROGRAM_POINT_SIZE);
+	auto nb_particles = particleData.activate_vbo2D();
+	glBindBuffer(GL_ARRAY_BUFFER, particleData.getId());
 	glDrawArrays(GL_POINTS, 0, nb_particles);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glDisable(GL_VERTEX_PROGRAM_POINT_SIZE);

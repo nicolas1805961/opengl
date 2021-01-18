@@ -30,6 +30,7 @@
 #include "Grass.h"
 #include "Random.h"
 #include "Particle.h"
+#include "Particle2D.h"
 #include "SSBO.h"
 
 void APIENTRY glDebugCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const GLvoid* userParam)
@@ -78,7 +79,8 @@ void display() {
 	static Shape planeData(Plane::initializeLayout());
 	static Shape screenData(Screen::initializeLayout());
 	static Shape grassData(Grass::initializeLayout(rand_generator));
-	static SSBO particleData = initializeLayout(rand_generator);
+	static SSBO particleData = initializeLayoutParticles3D(rand_generator);
+	static SSBO particleData2D = initializeLayoutParticles2D(rand_generator);
 	glEnable(GL_DEPTH_TEST);
     
     glEnable(GL_BLEND);
@@ -95,7 +97,9 @@ void display() {
 
 	static Shader lightingShader("lightingVertex.glsl", "lightingFragment.glsl", Shader::ShaderType::LIGHTING);
 	static Shader particlesShader("particleVertex.glsl", "particleFragment.glsl", Shader::ShaderType::PARTICLE);
+	static Shader particlesShader2D("particleVertex2D.glsl", "particleFragment.glsl", Shader::ShaderType::PARTICLE2D);
 	static Shader computeShader("compute.glsl", Shader::ShaderType::COMPUTE);
+	static Shader computeShader2D("compute2D.glsl", Shader::ShaderType::COMPUTE2D);
 	static Shader depthShader("shadowVertex.glsl", "shadowFragment.glsl", Shader::ShaderType::DEPTH);
 	static Shader screenShader("renderVertex.glsl", "renderFragment.glsl", Shader::ShaderType::SCREEN);
 	static Shader grassShader("grass_vertex.glsl", "geometry_grass.glsl", "lightingFragment.glsl", Shader::ShaderType::GRASS);
@@ -103,7 +107,9 @@ void display() {
 
 	input.addShader(lightingShader);
 	input.addShader(computeShader);
+	input.addShader(computeShader2D);
 	input.addShader(particlesShader);
+	input.addShader(particlesShader2D);
 	input.addShader(grassShader);
 	input.addShader(normalShader);
 	input.addShader(depthShader);
@@ -121,13 +127,17 @@ void display() {
 			input.getCamera().GetPosition().get_z()), true, 0.05));
 
 	//auto sphere1 = std::make_shared<Sphere>("sphere1", Vector3(0.0f, 1.0f, 0.0f), Vector3(1.0f, 1.0f, 1.0f), Vector3(-2.0f, 20.0f, -10.0f));
-	auto plane1 = std::make_shared<Plane>("plane1", Vector3(0.110f, 0.078f, 0.0f), Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f), 1.0f);
+	auto plane1 = std::make_shared<Plane>("plane1", Vector3(0.110f, 0.078f, 0.0f), Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f), 0.1f);
 	auto grass1 = std::make_shared<Grass>("grass1", Vector3(0.0f, 0.2f, 0.0f), Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f), 1.0f);
 	//auto cube1 = std::make_shared<Cube>("cube1", Vector3(0.0f, 1.0f, 1.0f), Vector3(3.0, 3.0, 3.0), Vector3(5.0, 20.0, -10.0));
 
 	auto view = input.getCamera().getViewMatrix();
 	auto projection = input.getCamera().getProjectionMatrix();
 	auto viewProjPair = std::make_pair(view, projection);
+
+	static Matrix4f ortho = Matrix4f::gl_ortho(-1.0f, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f);
+	particlesShader2D.bind();
+	particlesShader2D.set_uniform_mat_4f("ortho", ortho);
 
 	computeShader.bind();
 	computeShader.set_uniform_3f("viewPosition", input.getCamera().GetPosition().get_x(), input.getCamera().GetPosition().get_y(), input.getCamera().GetPosition().get_z());
@@ -156,7 +166,7 @@ void display() {
 	static Matrix4f shadowView = Matrix4f::gl_look_at(Vector3(1.0f, 5.0f, 0.0f), Vector3(0.0f, 0.0f, 0.0f), Vector3(0.0f, 1.0f, 0.0f));
 	static auto shadowMatrices = std::make_pair(shadowView, shadowProjection);
 
-	input.draw(viewProjPair, shadowMatrices, screenData, screenShader, particleData);
+	input.draw(viewProjPair, shadowMatrices, screenData, screenShader, particleData, particleData2D);
 
 	glEnable(GL_DEBUG_OUTPUT);
 	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
@@ -172,12 +182,12 @@ int main(int argc, char* argv[]) {
 	glutInitContextVersion(4, 4);
 	glutInitContextProfile(GLUT_CORE_PROFILE | GLUT_DEBUG);
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
-	/*glutInitWindowSize(1024, 1024);
+	glutInitWindowSize(1024, 1024);
 	glutInitWindowPosition(100, 100);
-	glutCreateWindow("Shader Programming");*/
-	glutGameModeString("1920x1080");
+	glutCreateWindow("Shader Programming");
+	/*glutGameModeString("1920x1080");
 	glutEnterGameMode();
-	glutReshapeWindow(1920, 1080);
+	glutReshapeWindow(1920, 1080);*/
 	glutDisplayFunc(display);
 	glutIdleFunc(idle);
 	glutKeyboardFunc(keyDown);

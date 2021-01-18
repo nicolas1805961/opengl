@@ -7,12 +7,11 @@ layout(location = 3) in float size;
 out vec3 Color;
 
 //uniform mat4 model;
-uniform mat4 view;
-uniform mat4 projection;
+uniform mat4 ortho;
 
 void main()
 {
 	Color = color;
-	gl_Position = /*projection * view **/ projection * view * vec4(position, 1.0f);
+	gl_Position = ortho * vec4(position, 1.0f);
 	gl_PointSize = size;
 }

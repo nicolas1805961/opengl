@@ -5,7 +5,7 @@
 #include "SSBO.h"
 #include "Random.h"
 
-struct Particle
+struct Particle2D
 {
 	float x, y, z;
 	float vx, vy, vz;
@@ -13,4 +13,4 @@ struct Particle
 	float size;
 };
 
-SSBO initializeLayoutParticles3D(Random& rand_generator);
+SSBO initializeLayoutParticles2D(Random& rand_generator);

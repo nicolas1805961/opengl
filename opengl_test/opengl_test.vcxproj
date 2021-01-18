@@ -156,6 +156,7 @@
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="Manager.cpp" />
     <ClCompile Include="Particle.cpp" />
+    <ClCompile Include="Particles2D.cpp" />
     <ClCompile Include="Plane.cpp" />
     <ClCompile Include="Lamp.cpp" />
     <ClCompile Include="IndexBuffer.cpp" />
@@ -183,6 +184,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="compute.glsl" />
+    <None Include="compute2D.glsl" />
     <None Include="geometry_normal.glsl" />
     <None Include="normal_fragment.glsl" />
     <None Include="geometry_grass.glsl" />
@@ -190,6 +192,7 @@
     <None Include="lightingFragment.glsl" />
     <None Include="particleFragment.glsl" />
     <None Include="particleVertex.glsl" />
+    <None Include="particleVertex2D.glsl" />
     <None Include="renderFragment.glsl" />
     <None Include="renderVertex.glsl" />
     <None Include="shadowFragment.glsl" />
@@ -213,6 +216,7 @@
     <ClInclude Include="Object.h" />
     <ClInclude Include="Manager.h" />
     <ClInclude Include="Particle.h" />
+    <ClInclude Include="Particle2D.h" />
     <ClInclude Include="Plane.h" />
     <ClInclude Include="Lamp.h" />
     <ClInclude Include="Light.h" />

@@ -24,9 +24,11 @@ out vec3 vertexPosition;
 void main()
 {
     float grass_height = height[0] + g_height;
+    if (grass_height < 0)
+        grass_height = 0;
     vec3 time_coeff = vec3(((sin(time / 1000) * (1 + grass_height)) / 10) * sin(time / 500), 0, ((sin(time / 1000) * (1 + grass_height)) / 10) * cos(time / 500));
     int number_of_loops = 10;
-    vec3 weight = vec3(0.0, -0.1, 0.0);
+    vec3 weight = vec3(0.0, -0.05, 0.0);
     vec3 cross_line = vec3(0, 0, 0);
     vec3 down_line = vec3(0, 0, 0);
     vec3 lightDirection = vec3(0, 0, 0);
@@ -89,7 +91,7 @@ void main()
         vertexPosition = vec3(model * top_right);
         EmitVertex();
 
-        weight += vec3(0.0, -grass_height*0.1, 0.0);
+        weight += vec3(0.0, -0.05, 0.0);
     }
 
     vec4 center = ((top_left + top_right) / 2) + vec4((normal[0] + time_coeff + weight) * grass_height, 0.0);

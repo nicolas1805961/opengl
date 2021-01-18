@@ -34,10 +34,10 @@ void main()
     particles[int(gl_GlobalInvocationID.x)].size = 1 / (0.05 * distanceToCamera);
     if (particles[int(gl_GlobalInvocationID.x)].y <= 0)
     {
-        particles[int(gl_GlobalInvocationID.x)].y = 100 + rand(float(gl_GlobalInvocationID));
+        particles[int(gl_GlobalInvocationID.x)].y = 100;
         particles[int(gl_GlobalInvocationID.x)].vy = 0;
-        float r = 10 * sqrt(rand(float(gl_GlobalInvocationID)));
-        particles[int(gl_GlobalInvocationID.x)].x = r * sin(2 * PI * rand(float(gl_GlobalInvocationID) * time));
-        particles[int(gl_GlobalInvocationID.x)].z = r * cos(2 * PI * rand(float(gl_GlobalInvocationID) * time));
+        float r = 5 * sqrt(rand(float(gl_GlobalInvocationID)));
+        particles[int(gl_GlobalInvocationID.x)].x = r * sin(2 * PI * rand(float(gl_GlobalInvocationID) + time));
+        particles[int(gl_GlobalInvocationID.x)].z = r * cos(2 * PI * rand(float(gl_GlobalInvocationID) + time));
     }
 }

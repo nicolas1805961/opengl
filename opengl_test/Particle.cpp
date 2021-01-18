@@ -1,6 +1,6 @@
 #include "Particle.h"
 
-SSBO initializeLayout(Random& rand_generator)
+SSBO initializeLayoutParticles3D(Random& rand_generator)
 {
 	std::vector<Particle> particles(5000);
 	//Particle particles[1000];
@@ -17,6 +17,6 @@ SSBO initializeLayout(Random& rand_generator)
 		particles[i].b = 0.4;
 		particles[i].size = 2;
 	}
-	SSBO ssbo(&particles[0], sizeof(Particle), 5000);
+	SSBO ssbo(&particles[0], sizeof(Particle), 5000, 0);
 	return ssbo;
 }

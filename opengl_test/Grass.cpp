@@ -35,8 +35,8 @@ std::pair<VertexArray, unsigned int> Grass::initializeLayout(Random & rand_gener
 	auto b = Vector3(0, 0, 2).normalize();
 	for (size_t i = 0; i < m_grass_density; i++)
 	{
-		auto x = rand_generator.rand_uniform(-1.0, 1.0);
-		auto z = rand_generator.rand_uniform(-1.0, 1.0);
+		auto x = rand_generator.rand_uniform(-0.1, 0.1);
+		auto z = rand_generator.rand_uniform(-0.1, 0.1);
 		vertices.push_back(x);
 		vertices.push_back(0);
 		vertices.push_back(z);
@@ -65,4 +65,4 @@ std::pair<VertexArray, unsigned int> Grass::initializeLayout(Random & rand_gener
 	return std::make_pair(vertexArray, m_grass_density);
 }
 
-unsigned int Grass::m_grass_density = 10000;
+unsigned int Grass::m_grass_density = 1000;

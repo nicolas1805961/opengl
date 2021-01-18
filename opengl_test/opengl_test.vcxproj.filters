@@ -129,6 +129,9 @@
     <ClCompile Include="Particle.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Particles2D.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stb_image.h">
@@ -236,6 +239,9 @@
     <ClInclude Include="Particle.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Particle2D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shadowVertex.glsl">
@@ -268,18 +274,6 @@
     <None Include="geometry_grass.glsl">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="tessellation_evaluation.glsl">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="tessellation_control.glsl">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="tessellation_vertex.glsl">
-      <Filter>Resource Files</Filter>
-    </None>
-    <None Include="tessellation_fragment.glsl">
-      <Filter>Resource Files</Filter>
-    </None>
     <None Include="compute.glsl">
       <Filter>Resource Files</Filter>
     </None>
@@ -287,6 +281,24 @@
       <Filter>Resource Files</Filter>
     </None>
     <None Include="particleFragment.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="compute2D.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="particleVertex2D.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="tessellation_control.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="tessellation_evaluation.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="tessellation_fragment.glsl">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="tessellation_vertex.glsl">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>
