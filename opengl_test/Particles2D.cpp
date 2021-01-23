@@ -2,8 +2,8 @@
 
 SSBO initializeLayoutParticles2D(Random& rand_generator)
 {
-	std::vector<Particle2D> particles(100);
-	for (size_t i = 0; i < 100; i++)
+	std::vector<Particle2D> particles(20);
+	for (size_t i = 0; i < 20; i++)
 	{
 		particles[i].x = rand_generator.rand_uniform(-1.0, 1.0);
 		particles[i].y = rand_generator.rand_uniform(-1.0, 1.0);
@@ -16,6 +16,6 @@ SSBO initializeLayoutParticles2D(Random& rand_generator)
 		particles[i].b = 0.4;
 		particles[i].size = 10;
 	}
-	SSBO ssbo(&particles[0], sizeof(Particle2D), 100, 1);
+	SSBO ssbo(&particles[0], sizeof(Particle2D), 20, 1);
 	return ssbo;
 }

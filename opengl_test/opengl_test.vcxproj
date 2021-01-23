@@ -191,6 +191,7 @@
     <None Include="lightingVertex.glsl" />
     <None Include="lightingFragment.glsl" />
     <None Include="particleFragment.glsl" />
+    <None Include="particleFragment2D.glsl" />
     <None Include="particleVertex.glsl" />
     <None Include="particleVertex2D.glsl" />
     <None Include="renderFragment.glsl" />

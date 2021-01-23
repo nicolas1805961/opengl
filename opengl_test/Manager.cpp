@@ -185,22 +185,28 @@ void Manager::drawNormal(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, 
 void Manager::drawParticles(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, SSBO const& particleData, Shader const& shader)
 {
 	glEnable(GL_PROGRAM_POINT_SIZE);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	auto nb_particles = particleData.activate_vbo();
 	glBindBuffer(GL_ARRAY_BUFFER, particleData.getId());
 	shader.set_uniform_mat_4f("view", viewProjMatrices.first);
 	shader.set_uniform_mat_4f("projection", viewProjMatrices.second);
 	glDrawArrays(GL_POINTS, 0, nb_particles);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glDisable(GL_BLEND);
 	glDisable(GL_VERTEX_PROGRAM_POINT_SIZE);
 }
 
 void Manager::drawParticles2D(std::pair<Matrix4f, Matrix4f> const& viewProjMatrices, SSBO const& particleData, Shader const& shader)
 {
 	glEnable(GL_PROGRAM_POINT_SIZE);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	auto nb_particles = particleData.activate_vbo2D();
 	glBindBuffer(GL_ARRAY_BUFFER, particleData.getId());
 	glDrawArrays(GL_POINTS, 0, nb_particles);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glDisable(GL_BLEND);
 	glDisable(GL_VERTEX_PROGRAM_POINT_SIZE);
 }
 

@@ -10,5 +10,5 @@ void main()
 	if(length(coord) > 1)
 		discard;
 	else
-		FragColor = vec4(Color, 0.75);
+		FragColor = vec4(Color, 0.15);
 }
